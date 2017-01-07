@@ -1,10 +1,32 @@
-﻿using System.Collections.Generic;
+﻿#region Copyright (C) 2005-2017 Team MediaPortal
+
+// Copyright (C) 2005-2017 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System.Collections.Generic;
 
 namespace MediaInfo
 {
   public static class LanguageHelper
   {
     public const string UnknownLanguage = "Unknown";
+
+    #region Dictionary LCID - langage name
 
     private static readonly Dictionary<int, string> LanguageLcids = new Dictionary<int, string>
     {
@@ -124,6 +146,10 @@ namespace MediaInfo
       { 0x048c, "Dari" },
       { 0x0491, "Scottish Gaelic" },
     };
+
+    #endregion
+
+    #region Dictionary ISO-639 - LCID
 
     private static readonly Dictionary<string, int> Lcids = new Dictionary<string, int>
     {
@@ -369,6 +395,10 @@ namespace MediaInfo
       { "SMS", 0x243b },
       { "SMN", 0x283b },
     };
+
+    #endregion
+
+    #region Dictionary ISO-639 - language name
 
     private static readonly Dictionary<string, string> Languages = new Dictionary<string, string>
     {
@@ -982,6 +1012,8 @@ namespace MediaInfo
       { "XAL", "Kalmyk" },
       { "UNK", UnknownLanguage }
     };
+
+    #endregion
 
     public static string GetLanguageByLcid(int lcid)
     {

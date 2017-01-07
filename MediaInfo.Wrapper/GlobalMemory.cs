@@ -18,23 +18,43 @@
 
 #endregion
 
+using System;
+using System.Runtime.InteropServices;
+
 namespace MediaInfo
 {
-  public class MenuStream : MediaStream
+  public class GlobalMemory : IDisposable
   {
-    public MenuStream(MediaInfo info, int number, int position)
-      : base(info, number, position)
+    public GlobalMemory(IntPtr handle)
     {
+      Handle = handle;
     }
 
-    public override MediaStreamKind Kind
+    ~GlobalMemory()
     {
-      get { return MediaStreamKind.Menu; }
+      Dispose(false);
     }
 
-    protected override StreamKind StreamKind
+    public IntPtr Handle { get; private set; }
+
+    public void Dispose()
     {
-      get { return StreamKind.Menu; }
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    public static GlobalMemory StringToGlobalAnsi(string source)
+    {
+      return new GlobalMemory(Marshal.StringToHGlobalAnsi(source));
+    }
+
+    private void Dispose(bool disposing)
+    {
+      if (Handle != IntPtr.Zero)
+      {
+        Marshal.FreeHGlobal(Handle);
+        Handle = IntPtr.Zero;
+      }
     }
   }
 }

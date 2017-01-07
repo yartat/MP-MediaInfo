@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -10,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Team MediaPortal")]
 [assembly: AssemblyProduct("MediaInfo")]
-[assembly: AssemblyCopyright("Copyright (C) 2005-2016 Team MediaPortal")]
-[assembly: AssemblyTrademark("Copyright (C) 2005-2016 Team MediaPortal")]
+[assembly: AssemblyCopyright("Copyright (C) 2005-2017 Team MediaPortal")]
+[assembly: AssemblyTrademark("Copyright (C) 2005-2017 Team MediaPortal")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

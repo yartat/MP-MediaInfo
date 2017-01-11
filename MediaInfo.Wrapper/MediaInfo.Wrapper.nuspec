@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>MediaInfo.Wrapper</id>
+        <version>0.7.91</version>
+        <title>MediaInfo .NET Wrapper</title>
+        <authors>Team MediaPortal</authors>
+        <owners>yartat</owners>
+        <licenseUrl>http://www.gnu.org/licenses/</licenseUrl>
+        <projectUrl>http://www.team-mediaportal.com</projectUrl>
+        <iconUrl>https://mediaarea.net/_/img/MediaInfo_90x90.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
+MediaInfo .NET wrapper with support network AV streams</description>
+        <summary>Copyright (C) 2005-2016 Team MediaPortal
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</summary>
+        <releaseNotes>Release 0.7.91 MediaInfo .NET wrapper with support network AV streams</releaseNotes>
+        <copyright>Copyright (C) 2005-2016 Team MediaPortal</copyright>
+        <language />
+        <tags>MediaInfo</tags>
+        <dependencies>
+            <dependency id="MediaInfo.Native" version="0.7.91" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\MediaInfo.Wrapper.dll" target="lib\net40\MediaInfo.Wrapper.dll" />
+        <file src="bin\Release\MediaInfo.Wrapper.pdb" target="lib\net40\MediaInfo.Wrapper.pdb" />
+    </files>
+</package>

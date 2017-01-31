@@ -1,0 +1,27 @@
+version: 0.7.{build}
+
+configuration: Release
+
+platform: Any CPU
+
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+
+cache:
+  - packages -> **\packages.config
+
+before_build:
+- cmd: >-
+    appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+
+    appveyor-retry nuget restore
+
+build:
+  publish_nuget: true
+  verbosity: minimal
+
+test: off

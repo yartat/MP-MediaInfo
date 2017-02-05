@@ -34,6 +34,9 @@ namespace MediaInfo
       Finalized = 0x08,
     }
 
+    [DllImport("kernel32.dll")]
+    internal static extern long GetDriveType(string driveLetter);
+
     //Import of DLL functions. DO NOT USE until you know what you do (MediaInfo DLL do NOT use CoTaskMemAlloc to allocate memory)
     [DllImport("MediaInfo.dll")]
     internal static extern IntPtr MediaInfo_New();

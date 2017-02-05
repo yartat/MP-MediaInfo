@@ -1,4 +1,4 @@
-version: 0.7.{build}
+version: 0.7.92.1
 
 configuration: Release
 
@@ -24,4 +24,7 @@ build:
   publish_nuget: true
   verbosity: minimal
 
-test: off
+test_script:
+
+- cmd: nunit-console-x86 .\MediaInfo.Wrapper.Tests\bin\Release\MediaInfo.Wrapper.Tests.dll
+

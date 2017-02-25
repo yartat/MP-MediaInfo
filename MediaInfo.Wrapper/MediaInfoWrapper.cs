@@ -158,6 +158,7 @@ namespace MediaInfo
 
         using (var mediaInfo = new MediaInfo())
         {
+          Version = mediaInfo.Option("Info_Version");
           mediaInfo.Open(filePath);
 
           var streamNumber = 0;
@@ -381,5 +382,7 @@ namespace MediaInfo
     public bool IsBluRay { get; private set; }
 
     public bool MediaInfoNotloaded { get; }
+
+    public string Version { get; }
   }
 }

@@ -20,6 +20,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 
 namespace MediaInfo
 {
@@ -67,45 +68,75 @@ namespace MediaInfo
       AnalyzeStreamInternal(info);
     }
 
-    protected long GetLong(MediaInfo info, string parameter)
+    protected long GetLong(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       long parsedValue;
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return long.TryParse(result, out parsedValue) ? parsedValue : 0;
     }
 
-    protected double GetDouble(MediaInfo info, string parameter)
+    protected double GetDouble(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
         NumberFormatInfo providerNumber = new NumberFormatInfo { NumberDecimalSeparator = "." };
         double parsedValue;
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return double.TryParse(result, NumberStyles.AllowDecimalPoint, providerNumber, out parsedValue) ? parsedValue : 0;
     }
 
-    protected int GetInt(MediaInfo info, string parameter)
+    protected int GetInt(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       int parsedValue;
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return int.TryParse(result, out parsedValue) ? parsedValue : 0;
     }
 
-    protected bool GetBool(MediaInfo info, string parameter)
+    protected bool GetBool(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       bool parsedValue;
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return bool.TryParse(result, out parsedValue) && parsedValue;
     }
 
-    protected DateTime GetDateTime(MediaInfo info, string parameter)
+    protected DateTime GetDateTime(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       DateTime parsedValue;
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return DateTime.TryParse(result, out parsedValue) ? parsedValue : DateTime.MinValue;
     }
 
-    protected string GetString(MediaInfo info, string parameter)
+    protected string GetString(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       var result = info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
       return result ?? string.Empty;
     }
   }

@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaInfo
 {
@@ -97,7 +98,7 @@ namespace MediaInfo
       { AudioCodec.A_AC3_BSID9, "Dolby Digital" },
       { AudioCodec.A_AC3_BSID10, "Dolby Digital" },
       { AudioCodec.A_DTS, "DTS" },
-      { AudioCodec.A_DTS_HD, "DTS HD" },
+      { AudioCodec.A_DTS_HD, "DTS-HD" },
       { AudioCodec.A_EAC3, "Dolby Digital Plus" },
       { AudioCodec.A_EAC3_ATMOS, "Dolby Atmos" },
       { AudioCodec.A_FLAC, "FLAC" },
@@ -217,6 +218,7 @@ namespace MediaInfo
       { "REAL/RALF", AudioCodec.A_REAL_RALF },
       { "REAL/ATRC", AudioCodec.A_REAL_ATRC },
       { "TRUEHD", AudioCodec.A_TRUEHD },
+      { "TRUEHD / AC3", AudioCodec.A_TRUEHD },
       { "TRUEHD+ATMOS / TRUEHD", AudioCodec.A_TRUEHD_ATMOS },
       { "TRUEHD+ATMOS", AudioCodec.A_TRUEHD_ATMOS },
       { "MLP", AudioCodec.A_MLP },
@@ -313,6 +315,7 @@ namespace MediaInfo
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);
+      var baseIndex = 0;
       Codec = GetCodecByCodecId(GetString(info, "CodecID").ToUpper());
       if (Codec == AudioCodec.A_UNDEFINED)
       {
@@ -324,15 +327,45 @@ namespace MediaInfo
         }
 
         Codec = GetCodecByCodec(codecValue.ToUpper());
+        // Correction for Atmos audio
+        switch (Codec)
+        {
+          case AudioCodec.A_DTS_HD:
+            baseIndex = 1;
+            break;
+          case AudioCodec.A_AC3:
+          case AudioCodec.A_AC3_BSID10:
+          case AudioCodec.A_AC3_BSID9:
+          case AudioCodec.A_EAC3:
+          case AudioCodec.A_TRUEHD:
+            var formatProfile = GetCodecByCodec(info.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].ToUpper().Trim());
+            if (formatProfile != AudioCodec.A_UNDEFINED)
+            {
+              Codec = formatProfile;
+              baseIndex = 1;
+            }
+
+            break;
+        }
       }
 
-      Duration = TimeSpan.FromMilliseconds(GetDouble(info, "Duration"));
-      Bitrate = GetDouble(info, "BitRate");
-      Channel = GetInt(info, "Channel(s)");
-      SamplingRate = GetDouble(info, "SamplingRate");
-      BitDepth = GetInt(info, "BitDepth");
-      Format = GetString(info, "Format");
+      Duration = TimeSpan.FromMilliseconds(GetDouble(info, "Duration", x => ExtractInfo(x, 0)));
+      Bitrate = GetDouble(info, "BitRate", x => ExtractInfo(x, baseIndex));
+      Channel = GetInt(info, "Channel(s)", x => ExtractInfo(x, baseIndex));
+      SamplingRate = GetDouble(info, "SamplingRate", x => ExtractInfo(x, baseIndex));
+      BitDepth = GetInt(info, "BitDepth", x => ExtractInfo(x, baseIndex));
+      Format = GetString(info, "Format", x => ExtractInfo(x, 0));
       CodecName = GetFullCodecName(info);
+    }
+
+    private static string ExtractInfo(string source, int index)
+    {
+      if (source.IndexOf("/", StringComparison.Ordinal) >= 0)
+      {
+        return source.Split('/').Skip(index).FirstOrDefault()?.Trim();
+      }
+
+      return source;
     }
 
     private static AudioCodec GetCodecByCodecId(string source)
@@ -369,9 +402,15 @@ namespace MediaInfo
         }
       }
 
-      strCodec = (strCodec + " " + mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split(new char[] { '/' })[0].ToUpper()).Trim();
+      var formatName = mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].Trim();
+      if (formatName.IndexOf("ATMOS", StringComparison.OrdinalIgnoreCase) < 0)
+      {
+        strCodec = (strCodec + " " + formatName).Trim();
 
-      return strCodec.Replace("+", "PLUS");
+        return strCodec.Replace("+", "PLUS");
+      }
+
+      return formatName;
     }
 
   }

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
 
 namespace MediaInfo.Wrapper.Tests
 {
@@ -11,7 +13,7 @@ namespace MediaInfo.Wrapper.Tests
     [TestCase(@".\Data\RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
     public void LoadSimpleVideo(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, ".\\");
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
@@ -23,7 +25,7 @@ namespace MediaInfo.Wrapper.Tests
     [TestCase(@".\Data\Test_H264_Atmos.m2ts")]
     public void LoadVideoWithDolbyAtmos(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, ".\\");
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
@@ -38,7 +40,7 @@ namespace MediaInfo.Wrapper.Tests
     [TestCase(@".\Data\Test_H264_Ac3.m2ts")]
     public void LoadVideoWithDolbyDigital(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, ".\\");
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
@@ -53,7 +55,7 @@ namespace MediaInfo.Wrapper.Tests
     [TestCase(@".\Data\Test_H264.m2ts")]
     public void LoadVideoWithoutAudio(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, ".\\");
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
@@ -67,7 +69,7 @@ namespace MediaInfo.Wrapper.Tests
     [TestCase(@".\Data\Test_H264_DTS2.m2ts", 6, 0)]
     public void LoadVideoWithDtsMa(string fileName, int audioStreamCount, int dtsIndex)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, ".\\");
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");

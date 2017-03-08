@@ -79,6 +79,11 @@ namespace MediaInfo
 
     #region ctor's
 
+    public MediaInfoWrapper(string filePath)
+      : this (filePath, Environment.Is64BitProcess ? @".\x64" : @".\x86")
+    {
+    }
+
     public MediaInfoWrapper(string filePath, string pathToDll)
     {
       MediaInfoNotloaded = false;
@@ -127,7 +132,7 @@ namespace MediaInfo
             var programBlocks = new List<Tuple<string, int>>();
             foreach (var bupFile in bups)
             {
-              using (var mi = new MediaInfo())
+              using (var mi = new MediaInfo(pathToDll))
               {
                 mi.Open(bupFile);
                 var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
@@ -156,7 +161,7 @@ namespace MediaInfo
           _hasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
         }
 
-        using (var mediaInfo = new MediaInfo())
+        using (var mediaInfo = new MediaInfo(pathToDll))
         {
           Version = mediaInfo.Option("Info_Version");
           mediaInfo.Open(filePath);

@@ -18,6 +18,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 #pragma warning disable 1591 // Disable XML documentation warnings
@@ -65,12 +66,15 @@ namespace MediaInfo
 
   public class MediaInfo : IDisposable
   {
+    private const string MediaInfoFileName = "MediaInfo.dll";
     private IntPtr _handle;
+    private IntPtr _module;
     private readonly bool _mustUseAnsi;
 
     //MediaInfo class
-    public MediaInfo()
+    public MediaInfo(string pathToDll)
     {
+      _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
       try
       {
         _handle = NativeMethods.MediaInfo_New();
@@ -267,6 +271,11 @@ namespace MediaInfo
     private void Dispose(bool disposing)
     {
       Close();
+      if (_module != IntPtr.Zero)
+      {
+        NativeMethods.FreeLibrary(_module);
+        _module = IntPtr.Zero;
+      }
     }
   }
 

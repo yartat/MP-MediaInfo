@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>MediaInfo.Wrapper</id>
-        <version>0.7.93.2</version>
+        <version>0.7.93.3</version>
         <title>MediaInfo .NET Wrapper</title>
         <authors>Team MediaPortal</authors>
         <owners>yartat</owners>
@@ -20,7 +20,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
         <language />
         <tags>MediaInfo</tags>
         <dependencies>
-            <dependency id="MediaInfo.Native" version="0.7.93.1" />
+            <dependency id="MediaInfo.Native" version="0.7.93.2" />
         </dependencies>
     </metadata>
     <files>

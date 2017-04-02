@@ -1,4 +1,8 @@
-version: 0.7.93.3
+version: 0.7.94
+
+branches:
+  only:
+  - master
 
 configuration: Release
 

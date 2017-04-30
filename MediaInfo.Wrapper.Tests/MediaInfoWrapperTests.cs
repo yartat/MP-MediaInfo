@@ -1,6 +1,4 @@
-﻿using System;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace MediaInfo.Wrapper.Tests
 {
@@ -33,7 +31,7 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
       Assert.AreEqual(2, _mediaInfoWrapper.AudioStreams.Count);
       var atmos = _mediaInfoWrapper.AudioStreams[0];
-      Assert.AreEqual(AudioCodec.A_TRUEHD_ATMOS, atmos.Codec);
+      Assert.AreEqual(AudioCodec.TruehdAtmos, atmos.Codec);
     }
 
     [Test]
@@ -48,7 +46,7 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
       Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
       var ac3 = _mediaInfoWrapper.AudioStreams[0];
-      Assert.AreEqual(AudioCodec.A_AC3, ac3.Codec);
+      Assert.AreEqual(AudioCodec.Ac3, ac3.Codec);
     }
 
     [Test]
@@ -77,7 +75,7 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
       Assert.AreEqual(audioStreamCount, _mediaInfoWrapper.AudioStreams.Count);
       var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
-      Assert.IsTrue(dts.Codec == AudioCodec.A_DTS_HD);
+      Assert.IsTrue(dts.Codec == AudioCodec.DtsHd);
     }
   }
 }

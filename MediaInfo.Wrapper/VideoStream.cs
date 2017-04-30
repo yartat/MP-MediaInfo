@@ -24,6 +24,9 @@ using System.Drawing;
 
 namespace MediaInfo
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public enum AspectRatio
   {
     Opaque, // 1:1
@@ -307,15 +310,9 @@ namespace MediaInfo
     {
     }
 
-    public override MediaStreamKind Kind
-    {
-      get { return MediaStreamKind.Video; }
-    }
+    public override MediaStreamKind Kind => MediaStreamKind.Video;
 
-    protected override StreamKind StreamKind
-    {
-      get { return StreamKind.Video; }
-    }
+    protected override StreamKind StreamKind => StreamKind.Video;
 
     public double FrameRate { get; set; }
 
@@ -339,36 +336,30 @@ namespace MediaInfo
 
     public string CodecName { get; set; }
 
-    public string Resolution
-    {
-      get { return GetVideoResolution(); }
-    }
+    public string Resolution => GetVideoResolution();
 
-    public Size Size
-    {
-      get { return new Size(Width, Height); }
-    }
+    public Size Size => new Size(Width, Height);
 
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);
-      FrameRate = GetDouble(info, "FrameRate");
-      Width = GetInt(info, "Width");
-      Height = GetInt(info, "Height");
-      AspectRatio = GetAspectRatio(GetString(info, "DisplayAspectRatio"));
-      Interlaced = GetInterlaced(GetString(info, "ScanType").ToLower());
-      Stereoscopic = GetInt(info, "MultiView_Count") >= 2
-                       ? GetStereoscopic(GetString(info, "MultiView_Layout").ToLower())
+      FrameRate = Get<double>(info, "FrameRate", double.TryParse);
+      Width = Get<int>(info, "Width", int.TryParse);
+      Height = Get<int>(info, "Height", int.TryParse);
+      AspectRatio = GetAspectRatio(Get(info, "DisplayAspectRatio"));
+      Interlaced = GetInterlaced(Get(info, "ScanType").ToLower());
+      Stereoscopic = Get<int>(info, "MultiView_Count", int.TryParse) >= 2
+                       ? GetStereoscopic(Get(info, "MultiView_Layout").ToLower())
                        : StereoMode.Mono;
-      Format = GetString(info, "Format");
-      Codec = GetCodecId(GetString(info, "CodecID"));
+      Format = Get(info, "Format");
+      Codec = GetCodecId(Get(info, "CodecID"));
       if (Codec == VideoCodec.V_UNDEFINED)
       {
-        Codec = GetCodec(GetString(info, "Codec"));
+        Codec = GetCodec(Get(info, "Codec"));
       }
 
-      Duration = TimeSpan.FromMilliseconds(GetDouble(info, "Duration"));
-      BitDepth = GetInt(info, "BitDepth");
+      Duration = TimeSpan.FromMilliseconds(Get<double>(info, "Duration", double.TryParse));
+      BitDepth = Get<int>(info, "BitDepth", int.TryParse);
       CodecName = GetFullCodecName(info);
     }
 
@@ -463,7 +454,7 @@ namespace MediaInfo
         if (!string.IsNullOrEmpty(strCodecVer))
         {
           strCodec = (strCodec + " " + strCodecVer).Trim();
-          string strCodecProf = mediaInfo.Get(StreamKind.Video, StreamPosition, "Format_Profile").ToUpper();
+          var strCodecProf = mediaInfo.Get(StreamKind.Video, StreamPosition, "Format_Profile").ToUpper();
           if (strCodecProf != "MAIN@MAIN")
           {
             strCodec = (strCodec + " " + strCodecProf).Trim();

@@ -23,9 +23,17 @@ using System.Runtime.InteropServices;
 
 namespace MediaInfo
 {
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <seealso cref="IDisposable" />
   public class GlobalMemory : IDisposable
   {
-    public GlobalMemory(IntPtr handle)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GlobalMemory"/> class.
+    /// </summary>
+    /// <param name="handle">The handle.</param>
+    private GlobalMemory(IntPtr handle)
     {
       Handle = handle;
     }
@@ -43,6 +51,11 @@ namespace MediaInfo
       GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Strings to global ANSI string.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <returns></returns>
     public static GlobalMemory StringToGlobalAnsi(string source)
     {
       return new GlobalMemory(Marshal.StringToHGlobalAnsi(source));

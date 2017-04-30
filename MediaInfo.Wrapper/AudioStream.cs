@@ -22,228 +22,471 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
+  #region Audio codec
+
+  /// <summary>
+  /// Defines constants for different kind of audio codecs.
+  /// </summary>
   public enum AudioCodec
   {
-    A_UNDEFINED,
-    A_MPEG_L1,
-    A_MPEG_L2,
-    A_MPEG_L3,
-    A_PCM_INT_BIG,
-    A_PCM_INT_LIT,
-    A_PCM_FLOAT_IEEE,
-    A_AC3,
-    A_AC3_ATMOS,
-    A_AC3_BSID9,
-    A_AC3_BSID10,
-    A_DTS,
-    A_DTS_HD,
-    A_EAC3,
-    A_EAC3_ATMOS,
-    A_FLAC,
-    A_OPUS,
-    A_TTA1,
-    A_VORBIS,
-    A_WAVPACK4,
-    A_WAVPACK,
-    A_WAVE,
-    A_WAVE64,
-    A_REAL_14_4,
-    A_REAL_28_8,
-    A_REAL_COOK,
-    A_REAL_SIPR,
-    A_REAL_RALF,
-    A_REAL_ATRC,
-    A_TRUEHD,
-    A_TRUEHD_ATMOS,
-    A_MLP,
-    A_AAC,
-    A_AAC_MPEG2_MAIN,
-    A_AAC_MPEG2_LC,
-    A_AAC_MPEG2_LC_SBR,
-    A_AAC_MPEG2_SSR,
-    A_AAC_MPEG4_MAIN,
-    A_AAC_MPEG4_LC,
-    A_AAC_MPEG4_LC_SBR,
-    A_AAC_MPEG4_LC_SBR_PS,
-    A_AAC_MPEG4_SSR,
-    A_AAC_MPEG4_LTP,
-    A_ALAC,
-    A_APE,
-    A_WMA1,
-    A_WMA2,
-    A_WMA9,
-    A_ADPCM,
-    A_AMR,
-    A_ATRAC1,
-    A_ATRAC3,
+    /// <summary>
+    /// The undefined audio codec
+    /// </summary>
+    Undefined,
+
+    /// <summary>
+    /// MPEG Layer 1
+    /// </summary>
+    MpegLayer1,
+
+    /// <summary>
+    /// MPEG Layer 2
+    /// </summary>
+    MpegLayer2,
+
+    /// <summary>
+    /// MPEG Layer 3
+    /// </summary>
+    MpegLayer3,
+
+    /// <summary>
+    /// PCM big-endian int 
+    /// </summary>
+    PcmIntBig,
+
+    /// <summary>
+    /// PCM little-endian int 
+    /// </summary>
+    PcmIntLit,
+
+    /// <summary>
+    /// PCM float IEEE
+    /// </summary>
+    PcmFloatIeee,
+
+    /// <summary>
+    /// Dolby Digital
+    /// </summary>
+    Ac3,
+
+    /// <summary>
+    /// Dolby Digital Atmos
+    /// </summary>
+    Ac3Atmos,
+
+    /// <summary>
+    /// DolbyNet
+    /// </summary>
+    Ac3Bsid9,
+
+    /// <summary>
+    /// DolbyNet
+    /// </summary>
+    Ac3Bsid10,
+
+    /// <summary>
+    /// Dolby Digital Plus
+    /// </summary>
+    Eac3,
+
+    /// <summary>
+    /// Dolby Digital Plus Atmos
+    /// </summary>
+    Eac3Atmos,
+
+    /// <summary>
+    /// Dolby TrueHD
+    /// </summary>
+    Truehd,
+
+    /// <summary>
+    /// Dolby TrueHD Atmos
+    /// </summary>
+    TruehdAtmos,
+
+    /// <summary>
+    /// DTS
+    /// </summary>
+    Dts,
+
+    /// <summary>
+    /// DTS-HD
+    /// </summary>
+    DtsHd,
+
+    /// <summary>
+    /// Free Lossless Audio Codec
+    /// </summary>
+    Flac,
+
+    /// <summary>
+    /// OPUS
+    /// </summary>
+    Opus,
+
+    /// <summary>
+    /// True Audio
+    /// </summary>
+    Tta1,
+
+    /// <summary>
+    /// VORBIS
+    /// </summary>
+    Vorbis,
+
+    /// <summary>
+    /// WavPack v4
+    /// </summary>
+    WavPack4,
+
+    /// <summary>
+    /// WavPack
+    /// </summary>
+    WavPack,
+
+    /// <summary>
+    /// Waveform Audio
+    /// </summary>
+    Wave,
+
+    /// <summary>
+    /// Waveform Audio
+    /// </summary>
+    Wave64,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
+    Real14_4,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
+    Real28_8,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    RealCook,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    RealSipr,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    RealRalf,
+
+    /// <summary>
+    /// The Real Audio
+    /// </summary>
+    RealAtrc,
+
+    /// <summary>
+    /// Meridian Lossless
+    /// </summary>
+    Mlp,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    Aac,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg2Main,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg2Lc,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg2LcSbr,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg2Ssr,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4Main,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4Lc,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4LcSbr,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4LcSbrPs,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4Ssr,
+
+    /// <summary>
+    /// Advanced Audio Coding
+    /// </summary>
+    AacMpeg4Ltp,
+
+    /// <summary>
+    /// Apple Lossless
+    /// </summary>
+    Alac,
+
+    /// <summary>
+    /// Monkey's Audio
+    /// </summary>
+    Ape,
+
+    /// <summary>
+    /// Windows Media Audio
+    /// </summary>
+    Wma1,
+
+    /// <summary>
+    /// Windows Media Audio v2
+    /// </summary>
+    Wma2,
+
+    /// <summary>
+    /// Windows Media Audio 9
+    /// </summary>
+    Wma9,
+
+    /// <summary>
+    /// Adaptive differential pulse-code modulation
+    /// </summary>
+    Adpcm,
+
+    /// <summary>
+    /// Adaptive multi rate
+    /// </summary>
+    Amr,
+
+    /// <summary>
+    /// Adaptive Transform Acoustic Coding (SDDS)
+    /// </summary>
+    Atrac1,
+
+    /// <summary>
+    /// Adaptive Transform Acoustic Coding 3
+    /// </summary>
+    Atrac3,
+
+    /// <summary>
+    /// ATRAC3plus
+    /// </summary>
+    Atrac3Plus,
+
+    /// <summary>
+    /// ATRAC Advanced Lossless
+    /// </summary>
+    AtracLossless,
+
+    /// <summary>
+    /// ATRAC9
+    /// </summary>
+    Atrac9
   }
 
+  #endregion
+
+  /// <summary>
+  /// Provides properties and overridden methods for the analyze audio stream 
+  /// and contains information about audio stream.
+  /// </summary>
+  /// <seealso cref="LanguageMediaStream" />
   public class AudioStream : LanguageMediaStream
   {
     #region matching dictionaries
 
     private static readonly Dictionary<AudioCodec, string> CodecFrendlyNames = new Dictionary<AudioCodec, string>
     {
-      { AudioCodec.A_UNDEFINED, "" },
-      { AudioCodec.A_MPEG_L1, "MPEG Layer 1" },
-      { AudioCodec.A_MPEG_L2, "MPEG Layer 2" },
-      { AudioCodec.A_MPEG_L3, "MPEG Layer 3" },
-      { AudioCodec.A_PCM_INT_BIG, "PCM" },
-      { AudioCodec.A_PCM_INT_LIT, "PCM" },
-      { AudioCodec.A_PCM_FLOAT_IEEE, "PCM" },
-      { AudioCodec.A_AC3, "Dolby Digital" },
-      { AudioCodec.A_AC3_ATMOS, "Dolby Atmos" },
-      { AudioCodec.A_AC3_BSID9, "Dolby Digital" },
-      { AudioCodec.A_AC3_BSID10, "Dolby Digital" },
-      { AudioCodec.A_DTS, "DTS" },
-      { AudioCodec.A_DTS_HD, "DTS-HD" },
-      { AudioCodec.A_EAC3, "Dolby Digital Plus" },
-      { AudioCodec.A_EAC3_ATMOS, "Dolby Atmos" },
-      { AudioCodec.A_FLAC, "FLAC" },
-      { AudioCodec.A_OPUS, "OPUS" },
-      { AudioCodec.A_TTA1, "True Audio" },
-      { AudioCodec.A_VORBIS, "Vorbis" },
-      { AudioCodec.A_WAVPACK4, "WavPack" },
-      { AudioCodec.A_WAVPACK, "WavPack" },
-      { AudioCodec.A_WAVE, "Wave" },
-      { AudioCodec.A_WAVE64, "Wave" },
-      { AudioCodec.A_REAL_14_4, "Real Audio" },
-      { AudioCodec.A_REAL_28_8, "Real Audio" },
-      { AudioCodec.A_REAL_COOK, "Real Audio" },
-      { AudioCodec.A_REAL_SIPR, "Real Audio" },
-      { AudioCodec.A_REAL_RALF, "Real Audio" },
-      { AudioCodec.A_REAL_ATRC, "Real Audio" },
-      { AudioCodec.A_TRUEHD, "Dolby TrueHD" },
-      { AudioCodec.A_TRUEHD_ATMOS, "Dolby Atmos TrueHD" },
-      { AudioCodec.A_MLP, "Meridian Lossless" },
-      { AudioCodec.A_AAC, "AAC" },
-      { AudioCodec.A_AAC_MPEG2_MAIN, "AAC" },
-      { AudioCodec.A_AAC_MPEG2_LC, "AAC" },
-      { AudioCodec.A_AAC_MPEG2_LC_SBR, "AAC" },
-      { AudioCodec.A_AAC_MPEG2_SSR, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_MAIN, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_LC, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_LC_SBR, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_LC_SBR_PS, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_SSR, "AAC" },
-      { AudioCodec.A_AAC_MPEG4_LTP, "AAC" },
-      { AudioCodec.A_ALAC, "Apple Lossless" },
-      { AudioCodec.A_APE, "Monkey's Audio" },
-      { AudioCodec.A_WMA1, "Windows Audio" },
-      { AudioCodec.A_WMA2, "Windows Audio" },
-      { AudioCodec.A_WMA9, "Windows Audio Pro" },
-      { AudioCodec.A_ADPCM, "ADPCM" },
-      { AudioCodec.A_AMR, "Adaptive Multi-Rate" },
+      { AudioCodec.Undefined, "" },
+      { AudioCodec.MpegLayer1, "MPEG Layer 1" },
+      { AudioCodec.MpegLayer2, "MPEG Layer 2" },
+      { AudioCodec.MpegLayer3, "MPEG Layer 3" },
+      { AudioCodec.PcmIntBig, "PCM" },
+      { AudioCodec.PcmIntLit, "PCM" },
+      { AudioCodec.PcmFloatIeee, "PCM" },
+      { AudioCodec.Ac3, "Dolby Digital" },
+      { AudioCodec.Ac3Atmos, "Dolby Atmos" },
+      { AudioCodec.Ac3Bsid9, "DolbyNet" },
+      { AudioCodec.Ac3Bsid10, "DolbyNet" },
+      { AudioCodec.Dts, "DTS" },
+      { AudioCodec.DtsHd, "DTS-HD" },
+      { AudioCodec.Eac3, "Dolby Digital Plus" },
+      { AudioCodec.Eac3Atmos, "Dolby Atmos" },
+      { AudioCodec.Flac, "FLAC" },
+      { AudioCodec.Opus, "OPUS" },
+      { AudioCodec.Tta1, "True Audio" },
+      { AudioCodec.Vorbis, "Vorbis" },
+      { AudioCodec.WavPack4, "WavPack" },
+      { AudioCodec.WavPack, "WavPack" },
+      { AudioCodec.Wave, "Wave" },
+      { AudioCodec.Wave64, "Wave" },
+      { AudioCodec.Real14_4, "Real Audio" },
+      { AudioCodec.Real28_8, "Real Audio" },
+      { AudioCodec.RealCook, "Real Audio" },
+      { AudioCodec.RealSipr, "Real Audio" },
+      { AudioCodec.RealRalf, "Real Audio" },
+      { AudioCodec.RealAtrc, "Real Audio" },
+      { AudioCodec.Truehd, "Dolby TrueHD" },
+      { AudioCodec.TruehdAtmos, "Dolby TrueHD Atmos" },
+      { AudioCodec.Mlp, "Meridian Lossless" },
+      { AudioCodec.Aac, "AAC" },
+      { AudioCodec.AacMpeg2Main, "AAC" },
+      { AudioCodec.AacMpeg2Lc, "AAC" },
+      { AudioCodec.AacMpeg2LcSbr, "AAC" },
+      { AudioCodec.AacMpeg2Ssr, "AAC" },
+      { AudioCodec.AacMpeg4Main, "AAC" },
+      { AudioCodec.AacMpeg4Lc, "AAC" },
+      { AudioCodec.AacMpeg4LcSbr, "AAC" },
+      { AudioCodec.AacMpeg4LcSbrPs, "AAC" },
+      { AudioCodec.AacMpeg4Ssr, "AAC" },
+      { AudioCodec.AacMpeg4Ltp, "AAC" },
+      { AudioCodec.Alac, "Apple Lossless" },
+      { AudioCodec.Ape, "Monkey's Audio" },
+      { AudioCodec.Wma1, "Windows Audio" },
+      { AudioCodec.Wma2, "Windows Audio" },
+      { AudioCodec.Wma9, "Windows Audio Pro" },
+      { AudioCodec.Adpcm, "ADPCM" },
+      { AudioCodec.Amr, "Adaptive Multi-Rate" },
+      { AudioCodec.Atrac1, "SDSS" },
+      { AudioCodec.Atrac3, "ATRAC3" },
+      { AudioCodec.Atrac3Plus, "ATRAC3plus" },
+      { AudioCodec.AtracLossless, "ATRAC Advanced Lossless" },
+      { AudioCodec.Atrac9, "ATRAC9" },
     };
 
-    private static readonly Dictionary<string, AudioCodec> CodecIds = new Dictionary<string, AudioCodec>
+    private static readonly Dictionary<string, AudioCodec> CodecIds = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
     {
-      { "A_MPEG/L1", AudioCodec.A_MPEG_L1 },
-      { "A_MPEG/L2", AudioCodec.A_MPEG_L2 },
-      { "A_MPEG/L3", AudioCodec.A_MPEG_L3 },
-      { "A_PCM/INT/BIG", AudioCodec.A_PCM_INT_BIG },
-      { "A_PCM/INT/LIT", AudioCodec.A_PCM_INT_LIT },
-      { "A_PCM/FLOAT/IEEE", AudioCodec.A_PCM_FLOAT_IEEE },
-      { "A_AC3", AudioCodec.A_AC3 },
-      { "A_AC3/BSID9", AudioCodec.A_AC3_BSID9 },
-      { "A_AC3/BSID10", AudioCodec.A_AC3_BSID10 },
-      { "A_DTS", AudioCodec.A_DTS },
-      { "A_DTS-HD", AudioCodec.A_DTS_HD },
-      { "A_EAC3", AudioCodec.A_EAC3 },
-      { "A_FLAC", AudioCodec.A_FLAC },
-      { "A_OPUS", AudioCodec.A_OPUS },
-      { "A_TTA1", AudioCodec.A_TTA1 },
-      { "A_VORBIS", AudioCodec.A_VORBIS },
-      { "A_WAVPACK4", AudioCodec.A_WAVPACK4 },
-      { "A_WAVPACK", AudioCodec.A_WAVPACK },
-      { "A_REAL/14_4", AudioCodec.A_REAL_14_4 },
-      { "A_REAL/28_8", AudioCodec.A_REAL_28_8 },
-      { "A_REAL/COOK", AudioCodec.A_REAL_COOK },
-      { "A_REAL/SIPR", AudioCodec.A_REAL_SIPR },
-      { "A_REAL/RALF", AudioCodec.A_REAL_RALF },
-      { "A_REAL/ATRC", AudioCodec.A_REAL_ATRC },
-      { "A_TRUEHD", AudioCodec.A_TRUEHD },
-      { "A_MLP", AudioCodec.A_MLP },
-      { "A_AAC", AudioCodec.A_AAC },
-      { "A_AAC/MPEG2/MAIN", AudioCodec.A_AAC_MPEG2_MAIN },
-      { "A_AAC/MPEG2/LC", AudioCodec.A_AAC_MPEG2_LC },
-      { "A_AAC/MPEG2/LC/SBR", AudioCodec.A_AAC_MPEG2_LC_SBR },
-      { "A_AAC/MPEG2/SSR", AudioCodec.A_AAC_MPEG2_SSR },
-      { "A_AAC/MPEG4/MAIN", AudioCodec.A_AAC_MPEG4_MAIN },
-      { "A_AAC/MPEG4/LC", AudioCodec.A_AAC_MPEG4_LC },
-      { "A_AAC/MPEG4/LC/SBR", AudioCodec.A_AAC_MPEG4_LC_SBR },
-      { "A_AAC/MPEG4/LC/SBR/PS", AudioCodec.A_AAC_MPEG4_LC_SBR_PS },
-      { "A_AAC/MPEG4/SSR", AudioCodec.A_AAC_MPEG4_SSR },
-      { "A_AAC/MPEG4/LTP", AudioCodec.A_AAC_MPEG4_LTP },
-      { "A_ALAC", AudioCodec.A_ALAC },
-      { "A_APE", AudioCodec.A_APE },
-      { "SAMR", AudioCodec.A_AMR },
+      { "A_MPEG/L1", AudioCodec.MpegLayer1 },
+      { "A_MPEG/L2", AudioCodec.MpegLayer2 },
+      { "A_MPEG/L3", AudioCodec.MpegLayer3 },
+      { "A_PCM/INT/BIG", AudioCodec.PcmIntBig },
+      { "A_PCM/INT/LIT", AudioCodec.PcmIntLit },
+      { "A_PCM/FLOAT/IEEE", AudioCodec.PcmFloatIeee },
+      { "A_AC3", AudioCodec.Ac3 },
+      { "A_AC3/BSID9", AudioCodec.Ac3Bsid9 },
+      { "A_AC3/BSID10", AudioCodec.Ac3Bsid10 },
+      { "A_DTS", AudioCodec.Dts },
+      { "A_DTS-HD", AudioCodec.DtsHd },
+      { "A_EAC3", AudioCodec.Eac3 },
+      { "A_FLAC", AudioCodec.Flac },
+      { "A_OPUS", AudioCodec.Opus },
+      { "A_TTA1", AudioCodec.Tta1 },
+      { "A_VORBIS", AudioCodec.Vorbis },
+      { "A_WAVPACK4", AudioCodec.WavPack4 },
+      { "A_WAVPACK", AudioCodec.WavPack },
+      { "A_REAL/14_4", AudioCodec.Real14_4 },
+      { "A_REAL/28_8", AudioCodec.Real28_8 },
+      { "A_REAL/COOK", AudioCodec.RealCook },
+      { "A_REAL/SIPR", AudioCodec.RealSipr },
+      { "A_REAL/RALF", AudioCodec.RealRalf },
+      { "A_REAL/ATRC", AudioCodec.RealAtrc },
+      { "A_TRUEHD", AudioCodec.Truehd },
+      { "A_MLP", AudioCodec.Mlp },
+      { "A_AAC", AudioCodec.Aac },
+      { "A_AAC/MPEG2/MAIN", AudioCodec.AacMpeg2Main },
+      { "A_AAC/MPEG2/LC", AudioCodec.AacMpeg2Lc },
+      { "A_AAC/MPEG2/LC/SBR", AudioCodec.AacMpeg2LcSbr },
+      { "A_AAC/MPEG2/SSR", AudioCodec.AacMpeg2Ssr },
+      { "A_AAC/MPEG4/MAIN", AudioCodec.AacMpeg4Main },
+      { "A_AAC/MPEG4/LC", AudioCodec.AacMpeg4Lc },
+      { "A_AAC/MPEG4/LC/SBR", AudioCodec.AacMpeg4LcSbr },
+      { "A_AAC/MPEG4/LC/SBR/PS", AudioCodec.AacMpeg4LcSbrPs },
+      { "A_AAC/MPEG4/SSR", AudioCodec.AacMpeg4Ssr },
+      { "A_AAC/MPEG4/LTP", AudioCodec.AacMpeg4Ltp },
+      { "A_ALAC", AudioCodec.Alac },
+      { "A_APE", AudioCodec.Ape },
+      { "SAMR", AudioCodec.Amr },
     };
 
-    private static readonly Dictionary<string, AudioCodec> Codecs = new Dictionary<string, AudioCodec>
+    private static readonly Dictionary<string, AudioCodec> Codecs = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
     {
-      { "MPA1L1", AudioCodec.A_MPEG_L1 },
-      { "MPA1L2", AudioCodec.A_MPEG_L2 },
-      { "MPA1L3", AudioCodec.A_MPEG_L3 },
-      { "PCM BIG", AudioCodec.A_PCM_INT_BIG },
-      { "PCM LITTLE", AudioCodec.A_PCM_INT_LIT },
-      { "PCM", AudioCodec.A_PCM_INT_LIT },
-      { "PCM/FLOAT/IEEE", AudioCodec.A_PCM_FLOAT_IEEE },
-      { "AC3", AudioCodec.A_AC3 },
-      { "AC-3", AudioCodec.A_AC3 },
-      { "AC3/BSID9", AudioCodec.A_AC3_BSID9 },
-      { "AC3/BSID10", AudioCodec.A_AC3_BSID10 },
-      { "DTS", AudioCodec.A_DTS },
-      { "DTS-HD", AudioCodec.A_DTS_HD },
-      { "EAC3", AudioCodec.A_EAC3 },
-      { "E-AC-3+ATMOS", AudioCodec.A_EAC3_ATMOS },
-      { "EAC-3", AudioCodec.A_EAC3 },
-      { "E-AC-3", AudioCodec.A_EAC3 },
-      { "AC-3+ATMOS", AudioCodec.A_AC3_ATMOS },
-      { "AC3+", AudioCodec.A_EAC3 },
-      { "FLAC", AudioCodec.A_FLAC },
-      { "OPUS", AudioCodec.A_OPUS },
-      { "TTA1", AudioCodec.A_TTA1 },
-      { "VORBIS", AudioCodec.A_VORBIS },
-      { "WAVPACK4", AudioCodec.A_WAVPACK4 },
-      { "WAVPACK", AudioCodec.A_WAVPACK },
-      { "WAVE", AudioCodec.A_WAVE },
-      { "WAVE64", AudioCodec.A_WAVE64 },
-      { "REAL/14_4", AudioCodec.A_REAL_14_4 },
-      { "REAL/28_8", AudioCodec.A_REAL_28_8 },
-      { "REAL/COOK", AudioCodec.A_REAL_COOK },
-      { "REAL/SIPR", AudioCodec.A_REAL_SIPR },
-      { "REAL/RALF", AudioCodec.A_REAL_RALF },
-      { "REAL/ATRC", AudioCodec.A_REAL_ATRC },
-      { "TRUEHD", AudioCodec.A_TRUEHD },
-      { "TRUEHD / AC3", AudioCodec.A_TRUEHD },
-      { "TRUEHD+ATMOS / TRUEHD", AudioCodec.A_TRUEHD_ATMOS },
-      { "TRUEHD+ATMOS", AudioCodec.A_TRUEHD_ATMOS },
-      { "MLP", AudioCodec.A_MLP },
-      { "AAC", AudioCodec.A_AAC },
-      { "AAC LC", AudioCodec.A_AAC_MPEG4_LC },
-      { "AAC LTP", AudioCodec.A_AAC_MPEG4_LTP },
-      { "AAC MAIN", AudioCodec.A_AAC_MPEG4_MAIN },
-      { "AAC SSR", AudioCodec.A_AAC_MPEG4_SSR },
-      { "AAC/MPEG2/MAIN", AudioCodec.A_AAC_MPEG2_MAIN },
-      { "AAC/MPEG2/LC", AudioCodec.A_AAC_MPEG2_LC },
-      { "AAC/MPEG2/LC/SBR", AudioCodec.A_AAC_MPEG2_LC_SBR },
-      { "AAC/MPEG2/SSR", AudioCodec.A_AAC_MPEG2_SSR },
-      { "AAC/MPEG4/MAIN", AudioCodec.A_AAC_MPEG4_MAIN },
-      { "AAC/MPEG4/LC", AudioCodec.A_AAC_MPEG4_LC },
-      { "AAC/MPEG4/LC/SBR", AudioCodec.A_AAC_MPEG4_LC_SBR },
-      { "AAC/MPEG4/LC/SBR/PS", AudioCodec.A_AAC_MPEG4_LC_SBR_PS },
-      { "AAC/MPEG4/SSR", AudioCodec.A_AAC_MPEG4_SSR },
-      { "AAC/MPEG4/LTP", AudioCodec.A_AAC_MPEG4_LTP },
-      { "ALAC", AudioCodec.A_ALAC },
-      { "APE", AudioCodec.A_APE },
-      { "11", AudioCodec.A_ADPCM },
-      { "AMR", AudioCodec.A_AMR },
-      { "160", AudioCodec.A_WMA1 },
-      { "161", AudioCodec.A_WMA2 },
-      { "162", AudioCodec.A_WMA9 },
+      { "MPA1L1", AudioCodec.MpegLayer1 },
+      { "MPA1L2", AudioCodec.MpegLayer2 },
+      { "MPA1L3", AudioCodec.MpegLayer3 },
+      { "PCM BIG", AudioCodec.PcmIntBig },
+      { "PCM LITTLE", AudioCodec.PcmIntLit },
+      { "PCM", AudioCodec.PcmIntLit },
+      { "PCM/FLOAT/IEEE", AudioCodec.PcmFloatIeee },
+      { "AC3", AudioCodec.Ac3 },
+      { "AC-3", AudioCodec.Ac3 },
+      { "AC3/BSID9", AudioCodec.Ac3Bsid9 },
+      { "AC3/BSID10", AudioCodec.Ac3Bsid10 },
+      { "DTS", AudioCodec.Dts },
+      { "DTS-HD", AudioCodec.DtsHd },
+      { "EAC3", AudioCodec.Eac3 },
+      { "E-AC-3+ATMOS", AudioCodec.Eac3Atmos },
+      { "EAC-3", AudioCodec.Eac3 },
+      { "E-AC-3", AudioCodec.Eac3 },
+      { "AC-3+ATMOS", AudioCodec.Ac3Atmos },
+      { "AC3+", AudioCodec.Eac3 },
+      { "FLAC", AudioCodec.Flac },
+      { "OPUS", AudioCodec.Opus },
+      { "TTA1", AudioCodec.Tta1 },
+      { "VORBIS", AudioCodec.Vorbis },
+      { "WAVPACK4", AudioCodec.WavPack4 },
+      { "WAVPACK", AudioCodec.WavPack },
+      { "WAVE", AudioCodec.Wave },
+      { "WAVE64", AudioCodec.Wave64 },
+      { "REAL/14_4", AudioCodec.Real14_4 },
+      { "REAL/28_8", AudioCodec.Real28_8 },
+      { "REAL/COOK", AudioCodec.RealCook },
+      { "REAL/SIPR", AudioCodec.RealSipr },
+      { "REAL/RALF", AudioCodec.RealRalf },
+      { "REAL/ATRC", AudioCodec.RealAtrc },
+      { "TRUEHD", AudioCodec.Truehd },
+      { "TRUEHD / AC3", AudioCodec.Truehd },
+      { "TRUEHD+ATMOS / TRUEHD", AudioCodec.TruehdAtmos },
+      { "TRUEHD+ATMOS", AudioCodec.TruehdAtmos },
+      { "MLP", AudioCodec.Mlp },
+      { "AAC", AudioCodec.Aac },
+      { "AAC LC", AudioCodec.AacMpeg4Lc },
+      { "AAC LTP", AudioCodec.AacMpeg4Ltp },
+      { "AAC MAIN", AudioCodec.AacMpeg4Main },
+      { "AAC SSR", AudioCodec.AacMpeg4Ssr },
+      { "AAC/MPEG2/MAIN", AudioCodec.AacMpeg2Main },
+      { "AAC/MPEG2/LC", AudioCodec.AacMpeg2Lc },
+      { "AAC/MPEG2/LC/SBR", AudioCodec.AacMpeg2LcSbr },
+      { "AAC/MPEG2/SSR", AudioCodec.AacMpeg2Ssr },
+      { "AAC/MPEG4/MAIN", AudioCodec.AacMpeg4Main },
+      { "AAC/MPEG4/LC", AudioCodec.AacMpeg4Lc },
+      { "AAC/MPEG4/LC/SBR", AudioCodec.AacMpeg4LcSbr },
+      { "AAC/MPEG4/LC/SBR/PS", AudioCodec.AacMpeg4LcSbrPs },
+      { "AAC/MPEG4/SSR", AudioCodec.AacMpeg4Ssr },
+      { "AAC/MPEG4/LTP", AudioCodec.AacMpeg4Ltp },
+      { "ALAC", AudioCodec.Alac },
+      { "APE", AudioCodec.Ape },
+      { "11", AudioCodec.Adpcm },
+      { "AMR", AudioCodec.Amr },
+      { "160", AudioCodec.Wma1 },
+      { "161", AudioCodec.Wma2 },
+      { "162", AudioCodec.Wma9 },
     };
 
     private static readonly Dictionary<int, string> Channels = new Dictionary<int, string>
@@ -262,29 +505,49 @@ namespace MediaInfo
 
     #endregion
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AudioStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     public AudioStream(MediaInfo info, int number, int position)
         : base(info, number, position)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AudioStream"/> class.
+    /// </summary>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     public AudioStream(int number, int position)
         : base(null, number, position)
     {
     }
 
-    public override MediaStreamKind Kind
-    {
-      get { return MediaStreamKind.Audio; }
-    }
+    /// <inheritdoc />
+    public override MediaStreamKind Kind => MediaStreamKind.Audio;
 
-    protected override StreamKind StreamKind
-    {
-      get { return StreamKind.Audio; }
-    }
+    protected override StreamKind StreamKind => StreamKind.Audio;
 
-    public AudioCodec Codec { get; set; }
+    /// <summary>
+    /// Gets the audio codec.
+    /// </summary>
+    /// <value>
+    /// The audio codec.
+    /// </value>
+    [PublicAPI]
+    public AudioCodec Codec { get; private set; }
 
-    public string CodecFrendly
+    /// <summary>
+    /// Gets the codec friendly name.
+    /// </summary>
+    /// <value>
+    /// The codec friendly name.
+    /// </value>
+    [PublicAPI]
+    public string CodecFriendly
     {
       get
       {
@@ -293,53 +556,107 @@ namespace MediaInfo
       }
     }
 
-    public TimeSpan Duration { get; set; }
+    /// <summary>
+    /// Gets the stream duration.
+    /// </summary>
+    /// <value>
+    /// The stream duration.
+    /// </value>
+    [PublicAPI]
+    public TimeSpan Duration { get; private set; }
 
-    public double Bitrate { get; set; }
+    /// <summary>
+    /// Gets the audio bitrate.
+    /// </summary>
+    /// <value>
+    /// The audio bitrate.
+    /// </value>
+    [PublicAPI]
+    public double Bitrate { get; private set; }
 
-    public int Channel { get; set; }
+    /// <summary>
+    /// Gets the audio channel amount.
+    /// </summary>
+    /// <value>
+    /// The audio channel amount.
+    /// </value>
+    [PublicAPI]
+    public int Channel { get; private set; }
 
-    public double SamplingRate { get; set; }
+    /// <summary>
+    /// Gets the audio sampling rate.
+    /// </summary>
+    /// <value>
+    /// The audio sampling rate.
+    /// </value>
+    [PublicAPI]
+    public double SamplingRate { get; private set; }
 
-    public int BitDepth { get; set; }
+    /// <summary>
+    /// Gets the bit depth of stream.
+    /// </summary>
+    /// <value>
+    /// The bit depth of stream.
+    /// </value>
+    [PublicAPI]
+    public int BitDepth { get; private set; }
 
-    public string Format { get; set; }
+    /// <summary>
+    /// Gets the audio format.
+    /// </summary>
+    /// <value>
+    /// The audio format.
+    /// </value>
+    [PublicAPI]
+    public string Format { get; private set; }
 
-    public string CodecName { get; set; }
+    /// <summary>
+    /// Gets the audio codec name.
+    /// </summary>
+    /// <value>
+    /// The audio codec name.
+    /// </value>
+    [PublicAPI]
+    public string CodecName { get; private set; }
 
-    public string AudioChannelsFriendly
-    {
-      get { return ConvertAudioChannels(Channel); }
-    }
+    /// <summary>
+    /// Gets the audio channels friendly.
+    /// </summary>
+    /// <value>
+    /// The audio channels friendly.
+    /// </value>
+    [PublicAPI]
+    public string AudioChannelsFriendly => ConvertAudioChannels(Channel);
 
+    /// <inheritdoc />
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);
       var baseIndex = 0;
-      Codec = GetCodecByCodecId(GetString(info, "CodecID").ToUpper());
-      if (Codec == AudioCodec.A_UNDEFINED)
+      Codec = GetCodecByCodecId(Get(info, "CodecID"));
+      if (Codec == AudioCodec.Undefined)
       {
-        var codecValue = GetString(info, "Codec");
+        var codecValue = Get(info, "Codec");
         if (codecValue.Equals("PCM", StringComparison.OrdinalIgnoreCase))
         {
-          var endianness = GetString(info, "Codec_Settings_Endianness");
+          var endianness = Get(info, "Codec_Settings_Endianness");
           codecValue = $"{codecValue}{(string.IsNullOrEmpty(endianness) ? string.Empty : " " + endianness)}";
         }
 
-        Codec = GetCodecByCodec(codecValue.ToUpper());
+        Codec = GetCodecIdByCodecName(codecValue);
         // Correction for Atmos audio
         switch (Codec)
         {
-          case AudioCodec.A_DTS_HD:
+          case AudioCodec.DtsHd:
             baseIndex = 1;
             break;
-          case AudioCodec.A_AC3:
-          case AudioCodec.A_AC3_BSID10:
-          case AudioCodec.A_AC3_BSID9:
-          case AudioCodec.A_EAC3:
-          case AudioCodec.A_TRUEHD:
-            var formatProfile = GetCodecByCodec(info.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].ToUpper().Trim());
-            if (formatProfile != AudioCodec.A_UNDEFINED)
+          case AudioCodec.Ac3:
+          case AudioCodec.Ac3Bsid10:
+          case AudioCodec.Ac3Bsid9:
+          case AudioCodec.Eac3:
+          case AudioCodec.Truehd:
+            var formatProfile = GetCodecIdByCodecName(info.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].Trim());
+            if (formatProfile != AudioCodec.Undefined)
             {
               Codec = formatProfile;
               baseIndex = 1;
@@ -349,35 +666,32 @@ namespace MediaInfo
         }
       }
 
-      Duration = TimeSpan.FromMilliseconds(GetDouble(info, "Duration", x => ExtractInfo(x, 0)));
-      Bitrate = GetDouble(info, "BitRate", x => ExtractInfo(x, baseIndex));
-      Channel = GetInt(info, "Channel(s)", x => ExtractInfo(x, baseIndex));
-      SamplingRate = GetDouble(info, "SamplingRate", x => ExtractInfo(x, baseIndex));
-      BitDepth = GetInt(info, "BitDepth", x => ExtractInfo(x, baseIndex));
-      Format = GetString(info, "Format", x => ExtractInfo(x, 0));
+      Duration = TimeSpan.FromMilliseconds(Get<double>(info, "Duration", double.TryParse, x => ExtractInfo(x, 0)));
+      Bitrate = Get<double>(info, "BitRate", double.TryParse, x => ExtractInfo(x, baseIndex));
+      Channel = Get<int>(info, "Channel(s)", int.TryParse, x => ExtractInfo(x, baseIndex));
+      SamplingRate = Get<double>(info, "SamplingRate", double.TryParse, x => ExtractInfo(x, baseIndex));
+      BitDepth = Get<int>(info, "BitDepth", int.TryParse, x => ExtractInfo(x, baseIndex));
+      Format = Get(info, "Format", x => ExtractInfo(x, 0));
       CodecName = GetFullCodecName(info);
     }
 
     private static string ExtractInfo(string source, int index)
     {
-      if (source.IndexOf("/", StringComparison.Ordinal) >= 0)
-      {
-        return source.Split('/').Skip(index).FirstOrDefault()?.Trim();
-      }
-
-      return source;
+      return source.IndexOf("/", StringComparison.Ordinal) >= 0 ? 
+          source.Split('/').Skip(index).FirstOrDefault()?.Trim() : 
+          source;
     }
 
     private static AudioCodec GetCodecByCodecId(string source)
     {
       AudioCodec result;
-      return CodecIds.TryGetValue(source, out result) ? result : AudioCodec.A_UNDEFINED;
+      return CodecIds.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
     }
 
-    private static AudioCodec GetCodecByCodec(string source)
+    private static AudioCodec GetCodecIdByCodecName(string source)
     {
       AudioCodec result;
-      return Codecs.TryGetValue(source, out result) ? result : AudioCodec.A_UNDEFINED;
+      return Codecs.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
     }
 
     private static string ConvertAudioChannels(int channels)
@@ -403,15 +717,13 @@ namespace MediaInfo
       }
 
       var formatName = mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].Trim();
-      if (formatName.IndexOf("ATMOS", StringComparison.OrdinalIgnoreCase) < 0)
+      if (formatName.IndexOf("ATMOS", StringComparison.OrdinalIgnoreCase) >= 0)
       {
-        strCodec = (strCodec + " " + formatName).Trim();
-
-        return strCodec.Replace("+", "PLUS");
+        return formatName;
       }
 
-      return formatName;
+      strCodec = (strCodec + " " + formatName).Trim();
+      return strCodec.Replace("+", "PLUS");
     }
-
   }
 }

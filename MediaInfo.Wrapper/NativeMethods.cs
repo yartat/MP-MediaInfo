@@ -34,7 +34,7 @@ namespace MediaInfo
       Finalized = 0x08,
     }
 
-    [System.Flags]
+    [Flags]
     internal enum LoadLibraryFlags : uint
     {
       DEFAULT = 0x00000000,

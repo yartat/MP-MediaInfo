@@ -20,21 +20,26 @@
 
 namespace MediaInfo
 {
+  /// <summary>
+  /// Describes properties of the menu
+  /// </summary>
+  /// <seealso cref="MediaStream" />
   public class MenuStream : MediaStream
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MenuStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     public MenuStream(MediaInfo info, int number, int position)
       : base(info, number, position)
     {
     }
 
-    public override MediaStreamKind Kind
-    {
-      get { return MediaStreamKind.Menu; }
-    }
+    /// <inheritdoc />
+    public override MediaStreamKind Kind => MediaStreamKind.Menu;
 
-    protected override StreamKind StreamKind
-    {
-      get { return StreamKind.Menu; }
-    }
+    protected override StreamKind StreamKind => StreamKind.Menu;
   }
 }

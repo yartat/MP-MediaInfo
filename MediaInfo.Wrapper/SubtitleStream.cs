@@ -20,77 +20,155 @@
 
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
+  /// <summary>
+  /// Defines constants for different kind of subtitles.
+  /// </summary>
   public enum SubtitleCodec
   {
-    S_UNDEFINED,
-    S_ASS,
-    S_IMAGE_BMP,
-    S_SSA,
-    S_TEXT_ASS,
-    S_TEXT_SSA,
-    S_TEXT_USF,
-    S_TEXT_UTF8,
-    S_USF,
-    S_UTF8,
-    S_VOBSUB,
-    S_HDMV_PGS,
-    S_HDMV_TEXTST
+
+    /// <summary>
+    /// The undefined type.
+    /// </summary>
+    Undefined,
+
+    /// <summary>
+    /// The Advanced SubStation Alpha subtitles.
+    /// </summary>
+    Ass,
+
+    /// <summary>
+    /// The BMP image subtitles.
+    /// </summary>
+    ImageBmp,
+
+    /// <summary>
+    /// The  SubStation Alpha subtitles.
+    /// </summary>
+    Ssa,
+
+    /// <summary>
+    /// The Advanced SubStation Alpha text subtitles.
+    /// </summary>
+    TextAss,
+
+    /// <summary>
+    /// The SubStation Alpha text subtitles.
+    /// </summary>
+    TextSsa,
+
+    /// <summary>
+    /// The Universal Subtitle Format text subtitles.
+    /// </summary>
+    TextUsf,
+
+    /// <summary>
+    /// The Unicode text subtitles.
+    /// </summary>
+    TextUtf8,
+
+    /// <summary>
+    /// The Universal Subtitle Format subtitles.
+    /// </summary>
+    Usf,
+
+    /// <summary>
+    /// The Unicode subtitles.
+    /// </summary>
+    Utf8,
+
+    /// <summary>
+    /// The VOB SUB subtitles (DVD subtitles).
+    /// </summary>
+    Vobsub,
+
+    /// <summary>
+    /// The Presentation Grapic Stream Subtitle Format subtitles
+    /// </summary>
+    HdmvPgs,
+
+    /// <summary>
+    /// The HDMV Text Subtitle Format subtitles
+    /// </summary>
+    HdmvTextst
   }
 
+  /// <summary>
+  /// Provides properties and overridden methods for the analyze subtitle stream 
+  /// and contains information about subtitle.
+  /// </summary>
+  /// <seealso cref="LanguageMediaStream" />
   public class SubtitleStream : LanguageMediaStream
   {
     #region match dictionary
 
     private static readonly Dictionary<string, SubtitleCodec> SubtitleCodecs = new Dictionary<string, SubtitleCodec>
     {
-        { "S_ASS", SubtitleCodec.S_ASS },
-        { "S_IMAGE/BMP", SubtitleCodec.S_IMAGE_BMP },
-        { "S_SSA", SubtitleCodec.S_SSA },
-        { "S_TEXT/ASS", SubtitleCodec.S_TEXT_ASS },
-        { "S_TEXT/SSA", SubtitleCodec.S_TEXT_SSA },
-        { "S_TEXT/USF", SubtitleCodec.S_TEXT_USF },
-        { "S_TEXT/UTF8", SubtitleCodec.S_TEXT_UTF8 },
-        { "S_USF", SubtitleCodec.S_USF },
-        { "S_UTF8", SubtitleCodec.S_UTF8 },
-        { "S_VOBSUB", SubtitleCodec.S_VOBSUB },
-        { "S_HDMV/PGS", SubtitleCodec.S_HDMV_PGS },
-        { "S_HDMV/TEXTST", SubtitleCodec.S_HDMV_TEXTST }
+        { "S_ASS", SubtitleCodec.Ass },
+        { "S_IMAGE/BMP", SubtitleCodec.ImageBmp },
+        { "S_SSA", SubtitleCodec.Ssa },
+        { "S_TEXT/ASS", SubtitleCodec.TextAss },
+        { "S_TEXT/SSA", SubtitleCodec.TextSsa },
+        { "S_TEXT/USF", SubtitleCodec.TextUsf },
+        { "S_TEXT/UTF8", SubtitleCodec.TextUtf8 },
+        { "S_USF", SubtitleCodec.Usf },
+        { "S_UTF8", SubtitleCodec.Utf8 },
+        { "S_VOBSUB", SubtitleCodec.Vobsub },
+        { "S_HDMV/PGS", SubtitleCodec.HdmvPgs },
+        { "S_HDMV/TEXTST", SubtitleCodec.HdmvTextst }
     };
 
     #endregion
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SubtitleStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     public SubtitleStream(MediaInfo info, int number, int position)
         : base(info, number, position)
     {
     }
 
+    /// <summary>
+    /// Gets the subtitle format.
+    /// </summary>
+    /// <value>
+    /// The subtitle format.
+    /// </value>
+    [PublicAPI]
     public string Format { get; private set; }
 
+    /// <summary>
+    /// Gets the subtitle codec.
+    /// </summary>
+    /// <value>
+    /// The subtitle codec.
+    /// </value>
+    [PublicAPI]
     public SubtitleCodec Codec { get; private set; }
 
-    public override MediaStreamKind Kind
-    {
-      get { return MediaStreamKind.Text; }
-    }
+    /// <inheritdoc />
+    public override MediaStreamKind Kind => MediaStreamKind.Text;
 
-    protected override StreamKind StreamKind
-    {
-      get { return StreamKind.Text; }
-    }
+    protected override StreamKind StreamKind => StreamKind.Text;
 
+    /// <inheritdoc />
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);
-      Format = GetString(info, "Format");
-      Codec = GetCodec(GetString(info, "CodecID").ToUpper());
+      Format = Get(info, "Format");
+      Codec = GetCodec(Get(info, "CodecID").ToUpper());
     }
 
     private static SubtitleCodec GetCodec(string source)
     {
       SubtitleCodec result;
-      return SubtitleCodecs.TryGetValue(source, out result) ? result : SubtitleCodec.S_UNDEFINED;
+      return SubtitleCodecs.TryGetValue(source, out result) ? result : SubtitleCodec.Undefined;
     }
   }
 }

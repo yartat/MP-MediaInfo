@@ -19,22 +19,64 @@
 #endregion
 
 using System;
-using System.Globalization;
-using System.Linq;
+
+using JetBrains.Annotations;
 
 namespace MediaInfo
 {
+  /// <summary>
+  /// Defines constants for media stream kinds.
+  /// </summary>
   public enum MediaStreamKind
   {
+    /// <summary>
+    /// The video stream
+    /// </summary>
     Video,
+
+    /// <summary>
+    /// The audio stream
+    /// </summary>
     Audio,
+
+    /// <summary>
+    /// The subtitle stream
+    /// </summary>
     Text,
+
+    /// <summary>
+    /// The image stream
+    /// </summary>
     Image,
+
+    /// <summary>
+    /// Menu
+    /// </summary>
     Menu
   }
 
+  /// <summary>
+  /// Provides basic properties and instance methods for the analyze stream 
+  /// and contains information about media stream.
+  /// </summary>
+  /// <seealso cref="MarshalByRefObject" />
   public abstract class MediaStream : MarshalByRefObject
   {
+    /// <summary>
+    /// Converts the string representation of a value to specified type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source">The source value.</param>
+    /// <param name="result">The result.</param>
+    /// <returns><b>true</b> if s was converted successfully; otherwise, <b>false</b>.</returns>
+    protected delegate bool ParseDelegate<T>(string source, out T result);
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     protected MediaStream(MediaInfo info, int number, int position)
     {
       StreamNumber = number;
@@ -45,22 +87,62 @@ namespace MediaInfo
       }
     }
 
+    /// <summary>
+    /// Gets or sets the media steam id.
+    /// </summary>
+    /// <value>
+    /// The media steam id.
+    /// </value>
+    [PublicAPI]
     public int Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of stream.
+    /// </summary>
+    /// <value>
+    /// The name of stream.
+    /// </value>
+    [PublicAPI]
     public string Name { get; set; }
 
+    /// <summary>
+    /// Gets the kind of media stream.
+    /// </summary>
+    /// <value>
+    /// The kind of media stream.
+    /// </value>
+    [PublicAPI]
     public abstract MediaStreamKind Kind { get; }
 
+    [PublicAPI]
     protected abstract StreamKind StreamKind { get; }
 
+    /// <summary>
+    /// Gets the stream position.
+    /// </summary>
+    /// <value>
+    /// The stream position.
+    /// </value>
+    [PublicAPI]
     public int StreamPosition { get; }
 
-    public int StreamNumber { get; private set; }
+    /// <summary>
+    /// Gets the logical stream number.
+    /// </summary>
+    /// <value>
+    /// The logical stream number.
+    /// </value>
+    [PublicAPI]
+    public int StreamNumber { get; }
 
+    /// <summary>
+    /// Analyzes the stream.
+    /// </summary>
+    /// <param name="info">The media information.</param>
     protected virtual void AnalyzeStreamInternal(MediaInfo info)
     {
-      Id = GetInt(info, "ID");
-      Name = GetString(info, "Title");
+      Id = Get<int>(info, "ID", int.TryParse);
+      Name = Get(info, "Title");
     }
 
     private void AnalyzeStream(MediaInfo info)
@@ -68,68 +150,33 @@ namespace MediaInfo
       AnalyzeStreamInternal(info);
     }
 
-    protected long GetLong(MediaInfo info, string parameter, Func<string, string> extractResult = null)
+    /// <summary>
+    /// Gets the <see cref="long"/> value of <paramref name="parameter"/>.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="parameter">The stream parameter name.</param>
+    /// <param name="convert"></param>
+    /// <param name="extractResult">The manual extract result function.</param>
+    /// <returns>Returns <see cref="long"/> value of specified stream parameter.</returns>
+    protected T Get<T>(MediaInfo info, string parameter, ParseDelegate<T> convert, Func<string, string> extractResult = null)
     {
-      long parsedValue;
-      var result = info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
+      if (convert == null)
       {
-        result = extractResult(result) ?? result;
+        throw new ArgumentNullException(nameof(convert));
       }
 
-      return long.TryParse(result, out parsedValue) ? parsedValue : 0;
+      T parsedValue;
+      return convert(Get(info, parameter, extractResult), out parsedValue) ? parsedValue : default(T);
     }
 
-    protected double GetDouble(MediaInfo info, string parameter, Func<string, string> extractResult = null)
-    {
-        NumberFormatInfo providerNumber = new NumberFormatInfo { NumberDecimalSeparator = "." };
-        double parsedValue;
-      var result = info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
-
-      return double.TryParse(result, NumberStyles.AllowDecimalPoint, providerNumber, out parsedValue) ? parsedValue : 0;
-    }
-
-    protected int GetInt(MediaInfo info, string parameter, Func<string, string> extractResult = null)
-    {
-      int parsedValue;
-      var result = info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
-
-      return int.TryParse(result, out parsedValue) ? parsedValue : 0;
-    }
-
-    protected bool GetBool(MediaInfo info, string parameter, Func<string, string> extractResult = null)
-    {
-      bool parsedValue;
-      var result = info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
-
-      return bool.TryParse(result, out parsedValue) && parsedValue;
-    }
-
-    protected DateTime GetDateTime(MediaInfo info, string parameter, Func<string, string> extractResult = null)
-    {
-      DateTime parsedValue;
-      var result = info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
-
-      return DateTime.TryParse(result, out parsedValue) ? parsedValue : DateTime.MinValue;
-    }
-
-    protected string GetString(MediaInfo info, string parameter, Func<string, string> extractResult = null)
+    /// <summary>
+    /// Gets the specified string value.
+    /// </summary>
+    /// <param name="info">The information.</param>
+    /// <param name="parameter">The parameter.</param>
+    /// <param name="extractResult">The extract result.</param>
+    /// <returns></returns>
+    protected string Get(MediaInfo info, string parameter, Func<string, string> extractResult = null)
     {
       var result = info.Get(StreamKind, StreamPosition, parameter);
       if (extractResult != null)

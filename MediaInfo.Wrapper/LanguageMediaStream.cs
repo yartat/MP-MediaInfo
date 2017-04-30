@@ -18,29 +18,71 @@
 
 #endregion
 
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
+  /// <summary>
+  /// Provides properties and overridden methods for the analyze stream 
+  /// and contains information about media stream.
+  /// </summary>
+  /// <seealso cref="MediaStream" />
   public abstract class LanguageMediaStream : MediaStream
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LanguageMediaStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     protected LanguageMediaStream(MediaInfo info, int number, int position)
         : base(info, number, position)
     {
     }
 
-    public string Language { get; set; }
+    /// <summary>
+    /// Gets the media stream language.
+    /// </summary>
+    /// <value>
+    /// The media stream language.
+    /// </value>
+    [PublicAPI]
+    public string Language { get; private set; }
 
-    public int Lcid { get; set; }
+    /// <summary>
+    /// Gets the media stream LCID.
+    /// </summary>
+    /// <value>
+    /// The media stream LCID.
+    /// </value>
+    [PublicAPI]
+    public int Lcid { get; private set; }
 
-    public bool Default { get; set; }
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is default.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if default; otherwise, <c>false</c>.
+    /// </value>
+    [PublicAPI]
+    public bool Default { get; private set; }
 
-    public bool Forced { get; set; }
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is forced.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if forced; otherwise, <c>false</c>.
+    /// </value>
+    [PublicAPI]
+    public bool Forced { get; private set; }
 
+    /// <inheritdoc />
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);
-      var language = GetString(info, "Language").ToLower();
-      Default = GetBool(info, "Default");
-      Forced = GetBool(info, "Forced");
+      var language = Get(info, "Language").ToLower();
+      Default = Get<bool>(info, "Default", bool.TryParse);
+      Forced = Get<bool>(info, "Forced", bool.TryParse);
       Language = LanguageHelper.GetLanguageByShortName(language);
       Lcid = LanguageHelper.GetLcidByShortName(language);
     }

@@ -220,13 +220,15 @@ namespace MediaInfo
 
     private static bool HasExtension(this string path)
     {
-      return path.Contains(".");
+      var items = path.Split('/', '\\');
+      return items.LastOrDefault()?.Contains(".") ?? false;
     }
 
     private static string GetExtension(this string path)
     {
-      var parts = path.Split('.');
-      return parts.Length > 1 ? "." + parts.Last() : string.Empty;
+      var items = path.Split('/', '\\');
+      var parts = items.LastOrDefault()?.Split('.') ?? new [] { string.Empty };
+      return parts.LastOrDefault() ?? string.Empty;
     }
 
     public static bool IsLastFmStream(this string path)
@@ -236,7 +238,7 @@ namespace MediaInfo
 
     public static bool IsNetwork(this string path)
     {
-      return string.IsNullOrEmpty(path) && 
+      return !string.IsNullOrEmpty(path) && 
              path.Length >= 2 && 
              (path.StartsWith($"{Path.DirectorySeparatorChar}") ||
               path.Substring(0, 2).GetDriveType() == 4);
@@ -255,21 +257,17 @@ namespace MediaInfo
 
     public static bool IsUNCNetwork(string strPath)
     {
-      if (strPath == null) return false;
-      if (strPath.Length < 2) return false;
-      if (strPath.StartsWith(@"\\")) return true;
-      return false;
+      return !string.IsNullOrEmpty(strPath) && strPath.StartsWith(@"\\");
     }
 
     public static bool IsAvStream(this string strPath)
     {
-      if (string.IsNullOrEmpty(strPath)) return false;
-      if (strPath.StartsWith("http:", StringComparison.OrdinalIgnoreCase)) return true;
-      if (strPath.StartsWith("https:", StringComparison.OrdinalIgnoreCase)) return true;
-      if (strPath.StartsWith("mms:", StringComparison.OrdinalIgnoreCase)) return true;
-      if (strPath.StartsWith("udp:", StringComparison.OrdinalIgnoreCase)) return true;
-      if (strPath.StartsWith("rtmp:", StringComparison.OrdinalIgnoreCase)) return true;
-      return false;
+      return !string.IsNullOrEmpty(strPath) &&
+             (strPath.StartsWith("http:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("https:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("mms:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("udp:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("rtmp:", StringComparison.OrdinalIgnoreCase));
     }
 
     public static bool IsRemoteUrl(string strPath)
@@ -286,6 +284,5 @@ namespace MediaInfo
       var extensionFile = path.GetExtension();
       return !extensionFile.IsPlayList() && AudioExtensions.ContainsKey(extensionFile.ToUpper());
     }
-
   }
 }

@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 namespace MediaInfo
 {
   /// <summary>
-  /// 
+  /// Describes methods to work with unmanaged Global memory block
   /// </summary>
   /// <seealso cref="IDisposable" />
   public class GlobalMemory : IDisposable
@@ -38,13 +38,25 @@ namespace MediaInfo
       Handle = handle;
     }
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="GlobalMemory"/> class.
+    /// </summary>
     ~GlobalMemory()
     {
       Dispose(false);
     }
 
+    /// <summary>
+    /// Gets the handle.
+    /// </summary>
+    /// <value>
+    /// The handle.
+    /// </value>
     public IntPtr Handle { get; private set; }
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
     public void Dispose()
     {
       Dispose(true);

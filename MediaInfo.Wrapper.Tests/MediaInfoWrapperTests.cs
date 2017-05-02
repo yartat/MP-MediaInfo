@@ -77,5 +77,20 @@ namespace MediaInfo.Wrapper.Tests
       var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
       Assert.IsTrue(dts.Codec == AudioCodec.DtsHd);
     }
+
+    [Test, Explicit]
+    [TestCase(@"D:\Video\2016 DOLBY ATMOS DEMO DISC\BDMV\index.bdmv")]
+    public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
+      Assert.IsTrue(_mediaInfoWrapper.IsBluRay, "Is BluRay");
+      Assert.IsFalse(_mediaInfoWrapper.IsDvd);
+      Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      var atmos = _mediaInfoWrapper.AudioStreams[0];
+      Assert.IsTrue(atmos.Codec == AudioCodec.TruehdAtmos);
+      Assert.AreEqual(1, _mediaInfoWrapper.MenuStreams.Count);
+    }
   }
 }

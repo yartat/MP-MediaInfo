@@ -23,6 +23,9 @@ using System.Collections.Generic;
 
 namespace MediaInfo
 {
+  /// <summary>
+  /// Describes methods to manipulate language data
+  /// </summary>
   public static class LanguageHelper
   {
     private const string UnknownLanguage = "Unknown";

@@ -22,43 +22,145 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
   /// <summary>
-  /// 
+  /// Describes video aspect ratio
   /// </summary>
   public enum AspectRatio
   {
-    Opaque, // 1:1
-    HighEndDataGraphics, // 5:4
-    FullScreen, // 4:3
-    StandartSlides, // 3:3
-    DigitalSlrCameras, // 3:2
-    HighDefinitionTv, // 16:9
-    WideScreenDisplay, // 16:10
-    WideScreen, // 1.85:1
-    CinimaScope // 21:9
+    /// <summary>
+    /// The opaque (1:1)
+    /// </summary>
+    Opaque,
+
+    /// <summary>
+    /// The high end data graphics (5:4)
+    /// </summary>
+    HighEndDataGraphics,
+
+    /// <summary>
+    /// The full screen (4:3)
+    /// </summary>
+    FullScreen,
+
+    /// <summary>
+    /// The standard slides (3:3)
+    /// </summary>
+    StandardSlides,
+
+    /// <summary>
+    /// The digital SLR cameras (3:2)
+    /// </summary>
+    DigitalSlrCameras,
+
+    /// <summary>
+    /// The High Definition TV (16:9)
+    /// </summary>
+    HighDefinitionTv,
+
+    /// <summary>
+    /// The wide screen display (16:10)
+    /// </summary>
+    WideScreenDisplay,
+
+    /// <summary>
+    /// The wide screen (1.85:1)
+    /// </summary>
+    WideScreen,
+
+    /// <summary>
+    /// The cinema scope (21:9)
+    /// </summary>
+    CinemaScope
   }
 
+  /// <summary>
+  /// Describes 3D stereo mode
+  /// </summary>
   public enum StereoMode
   {
+    /// <summary>
+    /// No 3D (mono)
+    /// </summary>
     Mono,
+
+    /// <summary>
+    /// The side by side left eye is first
+    /// </summary>
     SideBySideLeft,
+
+    /// <summary>
+    /// The top bottom right eye is first
+    /// </summary>
     TopBottomRight,
+
+    /// <summary>
+    /// The top bottom left eye is first
+    /// </summary>
     TopBottomLeft,
-    CheckboardRight,
-    CheckboardLeft,
+
+    /// <summary>
+    /// The checkerboard right eye is first
+    /// </summary>
+    CheckerboardRight,
+
+    /// <summary>
+    /// The checkerboard left eye is first
+    /// </summary>
+    CheckerboardLeft,
+
+    /// <summary>
+    /// The row interleaved right eye is first
+    /// </summary>
     RowInterleavedRight,
+
+    /// <summary>
+    /// The row interleaved left eye is first
+    /// </summary>
     RowInterleavedLeft,
+
+    /// <summary>
+    /// The column interleaved right eye is first
+    /// </summary>
     ColumnInterleavedRight,
+
+    /// <summary>
+    /// The column interleaved left eye is first
+    /// </summary>
     ColumnInterleavedLeft,
+
+    /// <summary>
+    /// The anaglyph cyan-red
+    /// </summary>
     AnaglyphCyanRed,
+
+    /// <summary>
+    /// The side by side right eye is first
+    /// </summary>
     SideBySideRight,
+
+    /// <summary>
+    /// The anaglyph green-magenta
+    /// </summary>
     AnaglyphGreenMagenta,
+
+    /// <summary>
+    /// The both eyes laced left eye is first
+    /// </summary>
     BothEyesLacedLeft,
+
+    /// <summary>
+    /// The both eyes laced right eye is first
+    /// </summary>
     BothEyesLacedRight
   }
 
+  /// <summary>
+  /// Describes type of video codecs
+  /// </summary>
   public enum VideoCodec
   {
     V_UNDEFINED,
@@ -125,6 +227,10 @@ namespace MediaInfo
     V_BINKVIDEO,
   }
 
+  /// <summary>
+  /// Describes properties of the video stream and method to analyze stream
+  /// </summary>
+  /// <seealso cref="LanguageMediaStream" />
   public class VideoStream : LanguageMediaStream
   {
     #region match dictionaries
@@ -134,7 +240,7 @@ namespace MediaInfo
       { "1:1", AspectRatio.Opaque },
       { "5:4", AspectRatio.HighEndDataGraphics },
       { "1.2", AspectRatio.HighEndDataGraphics },
-      { "3:3", AspectRatio.StandartSlides },
+      { "3:3", AspectRatio.StandardSlides },
       { "4:3", AspectRatio.FullScreen },
       { "1.334", AspectRatio.FullScreen },
       { "3:2", AspectRatio.DigitalSlrCameras },
@@ -144,26 +250,26 @@ namespace MediaInfo
       { "16:10", AspectRatio.WideScreenDisplay },
       { "1.6", AspectRatio.WideScreenDisplay },
       { "1.85", AspectRatio.WideScreen },
-      { "21:9", AspectRatio.CinimaScope },
-      { "2.334", AspectRatio.CinimaScope }
+      { "21:9", AspectRatio.CinemaScope },
+      { "2.334", AspectRatio.CinemaScope }
     };
 
     private static readonly Dictionary<string, StereoMode> StereoModes = new Dictionary<string, StereoMode>
     {
-      { "side by side (left eye first)", StereoMode.SideBySideLeft },
-      { "top-bottom (right eye first)", StereoMode.TopBottomRight },
-      { "top-bottom (left eye first)", StereoMode.TopBottomLeft },
-      { "checkboard (right eye first)", StereoMode.CheckboardRight },
-      { "checkboard (left eye first)", StereoMode.CheckboardLeft },
-      { "row interleaved (right eye first)", StereoMode.RowInterleavedRight },
-      { "row interleaved (left eye first)", StereoMode.RowInterleavedLeft },
-      { "column interleaved (right eye first)", StereoMode.ColumnInterleavedRight },
-      { "column interleaved (left eye first)", StereoMode.ColumnInterleavedLeft },
+      { "side-by-side (left eye is first)", StereoMode.SideBySideLeft },
+      { "top-bottom (right eye is first)", StereoMode.TopBottomRight },
+      { "top-bottom (left eye is first)", StereoMode.TopBottomLeft },
+      { "checkerboard (right eye is first)", StereoMode.CheckerboardRight },
+      { "checkerboard (left eye is first)", StereoMode.CheckerboardLeft },
+      { "row interleaved (right eye is first)", StereoMode.RowInterleavedRight },
+      { "row interleaved (left eye is first)", StereoMode.RowInterleavedLeft },
+      { "column interleaved (right eye is first)", StereoMode.ColumnInterleavedRight },
+      { "column interleaved (left eye is first)", StereoMode.ColumnInterleavedLeft },
       { "anaglyph (cyan/red)", StereoMode.AnaglyphCyanRed },
-      { "side by side (right eye first)", StereoMode.SideBySideRight },
+      { "side-by-side (right eye is first)", StereoMode.SideBySideRight },
       { "anaglyph (green/magenta)", StereoMode.AnaglyphGreenMagenta },
-      { "both eyes laced in one block (left eye first)", StereoMode.BothEyesLacedLeft },
-      { "both eyes laced in one block (right eye first)", StereoMode.BothEyesLacedRight }
+      { "both eyes laced in one block (left eye is first)", StereoMode.BothEyesLacedLeft },
+      { "both eyes laced in one block (right eye is first)", StereoMode.BothEyesLacedRight }
     };
 
     private static readonly Dictionary<string, VideoCodec> VideoCodecs = new Dictionary<string, VideoCodec>
@@ -300,46 +406,149 @@ namespace MediaInfo
 
     #endregion
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VideoStream"/> class.
+    /// </summary>
+    /// <param name="info">The media information.</param>
+    /// <param name="number">The stream number.</param>
+    /// <param name="position">The stream position.</param>
     public VideoStream(MediaInfo info, int number, int position)
         : base(info, number, position)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="VideoStream"/> class.
+    /// </summary>
+    /// <param name="number">The number.</param>
+    /// <param name="position">The position.</param>
     public VideoStream(int number, int position)
         : base(null, number, position)
     {
     }
 
+    /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Video;
 
+    /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Video;
 
+    /// <summary>
+    /// Gets or sets the video frame rate.
+    /// </summary>
+    /// <value>
+    /// The video frame rate.
+    /// </value>
+    [PublicAPI]
     public double FrameRate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video width.
+    /// </summary>
+    /// <value>
+    /// The video width.
+    /// </value>
+    [PublicAPI]
     public int Width { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video height.
+    /// </summary>
+    /// <value>
+    /// The video height.
+    /// </value>
+    [PublicAPI]
     public int Height { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video aspect ratio.
+    /// </summary>
+    /// <value>
+    /// The video aspect ratio.
+    /// </value>
+    [PublicAPI]
     public AspectRatio AspectRatio { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this <see cref="VideoStream"/> is interlaced.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if interlaced; otherwise, <c>false</c>.
+    /// </value>
+    [PublicAPI]
     public bool Interlaced { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video stereoscopic mode.
+    /// </summary>
+    /// <value>
+    /// The video stereoscopic mode.
+    /// </value>
+    [PublicAPI]
     public StereoMode Stereoscopic { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video format.
+    /// </summary>
+    /// <value>
+    /// The video format.
+    /// </value>
+    [PublicAPI]
     public string Format { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video codec.
+    /// </summary>
+    /// <value>
+    /// The video codec.
+    /// </value>
+    [PublicAPI]
     public VideoCodec Codec { get; set; }
 
+    /// <summary>
+    /// Gets or sets the stream duration.
+    /// </summary>
+    /// <value>
+    /// The stream duration.
+    /// </value>
+    [PublicAPI]
     public TimeSpan Duration { get; set; }
 
+    /// <summary>
+    /// Gets or sets the video bit depth.
+    /// </summary>
+    /// <value>
+    /// The video bit depth.
+    /// </value>
+    [PublicAPI]
     public int BitDepth { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the video codec.
+    /// </summary>
+    /// <value>
+    /// The name of the video codec.
+    /// </value>
+    [PublicAPI]
     public string CodecName { get; set; }
 
+    /// <summary>
+    /// Gets the video resolution.
+    /// </summary>
+    /// <value>
+    /// The video resolution.
+    /// </value>
     public string Resolution => GetVideoResolution();
 
+    /// <summary>
+    /// Gets the video size.
+    /// </summary>
+    /// <value>
+    /// The vidoe size.
+    /// </value>
     public Size Size => new Size(Width, Height);
 
+    /// <inheritdoc />
     protected override void AnalyzeStreamInternal(MediaInfo info)
     {
       base.AnalyzeStreamInternal(info);

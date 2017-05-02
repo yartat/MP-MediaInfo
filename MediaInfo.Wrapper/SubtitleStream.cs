@@ -155,6 +155,7 @@ namespace MediaInfo
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Text;
 
+    /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Text;
 
     /// <inheritdoc />

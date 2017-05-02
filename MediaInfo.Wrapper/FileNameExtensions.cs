@@ -4,8 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
+  /// <summary>
+  /// Static extensions for file paths
+  /// </summary>
   public static class FileNameExtensions
   {
     private static readonly Regex TsBufferMatch = new Regex(@"(live\d+-\d+\.ts(\.tsbuffer(\d+\.ts)?)?)$", RegexOptions.Compiled);
@@ -154,30 +159,39 @@ namespace MediaInfo
     #endregion
 
     /// <summary>
-    /// Checks is path a live TV
+    /// Determines whether path is live TV.
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is live TV; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
     public static bool IsLiveTv(this string path)
     {
       return !string.IsNullOrEmpty(path) && TsBufferMatch.Match(path).Success;
     }
 
     /// <summary>
-    /// Checks is path a RTSP stream
+    /// Determines whether this instance is RTSP.
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is RTSP; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
     public static bool IsRTSP(this string path)
     {
       return !string.IsNullOrEmpty(path) && path.IndexOf("rtsp:", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     /// <summary>
-    /// Checks is path a network video
+    /// Determines whether path is network video.
     /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is network video; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
     public static bool IsNetworkVideo(this string path)
     {
       if (string.IsNullOrEmpty(path)) return false;
@@ -190,10 +204,13 @@ namespace MediaInfo
     }
 
     /// <summary>
-    /// Checks is path a video
+    /// Determines whether the specified path is video.
     /// </summary>
-    /// <param name="path">path to media</param>
-    /// <returns>Whether file is a video file</returns>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is video; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
     public static bool IsVideo(string path)
     {
       if (string.IsNullOrEmpty(path) || path.IsLastFmStream()) return false;
@@ -205,12 +222,135 @@ namespace MediaInfo
               VideoExtensions.ContainsKey(extensionFile.ToUpper());
     }
 
+    /// <summary>
+    /// Determines whether this instance is picture.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is picture; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
     public static bool IsPicture(this string path)
     {
       if (string.IsNullOrEmpty(path) || path.Contains(Path.DirectorySeparatorChar) || path.Contains(Path.AltDirectorySeparatorChar)) return false;
       return path.HasExtension() && 
               !path.IsPlayList() && 
               PictureExtensions.ContainsKey(path.GetExtension().ToUpper());
+    }
+
+    /// <summary>
+    /// Determines whether is LastFM stream.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is LastFM stream; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsLastFmStream(this string path)
+    {
+      return path.StartsWith(@"http://play.last.fm", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Determines whether specified path is network path.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is network path; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsNetwork(this string path)
+    {
+      return !string.IsNullOrEmpty(path) && 
+             path.Length >= 2 && 
+             (path.StartsWith($"{Path.DirectorySeparatorChar}") ||
+              path.Substring(0, 2).GetDriveType() == 4);
+    }
+
+    /// <summary>
+    /// Gets the type of the drive.
+    /// </summary>
+    /// <param name="drive">The drive.</param>
+    /// <returns>Returns drive type.
+    /// <b>0</b> - undefined
+    /// <b>2</b> - removable drive (Flash, Floppy)
+    /// <b>3</b> - fixed drive (HDD)
+    /// <b>4</b> - remote drive (network share)
+    /// <b>5</b> - CD/DVD drive
+    /// <b>6</b> - RAM disk drive
+    /// </returns>
+    [PublicAPI]
+    public static int GetDriveType(this string drive)
+    {
+      if (string.IsNullOrEmpty(drive)) return 2;
+      if ((NativeMethods.GetDriveType(drive) & 5) == 5) return 5; //cd
+      if ((NativeMethods.GetDriveType(drive) & 3) == 3) return 3; //fixed
+      if ((NativeMethods.GetDriveType(drive) & 2) == 2) return 2; //removable
+      if ((NativeMethods.GetDriveType(drive) & 4) == 4) return 4; //remote disk
+      if ((NativeMethods.GetDriveType(drive) & 6) == 6) return 6; //ram disk
+      return 0;
+    }
+
+    /// <summary>
+    /// Determines whether the specified string path is UNC network.
+    /// </summary>
+    /// <param name="strPath">The string path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified string path is UNC network; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsUncNetwork(string strPath)
+    {
+      return !string.IsNullOrEmpty(strPath) && strPath.StartsWith(@"\\");
+    }
+
+    /// <summary>
+    /// Determines whether the specified string path is A/V stream.
+    /// </summary>
+    /// <param name="strPath">The string path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified string path is A/V stream; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsAvStream(this string strPath)
+    {
+      return !string.IsNullOrEmpty(strPath) &&
+             (strPath.StartsWith("http:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("https:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("mms:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("udp:", StringComparison.OrdinalIgnoreCase) ||
+             strPath.StartsWith("rtmp:", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Determines whether the specified string path is remote URL.
+    /// </summary>
+    /// <param name="strPath">The string path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified string path is remote URL; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsRemoteUrl(string strPath)
+    {
+      Uri playbackUri;
+      return Uri.TryCreate(strPath, UriKind.Absolute, out playbackUri) && playbackUri.Scheme != "file";
+    }
+
+    /// <summary>
+    /// Determines whether specified path is audio.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified path is audio; otherwise, <c>false</c>.
+    /// </returns>
+    [PublicAPI]
+    public static bool IsAudio(this string path)
+    {
+      if (string.IsNullOrEmpty(path) || path.Contains(Path.DirectorySeparatorChar) || path.Contains(Path.AltDirectorySeparatorChar)) return false;
+      if (path.IsLastFmStream()) return true;
+      if (!path.HasExtension()) return false;
+      var extensionFile = path.GetExtension();
+      return !extensionFile.IsPlayList() && AudioExtensions.ContainsKey(extensionFile.ToUpper());
     }
 
     private static bool IsPlayList(this string extensionFile)
@@ -227,62 +367,8 @@ namespace MediaInfo
     private static string GetExtension(this string path)
     {
       var items = path.Split('/', '\\');
-      var parts = items.LastOrDefault()?.Split('.') ?? new [] { string.Empty };
+      var parts = items.LastOrDefault()?.Split('.') ?? new[] { string.Empty };
       return parts.LastOrDefault() ?? string.Empty;
-    }
-
-    public static bool IsLastFmStream(this string path)
-    {
-      return path.StartsWith(@"http://play.last.fm", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public static bool IsNetwork(this string path)
-    {
-      return !string.IsNullOrEmpty(path) && 
-             path.Length >= 2 && 
-             (path.StartsWith($"{Path.DirectorySeparatorChar}") ||
-              path.Substring(0, 2).GetDriveType() == 4);
-    }
-
-    public static int GetDriveType(this string drive)
-    {
-      if (string.IsNullOrEmpty(drive)) return 2;
-      if ((NativeMethods.GetDriveType(drive) & 5) == 5) return 5; //cd
-      if ((NativeMethods.GetDriveType(drive) & 3) == 3) return 3; //fixed
-      if ((NativeMethods.GetDriveType(drive) & 2) == 2) return 2; //removable
-      if ((NativeMethods.GetDriveType(drive) & 4) == 4) return 4; //remote disk
-      if ((NativeMethods.GetDriveType(drive) & 6) == 6) return 6; //ram disk
-      return 0;
-    }
-
-    public static bool IsUNCNetwork(string strPath)
-    {
-      return !string.IsNullOrEmpty(strPath) && strPath.StartsWith(@"\\");
-    }
-
-    public static bool IsAvStream(this string strPath)
-    {
-      return !string.IsNullOrEmpty(strPath) &&
-             (strPath.StartsWith("http:", StringComparison.OrdinalIgnoreCase) ||
-             strPath.StartsWith("https:", StringComparison.OrdinalIgnoreCase) ||
-             strPath.StartsWith("mms:", StringComparison.OrdinalIgnoreCase) ||
-             strPath.StartsWith("udp:", StringComparison.OrdinalIgnoreCase) ||
-             strPath.StartsWith("rtmp:", StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static bool IsRemoteUrl(string strPath)
-    {
-      Uri playbackUri;
-      return Uri.TryCreate(strPath, UriKind.Absolute, out playbackUri) && playbackUri.Scheme != "file";
-    }
-
-    public static bool IsAudio(this string path)
-    {
-      if (string.IsNullOrEmpty(path) || path.Contains(Path.DirectorySeparatorChar) || path.Contains(Path.AltDirectorySeparatorChar)) return false;
-      if (path.IsLastFmStream()) return true;
-      if (!path.HasExtension()) return false;
-      var extensionFile = path.GetExtension();
-      return !extensionFile.IsPlayList() && AudioExtensions.ContainsKey(extensionFile.ToUpper());
     }
   }
 }

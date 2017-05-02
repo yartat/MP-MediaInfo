@@ -40,6 +40,13 @@ namespace MediaInfo
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;
 
+    /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Menu;
+
+    /// <inheritdoc />
+    protected override void AnalyzeStreamInternal(MediaInfo info)
+    {
+      base.AnalyzeStreamInternal(info);
+    }
   }
 }

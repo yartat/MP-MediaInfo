@@ -159,8 +159,7 @@ namespace MediaInfo
           else if (filePath.EndsWith(".bdmv", StringComparison.OrdinalIgnoreCase))
           {
             IsBluRay = true;
-            var path = Path.GetDirectoryName(filePath) + @"\STREAM";
-            filePath = GetLargestFileInDirectory(path, "*.m2ts");
+            filePath = Path.GetDirectoryName(filePath);
           }
 
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
@@ -204,6 +203,11 @@ namespace MediaInfo
           for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
           {
             Chapters.Add(new Chapter(mediaInfo, streamNumber++, i));
+          }
+
+          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
+          {
+            MenuStreams.Add(new MenuStream(mediaInfo, streamNumber++, i));
           }
 
           MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
@@ -268,32 +272,6 @@ namespace MediaInfo
     }
 
     #region private methods
-
-    private static string GetLargestFileInDirectory(string targetDir, string fileMask)
-    {
-      string largestFile = null;
-      long largestSize = 0;
-      var dir = new DirectoryInfo(targetDir);
-      try
-      {
-        var files = dir.GetFiles(fileMask, SearchOption.TopDirectoryOnly);
-        foreach (var file in files)
-        {
-          var fileSize = file.Length;
-          if (fileSize > largestSize)
-          {
-            largestSize = fileSize;
-            largestFile = file.FullName;
-          }
-        }
-      }
-      catch
-      {
-        // ignored
-      }
-
-      return largestFile;
-    }
 
     private static bool CheckHasExternalSubtitles(string strFile)
     {
@@ -507,6 +485,12 @@ namespace MediaInfo
     [PublicAPI]
     public bool HasSubtitles => HasExternalSubtitles || Subtitles.Count > 0;
 
+    /// <summary>
+    /// Gets a value indicating whether this instance has external subtitles.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance has external subtitles; otherwise, <c>false</c>.
+    /// </value>
     [PublicAPI]
     public bool HasExternalSubtitles { get; }
 

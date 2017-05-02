@@ -114,6 +114,12 @@ namespace MediaInfo
     [PublicAPI]
     public abstract MediaStreamKind Kind { get; }
 
+    /// <summary>
+    /// Gets the kind of the stream.
+    /// </summary>
+    /// <value>
+    /// The kind of the stream.
+    /// </value>
     [PublicAPI]
     protected abstract StreamKind StreamKind { get; }
 
@@ -124,7 +130,7 @@ namespace MediaInfo
     /// The stream position.
     /// </value>
     [PublicAPI]
-    public int StreamPosition { get; }
+    public int StreamPosition { get; set; }
 
     /// <summary>
     /// Gets the logical stream number.
@@ -133,7 +139,7 @@ namespace MediaInfo
     /// The logical stream number.
     /// </value>
     [PublicAPI]
-    public int StreamNumber { get; }
+    public int StreamNumber { get; set; }
 
     /// <summary>
     /// Analyzes the stream.

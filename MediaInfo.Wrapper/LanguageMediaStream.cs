@@ -47,7 +47,7 @@ namespace MediaInfo
     /// The media stream language.
     /// </value>
     [PublicAPI]
-    public string Language { get; private set; }
+    public string Language { get; set; }
 
     /// <summary>
     /// Gets the media stream LCID.
@@ -56,7 +56,7 @@ namespace MediaInfo
     /// The media stream LCID.
     /// </value>
     [PublicAPI]
-    public int Lcid { get; private set; }
+    public int Lcid { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is default.

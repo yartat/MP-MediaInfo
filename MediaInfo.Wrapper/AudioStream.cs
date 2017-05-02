@@ -529,6 +529,7 @@ namespace MediaInfo
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Audio;
 
+    /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Audio;
 
     /// <summary>
@@ -538,7 +539,7 @@ namespace MediaInfo
     /// The audio codec.
     /// </value>
     [PublicAPI]
-    public AudioCodec Codec { get; private set; }
+    public AudioCodec Codec { get; set; }
 
     /// <summary>
     /// Gets the codec friendly name.
@@ -563,7 +564,7 @@ namespace MediaInfo
     /// The stream duration.
     /// </value>
     [PublicAPI]
-    public TimeSpan Duration { get; private set; }
+    public TimeSpan Duration { get; set; }
 
     /// <summary>
     /// Gets the audio bitrate.
@@ -572,7 +573,7 @@ namespace MediaInfo
     /// The audio bitrate.
     /// </value>
     [PublicAPI]
-    public double Bitrate { get; private set; }
+    public double Bitrate { get; set; }
 
     /// <summary>
     /// Gets the audio channel amount.
@@ -581,7 +582,7 @@ namespace MediaInfo
     /// The audio channel amount.
     /// </value>
     [PublicAPI]
-    public int Channel { get; private set; }
+    public int Channel { get; set; }
 
     /// <summary>
     /// Gets the audio sampling rate.
@@ -590,7 +591,7 @@ namespace MediaInfo
     /// The audio sampling rate.
     /// </value>
     [PublicAPI]
-    public double SamplingRate { get; private set; }
+    public double SamplingRate { get; set; }
 
     /// <summary>
     /// Gets the bit depth of stream.
@@ -599,7 +600,7 @@ namespace MediaInfo
     /// The bit depth of stream.
     /// </value>
     [PublicAPI]
-    public int BitDepth { get; private set; }
+    public int BitDepth { get; set; }
 
     /// <summary>
     /// Gets the audio format.
@@ -608,7 +609,7 @@ namespace MediaInfo
     /// The audio format.
     /// </value>
     [PublicAPI]
-    public string Format { get; private set; }
+    public string Format { get; set; }
 
     /// <summary>
     /// Gets the audio codec name.
@@ -617,7 +618,7 @@ namespace MediaInfo
     /// The audio codec name.
     /// </value>
     [PublicAPI]
-    public string CodecName { get; private set; }
+    public string CodecName { get; set; }
 
     /// <summary>
     /// Gets the audio channels friendly.

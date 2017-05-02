@@ -43,6 +43,7 @@ namespace MediaInfo
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;
 
+    /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;
 
     /// <summary>

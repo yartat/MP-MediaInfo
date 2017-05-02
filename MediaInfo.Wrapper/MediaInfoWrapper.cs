@@ -88,7 +88,7 @@ namespace MediaInfo
     /// </summary>
     /// <param name="filePath">The file path.</param>
     /// <param name="pathToDll">The path to DLL.</param>
-    private MediaInfoWrapper(string filePath, string pathToDll)
+    protected MediaInfoWrapper(string filePath, string pathToDll)
     {
       MediaInfoNotloaded = false;
       VideoStreams = new List<VideoStream>();
@@ -131,30 +131,7 @@ namespace MediaInfo
         {
           if (filePath.EndsWith(".ifo", StringComparison.OrdinalIgnoreCase))
           {
-            IsDvd = true;
-            var path = Path.GetDirectoryName(filePath) ?? string.Empty;
-            var bups = Directory.GetFiles(path, "*.BUP", SearchOption.TopDirectoryOnly);
-            var programBlocks = new List<Tuple<string, int>>();
-            foreach (var bupFile in bups)
-            {
-              using (var mi = new MediaInfo(pathToDll))
-              {
-                mi.Open(bupFile);
-                var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
-                if (profile == "Program")
-                {
-                  double duration;
-                  double.TryParse(mi.Get(StreamKind.Video, 0, "Duration"), NumberStyles.AllowDecimalPoint, providerNumber, out duration);
-                  programBlocks.Add(new Tuple<string, int>(bupFile, (int)duration));
-                }
-              }
-            }
-            // get all other info from main title's 1st vob
-            if (programBlocks.Any())
-            {
-              VideoDuration = programBlocks.Max(x => x.Item2);
-              filePath = programBlocks.First(x => x.Item2 == VideoDuration).Item1;
-            }
+            filePath = ProcessDvd(filePath, pathToDll, providerNumber);
           }
           else if (filePath.EndsWith(".bdmv", StringComparison.OrdinalIgnoreCase))
           {
@@ -165,97 +142,147 @@ namespace MediaInfo
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
         }
 
-        using (var mediaInfo = new MediaInfo(pathToDll))
-        {
-          Version = mediaInfo.Option("Info_Version");
-          mediaInfo.Open(filePath);
-
-          var streamNumber = 0;
-          //Video
-          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
-          {
-            VideoStreams.Add(new VideoStream(mediaInfo, streamNumber++, i));
-          }
-
-          if (VideoDuration == 0)
-          {
-            double duration;
-            double.TryParse(
-              mediaInfo.Get(StreamKind.Video, 0, "Duration"),
-              NumberStyles.AllowDecimalPoint,
-              providerNumber,
-              out duration);
-            VideoDuration = (int)duration;
-          }
-
-          //Audio
-          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
-          {
-            AudioStreams.Add(new AudioStream(mediaInfo, streamNumber++, i));
-          }
-
-          //Subtitles
-          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
-          {
-            Subtitles.Add(new SubtitleStream(mediaInfo, streamNumber++, i));
-          }
-
-          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
-          {
-            Chapters.Add(new Chapter(mediaInfo, streamNumber++, i));
-          }
-
-          for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
-          {
-            MenuStreams.Add(new MenuStream(mediaInfo, streamNumber++, i));
-          }
-
-          MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
-
-          // Produce copability properties
-          if (!MediaInfoNotloaded)
-          {
-            BestVideoStream =
-              VideoStreams.OrderByDescending(
-                x =>
-                  (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L)
-                  * x.FrameRate).FirstOrDefault();
-            VideoCodec = BestVideoStream?.CodecName ?? string.Empty;
-            VideoResolution = BestVideoStream?.Resolution ?? string.Empty;
-            Width = BestVideoStream?.Width ?? 0;
-            Height = BestVideoStream?.Height ?? 0;
-            IsInterlaced = BestVideoStream?.Interlaced ?? false;
-            Framerate = BestVideoStream?.FrameRate ?? 0;
-            ScanType = BestVideoStream != null
-                         ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "ScanType").ToLower()
-                         : string.Empty;
-            AspectRatio = BestVideoStream != null
-                            ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "DisplayAspectRatio")
-                            : string.Empty;
-            AspectRatio = AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen";
-
-            BestAudioStream = AudioStreams.OrderByDescending(x => x.Channel * 10000000 + x.Bitrate).FirstOrDefault();
-            AudioCodec = BestAudioStream?.CodecName ?? string.Empty;
-            AudioRate = (int?)BestAudioStream?.Bitrate ?? 0;
-            AudioChannels = BestAudioStream?.Channel ?? 0;
-            AudioChannelsFriendly = BestAudioStream?.AudioChannelsFriendly ?? string.Empty;
-          }
-          else
-          {
-            VideoCodec = string.Empty;
-            VideoResolution = string.Empty;
-            ScanType = string.Empty;
-            AspectRatio = string.Empty;
-
-            AudioCodec = string.Empty;
-            AudioChannelsFriendly = string.Empty;
-          }
-        }
+        ExtractInfo(filePath, pathToDll, providerNumber);
       }
       catch
       {
         // ignored
       }
+    }
+
+    private string ProcessDvd(string filePath, string pathToDll, NumberFormatInfo providerNumber)
+    {
+      IsDvd = true;
+      var path = Path.GetDirectoryName(filePath) ?? string.Empty;
+      var bups = Directory.GetFiles(path, "*.BUP", SearchOption.TopDirectoryOnly);
+      var programBlocks = new List<Tuple<string, int>>();
+      foreach (var bupFile in bups)
+      {
+        using (var mi = new MediaInfo(pathToDll))
+        {
+          mi.Open(bupFile);
+          var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
+          if (profile == "Program")
+          {
+            double duration;
+            double.TryParse(
+              mi.Get(StreamKind.Video, 0, "Duration"),
+              NumberStyles.AllowDecimalPoint,
+              providerNumber,
+              out duration);
+            programBlocks.Add(new Tuple<string, int>(bupFile, (int)duration));
+          }
+        }
+      }
+
+      // get all other info from main title's 1st vob
+      if (programBlocks.Any())
+      {
+        VideoDuration = programBlocks.Max(x => x.Item2);
+        filePath = programBlocks.First(x => x.Item2 == VideoDuration).Item1;
+      }
+
+      return filePath;
+    }
+
+    private void ExtractInfo(string filePath, string pathToDll, NumberFormatInfo providerNumber)
+    {
+      using (var mediaInfo = new MediaInfo(pathToDll))
+      {
+        Version = mediaInfo.Option("Info_Version");
+        mediaInfo.Open(filePath);
+
+        var streamNumber = 0;
+
+        // Setup videos
+        for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
+        {
+          VideoStreams.Add(new VideoStream(mediaInfo, streamNumber++, i));
+        }
+
+        if (VideoDuration == 0)
+        {
+          double duration;
+          double.TryParse(
+            mediaInfo.Get(StreamKind.Video, 0, "Duration"),
+            NumberStyles.AllowDecimalPoint,
+            providerNumber,
+            out duration);
+          VideoDuration = (int)duration;
+        }
+
+        // Setup audios
+        for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
+        {
+          AudioStreams.Add(new AudioStream(mediaInfo, streamNumber++, i));
+        }
+
+        // Setup subtitles
+        for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
+        {
+          Subtitles.Add(new SubtitleStream(mediaInfo, streamNumber++, i));
+        }
+
+        // Setup chapters
+        for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
+        {
+          Chapters.Add(new Chapter(mediaInfo, streamNumber++, i));
+        }
+
+        // Setup videos
+        for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
+        {
+          MenuStreams.Add(new MenuStream(mediaInfo, streamNumber++, i));
+        }
+
+        MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
+
+        // Produce copability properties
+        if (MediaInfoNotloaded)
+        {
+          SetPropertiesDefault();
+        }
+        else
+        {
+          SetupProperties(mediaInfo);
+        }
+      }
+    }
+
+    private void SetPropertiesDefault()
+    {
+      VideoCodec = string.Empty;
+      VideoResolution = string.Empty;
+      ScanType = string.Empty;
+      AspectRatio = string.Empty;
+      AudioCodec = string.Empty;
+      AudioChannelsFriendly = string.Empty;
+    }
+
+    private void SetupProperties(MediaInfo mediaInfo)
+    {
+      BestVideoStream = VideoStreams.OrderByDescending(
+          x => (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L) * x.FrameRate)
+        .FirstOrDefault();
+      VideoCodec = BestVideoStream?.CodecName ?? string.Empty;
+      VideoResolution = BestVideoStream?.Resolution ?? string.Empty;
+      Width = BestVideoStream?.Width ?? 0;
+      Height = BestVideoStream?.Height ?? 0;
+      IsInterlaced = BestVideoStream?.Interlaced ?? false;
+      Framerate = BestVideoStream?.FrameRate ?? 0;
+      ScanType = BestVideoStream != null
+                   ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "ScanType").ToLower()
+                   : string.Empty;
+      AspectRatio = BestVideoStream != null
+                      ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "DisplayAspectRatio")
+                      : string.Empty;
+      AspectRatio = AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen";
+
+      BestAudioStream = AudioStreams.OrderByDescending(x => x.Channel * 10000000 + x.Bitrate).FirstOrDefault();
+      AudioCodec = BestAudioStream?.CodecName ?? string.Empty;
+      AudioRate = (int?)BestAudioStream?.Bitrate ?? 0;
+      AudioChannels = BestAudioStream?.Channel ?? 0;
+      AudioChannelsFriendly = BestAudioStream?.AudioChannelsFriendly ?? string.Empty;
     }
 
     #endregion
@@ -304,7 +331,7 @@ namespace MediaInfo
     /// The duration of the video.
     /// </value>
     [PublicAPI]
-    public int VideoDuration { get; }
+    public int VideoDuration { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this instance has video.
@@ -331,7 +358,7 @@ namespace MediaInfo
     /// The best video stream.
     /// </value>
     [PublicAPI]
-    public VideoStream BestVideoStream { get; }
+    public VideoStream BestVideoStream { get; private set; }
 
     /// <summary>
     /// Gets the video codec.
@@ -340,7 +367,7 @@ namespace MediaInfo
     /// The video codec.
     /// </value>
     [PublicAPI]
-    public string VideoCodec { get; }
+    public string VideoCodec { get; private set; }
 
     /// <summary>
     /// Gets the video frame rate.
@@ -349,7 +376,7 @@ namespace MediaInfo
     /// The video frame rate.
     /// </value>
     [PublicAPI]
-    public double Framerate { get; }
+    public double Framerate { get; private set; }
 
     /// <summary>
     /// Gets the video width.
@@ -358,7 +385,7 @@ namespace MediaInfo
     /// The video width.
     /// </value>
     [PublicAPI]
-    public int Width { get; }
+    public int Width { get; private set; }
 
     /// <summary>
     /// Gets the video height.
@@ -367,7 +394,7 @@ namespace MediaInfo
     /// The video height.
     /// </value>
     [PublicAPI]
-    public int Height { get; }
+    public int Height { get; private set; }
 
     /// <summary>
     /// Gets the video aspect ratio.
@@ -376,7 +403,7 @@ namespace MediaInfo
     /// The video aspect ratio.
     /// </value>
     [PublicAPI]
-    public string AspectRatio { get; }
+    public string AspectRatio { get; private set; }
 
     /// <summary>
     /// Gets the type of the scan.
@@ -385,7 +412,7 @@ namespace MediaInfo
     /// The type of the scan.
     /// </value>
     [PublicAPI]
-    public string ScanType { get; }
+    public string ScanType { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether video is interlaced.
@@ -394,7 +421,7 @@ namespace MediaInfo
     ///   <c>true</c> if video is interlaced; otherwise, <c>false</c>.
     /// </value>
     [PublicAPI]
-    public bool IsInterlaced { get; }
+    public bool IsInterlaced { get; private set; }
 
     /// <summary>
     /// Gets the video resolution.
@@ -403,7 +430,7 @@ namespace MediaInfo
     /// The video resolution.
     /// </value>
     [PublicAPI]
-    public string VideoResolution { get; }
+    public string VideoResolution { get; private set; }
 
     #endregion
 
@@ -425,7 +452,7 @@ namespace MediaInfo
     /// The best audio stream.
     /// </value>
     [PublicAPI]
-    public AudioStream BestAudioStream { get; }
+    public AudioStream BestAudioStream { get; private set; }
 
     /// <summary>
     /// Gets the audio codec.
@@ -434,7 +461,7 @@ namespace MediaInfo
     /// The audio codec.
     /// </value>
     [PublicAPI]
-    public string AudioCodec { get; }
+    public string AudioCodec { get; private set; }
 
     /// <summary>
     /// Gets the audio bitrate.
@@ -443,7 +470,7 @@ namespace MediaInfo
     /// The audio bitrate.
     /// </value>
     [PublicAPI]
-    public int AudioRate { get; }
+    public int AudioRate { get; private set; }
 
     /// <summary>
     /// Gets the count of audio channels.
@@ -452,7 +479,7 @@ namespace MediaInfo
     /// The count of audio channels.
     /// </value>
     [PublicAPI]
-    public int AudioChannels { get; }
+    public int AudioChannels { get; private set; }
 
     /// <summary>
     /// Gets the audio channels friendly name.
@@ -461,7 +488,7 @@ namespace MediaInfo
     /// The audio channels friendly name.
     /// </value>
     [PublicAPI]
-    public string AudioChannelsFriendly { get; }
+    public string AudioChannelsFriendly { get; private set; }
 
     #endregion
 
@@ -546,7 +573,7 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if media is DVD; otherwise, <c>false</c>.
     /// </value>
-    public bool IsDvd { get; }
+    public bool IsDvd { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether media is BluRay.
@@ -562,7 +589,7 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if media information was not loaded; otherwise, <c>false</c>.
     /// </value>
-    public bool MediaInfoNotloaded { get; }
+    public bool MediaInfoNotloaded { get; private set; }
 
     /// <summary>
     /// Gets the mediainfo.dll version.
@@ -571,6 +598,6 @@ namespace MediaInfo
     /// The mediainfo.dll version.
     /// </value>
     [PublicAPI]
-    public string Version { get; }
+    public string Version { get; private set; }
   }
 }

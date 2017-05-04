@@ -630,17 +630,17 @@ namespace MediaInfo
     public string AudioChannelsFriendly => ConvertAudioChannels(Channel);
 
     /// <inheritdoc />
-    protected override void AnalyzeStreamInternal(MediaInfo info)
+    protected override void AnalyzeInternal()
     {
-      base.AnalyzeStreamInternal(info);
+      base.AnalyzeInternal();
       var baseIndex = 0;
-      Codec = GetCodecByCodecId(Get(info, "CodecID"));
+      Codec = GetCodecByCodecId(Get("CodecID"));
       if (Codec == AudioCodec.Undefined)
       {
-        var codecValue = Get(info, "Codec");
+        var codecValue = Get("Codec");
         if (codecValue.Equals("PCM", StringComparison.OrdinalIgnoreCase))
         {
-          var endianness = Get(info, "Codec_Settings_Endianness");
+          var endianness = Get("Codec_Settings_Endianness");
           codecValue = $"{codecValue}{(string.IsNullOrEmpty(endianness) ? string.Empty : " " + endianness)}";
         }
 
@@ -656,7 +656,7 @@ namespace MediaInfo
           case AudioCodec.Ac3Bsid9:
           case AudioCodec.Eac3:
           case AudioCodec.Truehd:
-            var formatProfile = GetCodecIdByCodecName(info.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].Trim());
+            var formatProfile = GetCodecIdByCodecName(Get("Format_Profile").Split('/')[0].Trim());
             if (formatProfile != AudioCodec.Undefined)
             {
               Codec = formatProfile;
@@ -667,13 +667,13 @@ namespace MediaInfo
         }
       }
 
-      Duration = TimeSpan.FromMilliseconds(Get<double>(info, "Duration", double.TryParse, x => ExtractInfo(x, 0)));
-      Bitrate = Get<double>(info, "BitRate", double.TryParse, x => ExtractInfo(x, baseIndex));
-      Channel = Get<int>(info, "Channel(s)", int.TryParse, x => ExtractInfo(x, baseIndex));
-      SamplingRate = Get<double>(info, "SamplingRate", double.TryParse, x => ExtractInfo(x, baseIndex));
-      BitDepth = Get<int>(info, "BitDepth", int.TryParse, x => ExtractInfo(x, baseIndex));
-      Format = Get(info, "Format", x => ExtractInfo(x, 0));
-      CodecName = GetFullCodecName(info);
+      Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse, x => ExtractInfo(x, 0)));
+      Bitrate = Get<double>("BitRate", double.TryParse, x => ExtractInfo(x, baseIndex));
+      Channel = Get<int>("Channel(s)", int.TryParse, x => ExtractInfo(x, baseIndex));
+      SamplingRate = Get<double>("SamplingRate", double.TryParse, x => ExtractInfo(x, baseIndex));
+      BitDepth = Get<int>("BitDepth", int.TryParse, x => ExtractInfo(x, baseIndex));
+      Format = Get("Format", x => ExtractInfo(x, 0));
+      CodecName = GetFullCodecName();
     }
 
     private static string ExtractInfo(string source, int index)
@@ -701,13 +701,13 @@ namespace MediaInfo
       return Channels.TryGetValue(channels, out result) ? result : "Unknown";
     }
 
-    private string GetFullCodecName(MediaInfo mediaInfo)
+    private string GetFullCodecName()
     {
-      var strCodec = mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format").ToUpper();
-      var strCodecVer = mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format_Version").ToUpper();
+      var strCodec = Get("Format").ToUpper();
+      var strCodecVer = Get("Format_Version").ToUpper();
       if (strCodec == "MPEG-4 VISUAL")
       {
-        strCodec = mediaInfo.Get(StreamKind.Audio, StreamPosition, "CodecID").ToUpperInvariant();
+        strCodec = Get("CodecID").ToUpperInvariant();
       }
       else
       {
@@ -717,7 +717,7 @@ namespace MediaInfo
         }
       }
 
-      var formatName = mediaInfo.Get(StreamKind.Audio, StreamPosition, "Format_Profile").Split('/')[0].Trim();
+      var formatName = Get("Format_Profile").Split('/')[0].Trim();
       if (formatName.IndexOf("ATMOS", StringComparison.OrdinalIgnoreCase) >= 0)
       {
         return formatName;

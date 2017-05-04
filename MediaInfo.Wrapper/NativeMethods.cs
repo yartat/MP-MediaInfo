@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace MediaInfo
@@ -35,6 +36,7 @@ namespace MediaInfo
     }
 
     [Flags]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal enum LoadLibraryFlags : uint
     {
       DEFAULT = 0x00000000,

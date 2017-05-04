@@ -77,12 +77,12 @@ namespace MediaInfo
     public bool Forced { get; private set; }
 
     /// <inheritdoc />
-    protected override void AnalyzeStreamInternal(MediaInfo info)
+    protected override void AnalyzeInternal()
     {
-      base.AnalyzeStreamInternal(info);
-      var language = Get(info, "Language").ToLower();
-      Default = Get<bool>(info, "Default", bool.TryParse);
-      Forced = Get<bool>(info, "Forced", bool.TryParse);
+      base.AnalyzeInternal();
+      var language = Get("Language").ToLower();
+      Default = Get<bool>("Default", bool.TryParse);
+      Forced = Get<bool>("Forced", bool.TryParse);
       Language = LanguageHelper.GetLanguageByShortName(language);
       Lcid = LanguageHelper.GetLcidByShortName(language);
     }

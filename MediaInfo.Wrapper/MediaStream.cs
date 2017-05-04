@@ -81,10 +81,7 @@ namespace MediaInfo
     {
       StreamNumber = number;
       StreamPosition = position;
-      if (info != null)
-      {
-        AnalyzeStream(info);
-      }
+      Info = info;
     }
 
     /// <summary>
@@ -142,29 +139,39 @@ namespace MediaInfo
     public int StreamNumber { get; set; }
 
     /// <summary>
+    /// Gets the media info object to access to low-level functions.
+    /// </summary>
+    /// <value>
+    /// The media info object.
+    /// </value>
+    [PublicAPI]
+    protected MediaInfo Info { get; }
+
+    /// <summary>
     /// Analyzes the stream.
     /// </summary>
-    /// <param name="info">The media information.</param>
-    protected virtual void AnalyzeStreamInternal(MediaInfo info)
+    protected virtual void AnalyzeInternal()
     {
-      Id = Get<int>(info, "ID", int.TryParse);
-      Name = Get(info, "Title");
-    }
-
-    private void AnalyzeStream(MediaInfo info)
-    {
-      AnalyzeStreamInternal(info);
+      Id = Get<int>("ID", int.TryParse);
+      Name = Get("Title");
     }
 
     /// <summary>
-    /// Gets the <see cref="long"/> value of <paramref name="parameter"/>.
+    /// Analyzes media stream.
     /// </summary>
-    /// <param name="info">The media information.</param>
+    public void Analyze()
+    {
+      AnalyzeInternal();
+    }
+
+    /// <summary>
+    /// Gets the property <typeparamref name="T">value</typeparamref> by the <paramref name="parameter">property name</paramref>.
+    /// </summary>
     /// <param name="parameter">The stream parameter name.</param>
     /// <param name="convert"></param>
     /// <param name="extractResult">The manual extract result function.</param>
-    /// <returns>Returns <see cref="long"/> value of specified stream parameter.</returns>
-    protected T Get<T>(MediaInfo info, string parameter, ParseDelegate<T> convert, Func<string, string> extractResult = null)
+    /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property name</paramref>.</returns>
+    protected T Get<T>(string parameter, ParseDelegate<T> convert, Func<string, string> extractResult = null)
     {
       if (convert == null)
       {
@@ -172,19 +179,55 @@ namespace MediaInfo
       }
 
       T parsedValue;
-      return convert(Get(info, parameter, extractResult), out parsedValue) ? parsedValue : default(T);
+      return convert(Get(parameter, extractResult), out parsedValue) ? parsedValue : default(T);
     }
 
     /// <summary>
-    /// Gets the specified string value.
+    /// Gets the property <typeparamref name="T">value</typeparamref> by the <paramref name="parameter">property index</paramref>.
     /// </summary>
-    /// <param name="info">The information.</param>
+    /// <param name="parameter">The stream property index.</param>
+    /// <param name="infoKind">The kind of property value</param>
+    /// <param name="convert"></param>
+    /// <param name="extractResult">The manual extract result function.</param>
+    /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property index</paramref>.</returns>
+    protected T Get<T>(int parameter, InfoKind infoKind, ParseDelegate<T> convert, Func<string, string> extractResult = null)
+    {
+      if (convert == null)
+      {
+        throw new ArgumentNullException(nameof(convert));
+      }
+
+      T parsedValue;
+      return convert(Get(parameter, infoKind, extractResult), out parsedValue) ? parsedValue : default(T);
+    }
+
+    /// <summary>
+    /// Gets the specified property value by <paramref name="parameter">property name</paramref>.
+    /// </summary>
     /// <param name="parameter">The parameter.</param>
     /// <param name="extractResult">The extract result.</param>
-    /// <returns></returns>
-    protected string Get(MediaInfo info, string parameter, Func<string, string> extractResult = null)
+    /// <returns>Returns property value by name. If property does not defined will return <see cref="string.Empty"/>.</returns>
+    protected string Get(string parameter, Func<string, string> extractResult = null)
     {
-      var result = info.Get(StreamKind, StreamPosition, parameter);
+      var result = Info.Get(StreamKind, StreamPosition, parameter);
+      if (extractResult != null)
+      {
+        result = extractResult(result) ?? result;
+      }
+
+      return result ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Gets the specified property value by the <paramref name="parameter">property index</paramref>.
+    /// </summary>
+    /// <param name="parameter">The property index.</param>
+    /// <param name="infoKind">The kind of property value</param>
+    /// <param name="extractResult">The extract result.</param>
+    /// <returns>Returns property value by name. If property does not defined will return <see cref="string.Empty"/>.</returns>
+    protected string Get(int parameter, InfoKind infoKind, Func<string, string> extractResult = null)
+    {
+      var result = Info.Get(StreamKind, StreamPosition, parameter, infoKind);
       if (extractResult != null)
       {
         result = extractResult(result) ?? result;

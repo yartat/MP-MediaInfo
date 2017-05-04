@@ -113,7 +113,6 @@ namespace MediaInfo
       var isRadio = filePath.IsLiveTv();
       var isRTSP = filePath.IsRTSP(); //rtsp for live TV and recordings.
       var isAvStream = filePath.IsAvStream(); //other AV streams
-      var isNetwork = filePath.IsNetwork();
 
       //currently disabled for all tv/radio
       if (isTv || isRadio || isRTSP)
@@ -127,7 +126,7 @@ namespace MediaInfo
       try
       {
         // Analyze local file for DVD and BD
-        if (!(isAvStream || isNetwork))
+        if (!isAvStream)
         {
           if (filePath.EndsWith(".ifo", StringComparison.OrdinalIgnoreCase))
           {
@@ -197,7 +196,9 @@ namespace MediaInfo
         // Setup videos
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
         {
-          VideoStreams.Add(new VideoStream(mediaInfo, streamNumber++, i));
+          var stream = new VideoStream(mediaInfo, streamNumber++, i);
+          stream.Analyze();
+          VideoStreams.Add(stream);
         }
 
         if (VideoDuration == 0)
@@ -214,25 +215,33 @@ namespace MediaInfo
         // Setup audios
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
         {
-          AudioStreams.Add(new AudioStream(mediaInfo, streamNumber++, i));
+          var stream = new AudioStream(mediaInfo, streamNumber++, i);
+          stream.Analyze();
+          AudioStreams.Add(stream);
         }
 
         // Setup subtitles
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
         {
-          Subtitles.Add(new SubtitleStream(mediaInfo, streamNumber++, i));
+          var stream = new SubtitleStream(mediaInfo, streamNumber++, i);
+          stream.Analyze();
+          Subtitles.Add(stream);
         }
 
         // Setup chapters
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
         {
-          Chapters.Add(new Chapter(mediaInfo, streamNumber++, i));
+          var stream = new Chapter(mediaInfo, streamNumber++, i);
+          stream.Analyze();
+          Chapters.Add(stream);
         }
 
-        // Setup videos
+        // Setup menus
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
         {
-          MenuStreams.Add(new MenuStream(mediaInfo, streamNumber++, i));
+          var stream = new MenuStream(mediaInfo, streamNumber++, i);
+          stream.Analyze();
+          MenuStreams.Add(stream);
         }
 
         MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;

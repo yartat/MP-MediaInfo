@@ -18,6 +18,11 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
+
+using JetBrains.Annotations;
+
 namespace MediaInfo
 {
   /// <summary>
@@ -35,7 +40,26 @@ namespace MediaInfo
     public MenuStream(MediaInfo info, int number, int position)
       : base(info, number, position)
     {
+      Chapters = new List<Chapter>();
     }
+
+    /// <summary>
+    /// Gets or sets the menu duration.
+    /// </summary>
+    /// <value>
+    /// The menu duration.
+    /// </value>
+    [PublicAPI]
+    public TimeSpan Duration { get; set; }
+
+    /// <summary>
+    /// Gets the chapters.
+    /// </summary>
+    /// <value>
+    /// The chapters.
+    /// </value>
+    [PublicAPI]
+    public IList<Chapter> Chapters { get; }
 
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;
@@ -44,9 +68,43 @@ namespace MediaInfo
     protected override StreamKind StreamKind => StreamKind.Menu;
 
     /// <inheritdoc />
-    protected override void AnalyzeStreamInternal(MediaInfo info)
+    protected override void AnalyzeInternal()
     {
-      base.AnalyzeStreamInternal(info);
+      base.AnalyzeInternal();
+      var chapterStartId = Get<int>("Chapters_Pos_Begin", int.TryParse);
+      var chapterEndId = Get<int>("Chapters_Pos_End", int.TryParse);
+      for (var i = chapterStartId; i < chapterEndId; ++i)
+      {
+        Chapters.Add(new Chapter
+                        {
+                          Name = Get(i, InfoKind.Text),
+                          Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse)
+                        });
+      }
+    }
+
+    /// <summary>
+    /// Describes properties of the menu chapter
+    /// </summary>
+    public sealed class Chapter
+    {
+      /// <summary>
+      /// Gets or sets the menu position.
+      /// </summary>
+      /// <value>
+      /// The menu position.
+      /// </value>
+      [PublicAPI]
+      public TimeSpan Position { get; set; }
+
+      /// <summary>
+      /// Gets or sets the menu chapter name.
+      /// </summary>
+      /// <value>
+      /// The menu chapter name.
+      /// </value>
+      [PublicAPI]
+      public string Name { get; set; }
     }
   }
 }

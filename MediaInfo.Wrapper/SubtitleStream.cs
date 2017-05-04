@@ -159,17 +159,16 @@ namespace MediaInfo
     protected override StreamKind StreamKind => StreamKind.Text;
 
     /// <inheritdoc />
-    protected override void AnalyzeStreamInternal(MediaInfo info)
+    protected override void AnalyzeInternal()
     {
-      base.AnalyzeStreamInternal(info);
-      Format = Get(info, "Format");
-      Codec = GetCodec(Get(info, "CodecID").ToUpper());
+      base.AnalyzeInternal();
+      Format = Get("Format");
+      Codec = Get<SubtitleCodec>("CodecID", TryGetCodec);
     }
 
-    private static SubtitleCodec GetCodec(string source)
+    private static bool TryGetCodec(string source, out SubtitleCodec result)
     {
-      SubtitleCodec result;
-      return SubtitleCodecs.TryGetValue(source, out result) ? result : SubtitleCodec.Undefined;
+      return SubtitleCodecs.TryGetValue(source.ToUpper(), out result);
     }
   }
 }

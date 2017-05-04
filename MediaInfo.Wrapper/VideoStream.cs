@@ -163,68 +163,315 @@ namespace MediaInfo
   /// </summary>
   public enum VideoCodec
   {
-    V_UNDEFINED,
-    V_UNCOMPRESSED,
-    V_DIRAC,
-    V_MPEG4,
-    V_MPEG4_IS0_SP,
-    V_MPEG4_IS0_ASP,
-    V_MPEG4_IS0_AP,
-    V_MPEG4_IS0_AVC,
-    V_MPEG4_ISO_SP,
-    V_MPEG4_ISO_ASP,
-    V_MPEG4_ISO_AP,
-    V_MPEG4_ISO_AVC,
-    V_MPEGH_ISO_HEVC,
-    V_MPEG4_MS_V1,
-    V_MPEG4_MS_V2,
-    V_MPEG4_MS_V3,
-    V_VC1,
-    V_MPEG1,
-    V_MPEG2,
-    V_PRORES,
-    V_REAL_RV10,
-    V_REAL_RV20,
-    V_REAL_RV30,
-    V_REAL_RV40,
-    V_THEORA,
-    V_VP6,
-    V_VP8,
-    V_VP9,
-    V_DIVX1,
-    V_DIVX2,
-    V_DIVX3,
-    V_DIVX4,
-    V_DIVX50,
-    V_XVID,
-    V_SVQ1,
-    V_SVQ2,
-    V_SVQ3,
-    V_SPRK,
-    V_H260,
-    V_H261,
-    V_H263,
-    V_AVDV,
-    V_AVD1,
-    V_FFV1,
-    V_FFV2,
-    V_IV21,
-    V_IV30,
-    V_IV40,
-    V_IV50,
-    V_FFDS,
-    V_FRAPS,
-    V_FFVH,
-    V_MJPG,
-    V_DV,
-    V_HDV,
-    V_DVCPRO50,
-    V_DVCPRO100,
-    V_WMV1,
-    V_WMV2,
-    V_WMV3,
-    V_8BPS,
-    V_BINKVIDEO,
+    /// <summary>
+    /// The undefined
+    /// </summary>
+    Undefined,
+
+    /// <summary>
+    /// The uncompressed
+    /// </summary>
+    Uncompressed,
+
+    /// <summary>
+    /// Dirac
+    /// </summary>
+    Dirac,
+
+    /// <summary>
+    /// MPEG4
+    /// </summary>
+    Mpeg4,
+
+    /// <summary>
+    /// MPEG4 Simple Profile
+    /// </summary>
+    Mpeg4Is0Sp,
+
+    /// <summary>
+    /// MPEG4 Advanced Simple Profile
+    /// </summary>
+    Mpeg4Is0Asp,
+
+    /// <summary>
+    /// MPEG4 Advanced Profile
+    /// </summary>
+    Mpeg4Is0Ap,
+
+    /// <summary>
+    /// MPEG4 AVC
+    /// </summary>
+    Mpeg4Is0Avc,
+
+    /// <summary>
+    /// MPEG4 ISO Simple Profile
+    /// </summary>
+    Mpeg4IsoSp,
+
+    /// <summary>
+    /// MPEG4 ISO Advanced Simple Profile
+    /// </summary>
+    Mpeg4IsoAsp,
+
+    /// <summary>
+    /// MPEG4 ISO Advanced Profile
+    /// </summary>
+    Mpeg4IsoAp,
+
+    /// <summary>
+    /// MPEG4 ISO AVC
+    /// </summary>
+    Mpeg4IsoAvc,
+
+    /// <summary>
+    /// MPEG4 ISO HEVC
+    /// </summary>
+    MpeghIsoHevc,
+
+    /// <summary>
+    /// The Windows Media MPEG4 V1
+    /// </summary>
+    Mpeg4MsV1,
+
+    /// <summary>
+    /// The Windows Media MPEG4 V2
+    /// </summary>
+    Mpeg4MsV2,
+
+    /// <summary>
+    /// The Windows Media MPEG4 V3
+    /// </summary>
+    Mpeg4MsV3,
+
+    /// <summary>
+    /// VC1
+    /// </summary>
+    Vc1,
+
+    /// <summary>
+    /// The MPEG1
+    /// </summary>
+    Mpeg1,
+
+    /// <summary>
+    /// The MPEG2
+    /// </summary>
+    Mpeg2,
+
+    /// <summary>
+    /// The ProRes
+    /// </summary>
+    Prores,
+
+    /// <summary>
+    /// Real Video v1
+    /// </summary>
+    RealRv10,
+
+    /// <summary>
+    /// Real Video v2
+    /// </summary>
+    RealRv20,
+
+    /// <summary>
+    /// Real Video v3
+    /// </summary>
+    RealRv30,
+
+    /// <summary>
+    /// Real Video v4
+    /// </summary>
+    RealRv40,
+
+    /// <summary>
+    /// Theora
+    /// </summary>
+    Theora,
+
+    /// <summary>
+    /// TrueMotion VP6
+    /// </summary>
+    Vp6,
+
+    /// <summary>
+    /// VP8
+    /// </summary>
+    Vp8,
+
+    /// <summary>
+    /// VP9
+    /// </summary>
+    Vp9,
+
+    /// <summary>
+    /// DivX v1
+    /// </summary>
+    Divx1,
+
+    /// <summary>
+    /// DivX v2
+    /// </summary>
+    Divx2,
+
+    /// <summary>
+    /// DivX v3.x
+    /// </summary>
+    Divx3,
+
+    /// <summary>
+    /// DivX v4
+    /// </summary>
+    Divx4,
+
+    /// <summary>
+    /// DivX v5
+    /// </summary>
+    Divx50,
+
+    /// <summary>
+    /// The XVid
+    /// </summary>
+    Xvid,
+
+    /// <summary>
+    /// Sorenson Video v1
+    /// </summary>
+    Svq1,
+
+    /// <summary>
+    /// Sorenson Video v2
+    /// </summary>
+    Svq2,
+
+    /// <summary>
+    /// Sorenson Video v3
+    /// </summary>
+    Svq3,
+
+    /// <summary>
+    /// The Sorenson Spark
+    /// </summary>
+    Sprk,
+
+    /// <summary>
+    /// H.260
+    /// </summary>
+    H260,
+
+    /// <summary>
+    /// H.261
+    /// </summary>
+    H261,
+
+    /// <summary>
+    /// H.263
+    /// </summary>
+    H263,
+
+    /// <summary>
+    /// AVdv
+    /// </summary>
+    Avdv,
+
+    /// <summary>
+    /// Autodesk Digital Video v1
+    /// </summary>
+    Avd1,
+
+    /// <summary>
+    /// FF video codec 1
+    /// </summary>
+    Ffv1,
+
+    /// <summary>
+    /// FF video codec 2
+    /// </summary>
+    Ffv2,
+
+    /// <summary>
+    /// IV21
+    /// </summary>
+    Iv21,
+
+    /// <summary>
+    /// IV30
+    /// </summary>
+    Iv30,
+
+    /// <summary>
+    /// IV40
+    /// </summary>
+    Iv40,
+
+    /// <summary>
+    /// IV50
+    /// </summary>
+    Iv50,
+
+    /// <summary>
+    /// The FFDShow MPEG-4 Video
+    /// </summary>
+    Ffds,
+
+    /// <summary>
+    /// The FFDShow MPEG-4 Video
+    /// </summary>
+    Fraps,
+
+    /// <summary>
+    /// HuffYUV 2.2
+    /// </summary>
+    Ffvh,
+
+    /// <summary>
+    /// Motion JPEG
+    /// </summary>
+    Mjpg,
+
+    /// <summary>
+    /// Digital Video
+    /// </summary>
+    Dv,
+
+    /// <summary>
+    /// Digital Video HD
+    /// </summary>
+    Hdv,
+
+    /// <summary>
+    /// DVCPRO50
+    /// </summary>
+    DvcPro50,
+
+    /// <summary>
+    /// DVCPRO HD
+    /// </summary>
+    DvcProHd,
+
+    /// <summary>
+    /// Windows Media Video V7
+    /// </summary>
+    Wmv1,
+
+    /// <summary>
+    /// Windows Media Video V8
+    /// </summary>
+    Wmv2,
+
+    /// <summary>
+    /// Windows Media Video V9
+    /// </summary>
+    Wmv3,
+    
+    /// <summary>
+    /// QuickTime 8BPS
+    /// </summary>
+    Q8Bps,
+
+    /// <summary>
+    /// Bink video
+    /// </summary>
+    BinkVideo,
   }
 
   /// <summary>
@@ -274,134 +521,134 @@ namespace MediaInfo
 
     private static readonly Dictionary<string, VideoCodec> VideoCodecs = new Dictionary<string, VideoCodec>
     {
-      { "V_UNCOMPRESSED", VideoCodec.V_UNCOMPRESSED },
-      { "V_DIRAC", VideoCodec.V_DIRAC },
-      { "V_MPEG4/IS0/SP", VideoCodec.V_MPEG4_IS0_SP },
-      { "V_MPEG4/IS0/ASP", VideoCodec.V_MPEG4_IS0_ASP },
-      { "V_MPEG4/IS0/AP", VideoCodec.V_MPEG4_IS0_AP },
-      { "V_MPEG4/IS0/AVC", VideoCodec.V_MPEG4_IS0_AVC },
-      { "V_MPEG4/ISO/SP", VideoCodec.V_MPEG4_ISO_SP },
-      { "V_MPEG4/ISO/ASP", VideoCodec.V_MPEG4_ISO_ASP },
-      { "V_MPEG4/ISO/AP", VideoCodec.V_MPEG4_ISO_AP },
-      { "V_MPEG4/ISO/AVC", VideoCodec.V_MPEG4_ISO_AVC },
-      { "V_MPEGH/ISO/HEVC", VideoCodec.V_MPEGH_ISO_HEVC },
-      { "V_MPEG4/MS/V2", VideoCodec.V_MPEG4_MS_V2 },
-      { "V_MPEG4/MS/V3", VideoCodec.V_MPEG4_MS_V3 },
-      { "V_MPEG1", VideoCodec.V_MPEG1 },
-      { "V_MPEG2", VideoCodec.V_MPEG2 },
-      { "V_PRORES", VideoCodec.V_PRORES },
-      { "V_REAL/RV10", VideoCodec.V_REAL_RV10 },
-      { "V_REAL/RV20", VideoCodec.V_REAL_RV20 },
-      { "V_REAL/RV30", VideoCodec.V_REAL_RV30 },
-      { "V_REAL/RV40", VideoCodec.V_REAL_RV40 },
-      { "V_THEORA", VideoCodec.V_THEORA },
-      { "V_VP8", VideoCodec.V_VP8 },
-      { "V_VP9", VideoCodec.V_VP9 },
-      { "AVC1", VideoCodec.V_MPEG4_ISO_AVC },
-      { "AVC", VideoCodec.V_MPEG4_ISO_AVC },
-      { "H264", VideoCodec.V_MPEG4_ISO_AVC },
-      { "DAVC", VideoCodec.V_MPEG4_ISO_AVC },
-      { "MPEG-2V", VideoCodec.V_MPEG2 },
-      { "MPEG-2", VideoCodec.V_MPEG2 },
-      { "MPEG-1", VideoCodec.V_MPEG1 },
-      { "MPEG-1V", VideoCodec.V_MPEG1 },
-      { "VC1", VideoCodec.V_VC1 },
-      { "VC-1", VideoCodec.V_VC1 },
-      { "OVC1", VideoCodec.V_VC1 },
-      { "WVC1", VideoCodec.V_VC1 },
-      { "SORENSON H263", VideoCodec.V_SPRK },
-      { "SPRK", VideoCodec.V_SPRK },
-      { "SVQ1", VideoCodec.V_SVQ1 },
-      { "SVQ2", VideoCodec.V_SVQ2 },
-      { "SVQ3", VideoCodec.V_SVQ3 },
-      { "DX50", VideoCodec.V_DIVX50 },
-      { "DVX1", VideoCodec.V_DIVX1 },
-      { "DIV1", VideoCodec.V_DIVX1 },
-      { "DVX2", VideoCodec.V_DIVX2 },
-      { "DIV2", VideoCodec.V_DIVX2 },
-      { "DVX3", VideoCodec.V_DIVX3 },
-      { "DIV3", VideoCodec.V_DIVX3 },
-      { "DIV4", VideoCodec.V_DIVX3 },
-      { "DIV5", VideoCodec.V_DIVX50 },
-      { "DIV6", VideoCodec.V_MPEG4_MS_V3 },
-      { "DIVX", VideoCodec.V_DIVX4 },
-      { "XVID", VideoCodec.V_XVID },
-      { "FFV1", VideoCodec.V_FFV1 },
-      { "FFV2", VideoCodec.V_FFV2 },
-      { "S263", VideoCodec.V_H263 },
-      { "H263", VideoCodec.V_H263 },
-      { "D263", VideoCodec.V_H263 },
-      { "L263", VideoCodec.V_H263 },
-      { "M263", VideoCodec.V_H263 },
-      { "ILVR", VideoCodec.V_H263 },
-      { "S261", VideoCodec.V_H261 },
-      { "H261", VideoCodec.V_H261 },
-      { "D261", VideoCodec.V_H261 },
-      { "L261", VideoCodec.V_H261 },
-      { "M261", VideoCodec.V_H261 },
-      { "IF09", VideoCodec.V_H261 },
-      { "H260", VideoCodec.V_H260 },
-      { "IR21", VideoCodec.V_IV21 },
-      { "IV30", VideoCodec.V_IV30 },
-      { "IV31", VideoCodec.V_IV30 },
-      { "IV32", VideoCodec.V_IV30 },
-      { "IV33", VideoCodec.V_IV30 },
-      { "IV34", VideoCodec.V_IV30 },
-      { "IV35", VideoCodec.V_IV30 },
-      { "IV36", VideoCodec.V_IV30 },
-      { "IV37", VideoCodec.V_IV30 },
-      { "IV38", VideoCodec.V_IV30 },
-      { "IV39", VideoCodec.V_IV30 },
-      { "IV40", VideoCodec.V_IV40 },
-      { "IV41", VideoCodec.V_IV40 },
-      { "IV42", VideoCodec.V_IV40 },
-      { "IV43", VideoCodec.V_IV40 },
-      { "IV44", VideoCodec.V_IV40 },
-      { "IV45", VideoCodec.V_IV40 },
-      { "IV46", VideoCodec.V_IV40 },
-      { "IV47", VideoCodec.V_IV40 },
-      { "IV48", VideoCodec.V_IV40 },
-      { "IV49", VideoCodec.V_IV40 },
-      { "IAN", VideoCodec.V_IV40 },
-      { "IV50", VideoCodec.V_IV50 },
-      { "RV10", VideoCodec.V_REAL_RV10 },
-      { "RV13", VideoCodec.V_REAL_RV10 },
-      { "RV20", VideoCodec.V_REAL_RV20 },
-      { "RV30", VideoCodec.V_REAL_RV30 },
-      { "RV40", VideoCodec.V_REAL_RV40 },
-      { "FLV1", VideoCodec.V_SPRK },
-      { "FLV4", VideoCodec.V_VP6 },
-      { "FFVH", VideoCodec.V_FFVH },
-      { "FFDS", VideoCodec.V_FFDS },
-      { "FPS1", VideoCodec.V_FRAPS },
-      { "M4S2", VideoCodec.V_MPEG4_MS_V2 },
-      { "COL0", VideoCodec.V_MPEG4_MS_V3 },
-      { "COL1", VideoCodec.V_MPEG4_MS_V3 },
-      { "THEORA", VideoCodec.V_THEORA },
-      { "MJPG", VideoCodec.V_MJPG },
-      { "MPEG-4V", VideoCodec.V_MPEG4 },
-      { "3IV0", VideoCodec.V_MPEG4 },
-      { "3IV1", VideoCodec.V_MPEG4 },
-      { "3IV2", VideoCodec.V_MPEG4 },
-      { "3IVD", VideoCodec.V_MPEG4 },
-      { "3IVX", VideoCodec.V_MPEG4 },
-      { "3VID", VideoCodec.V_MPEG4 },
-      { "AP41", VideoCodec.V_MPEG4 },
-      { "AP42", VideoCodec.V_MPEG4 },
-      { "ATM4", VideoCodec.V_MPEG4 },
-      { "BLZ0", VideoCodec.V_MPEG4 },
-      { "DM4V", VideoCodec.V_MPEG4 },
-      { "DP02", VideoCodec.V_MPEG4 },
-      { "FMP4", VideoCodec.V_MPEG4 },
-      { "M4CC", VideoCodec.V_MPEG4 },
-      { "MP41", VideoCodec.V_MPEG4_MS_V1 },
-      { "MP42", VideoCodec.V_MPEG4_MS_V2 },
-      { "MP43", VideoCodec.V_MPEG4_MS_V3 },
-      { "DV", VideoCodec.V_DV },
-      { "HDV", VideoCodec.V_HDV },
-      { "WMV1", VideoCodec.V_WMV1 },
-      { "WMV2", VideoCodec.V_WMV2 },
-      { "WMV3", VideoCodec.V_WMV3 },
+      { "V_UNCOMPRESSED", VideoCodec.Uncompressed },
+      { "V_DIRAC", VideoCodec.Dirac },
+      { "V_MPEG4/IS0/SP", VideoCodec.Mpeg4Is0Sp },
+      { "V_MPEG4/IS0/ASP", VideoCodec.Mpeg4Is0Asp },
+      { "V_MPEG4/IS0/AP", VideoCodec.Mpeg4Is0Ap },
+      { "V_MPEG4/IS0/AVC", VideoCodec.Mpeg4Is0Avc },
+      { "V_MPEG4/ISO/SP", VideoCodec.Mpeg4IsoSp },
+      { "V_MPEG4/ISO/ASP", VideoCodec.Mpeg4IsoAsp },
+      { "V_MPEG4/ISO/AP", VideoCodec.Mpeg4IsoAp },
+      { "V_MPEG4/ISO/AVC", VideoCodec.Mpeg4IsoAvc },
+      { "V_MPEGH/ISO/HEVC", VideoCodec.MpeghIsoHevc },
+      { "V_MPEG4/MS/V2", VideoCodec.Mpeg4MsV2 },
+      { "V_MPEG4/MS/V3", VideoCodec.Mpeg4MsV3 },
+      { "V_MPEG1", VideoCodec.Mpeg1 },
+      { "V_MPEG2", VideoCodec.Mpeg2 },
+      { "V_PRORES", VideoCodec.Prores },
+      { "V_REAL/RV10", VideoCodec.RealRv10 },
+      { "V_REAL/RV20", VideoCodec.RealRv20 },
+      { "V_REAL/RV30", VideoCodec.RealRv30 },
+      { "V_REAL/RV40", VideoCodec.RealRv40 },
+      { "V_THEORA", VideoCodec.Theora },
+      { "V_VP8", VideoCodec.Vp8 },
+      { "V_VP9", VideoCodec.Vp9 },
+      { "AVC1", VideoCodec.Mpeg4IsoAvc },
+      { "AVC", VideoCodec.Mpeg4IsoAvc },
+      { "H264", VideoCodec.Mpeg4IsoAvc },
+      { "DAVC", VideoCodec.Mpeg4IsoAvc },
+      { "MPEG-2V", VideoCodec.Mpeg2 },
+      { "MPEG-2", VideoCodec.Mpeg2 },
+      { "MPEG-1", VideoCodec.Mpeg1 },
+      { "MPEG-1V", VideoCodec.Mpeg1 },
+      { "VC1", VideoCodec.Vc1 },
+      { "VC-1", VideoCodec.Vc1 },
+      { "OVC1", VideoCodec.Vc1 },
+      { "WVC1", VideoCodec.Vc1 },
+      { "SORENSON H263", VideoCodec.Sprk },
+      { "SPRK", VideoCodec.Sprk },
+      { "SVQ1", VideoCodec.Svq1 },
+      { "SVQ2", VideoCodec.Svq2 },
+      { "SVQ3", VideoCodec.Svq3 },
+      { "DX50", VideoCodec.Divx50 },
+      { "DVX1", VideoCodec.Divx1 },
+      { "DIV1", VideoCodec.Divx1 },
+      { "DVX2", VideoCodec.Divx2 },
+      { "DIV2", VideoCodec.Divx2 },
+      { "DVX3", VideoCodec.Divx3 },
+      { "DIV3", VideoCodec.Divx3 },
+      { "DIV4", VideoCodec.Divx3 },
+      { "DIV5", VideoCodec.Divx50 },
+      { "DIV6", VideoCodec.Mpeg4MsV3 },
+      { "DIVX", VideoCodec.Divx4 },
+      { "XVID", VideoCodec.Xvid },
+      { "FFV1", VideoCodec.Ffv1 },
+      { "FFV2", VideoCodec.Ffv2 },
+      { "S263", VideoCodec.H263 },
+      { "H263", VideoCodec.H263 },
+      { "D263", VideoCodec.H263 },
+      { "L263", VideoCodec.H263 },
+      { "M263", VideoCodec.H263 },
+      { "ILVR", VideoCodec.H263 },
+      { "S261", VideoCodec.H261 },
+      { "H261", VideoCodec.H261 },
+      { "D261", VideoCodec.H261 },
+      { "L261", VideoCodec.H261 },
+      { "M261", VideoCodec.H261 },
+      { "IF09", VideoCodec.H261 },
+      { "H260", VideoCodec.H260 },
+      { "IR21", VideoCodec.Iv21 },
+      { "IV30", VideoCodec.Iv30 },
+      { "IV31", VideoCodec.Iv30 },
+      { "IV32", VideoCodec.Iv30 },
+      { "IV33", VideoCodec.Iv30 },
+      { "IV34", VideoCodec.Iv30 },
+      { "IV35", VideoCodec.Iv30 },
+      { "IV36", VideoCodec.Iv30 },
+      { "IV37", VideoCodec.Iv30 },
+      { "IV38", VideoCodec.Iv30 },
+      { "IV39", VideoCodec.Iv30 },
+      { "IV40", VideoCodec.Iv40 },
+      { "IV41", VideoCodec.Iv40 },
+      { "IV42", VideoCodec.Iv40 },
+      { "IV43", VideoCodec.Iv40 },
+      { "IV44", VideoCodec.Iv40 },
+      { "IV45", VideoCodec.Iv40 },
+      { "IV46", VideoCodec.Iv40 },
+      { "IV47", VideoCodec.Iv40 },
+      { "IV48", VideoCodec.Iv40 },
+      { "IV49", VideoCodec.Iv40 },
+      { "IAN", VideoCodec.Iv40 },
+      { "IV50", VideoCodec.Iv50 },
+      { "RV10", VideoCodec.RealRv10 },
+      { "RV13", VideoCodec.RealRv10 },
+      { "RV20", VideoCodec.RealRv20 },
+      { "RV30", VideoCodec.RealRv30 },
+      { "RV40", VideoCodec.RealRv40 },
+      { "FLV1", VideoCodec.Sprk },
+      { "FLV4", VideoCodec.Vp6 },
+      { "FFVH", VideoCodec.Ffvh },
+      { "FFDS", VideoCodec.Ffds },
+      { "FPS1", VideoCodec.Fraps },
+      { "M4S2", VideoCodec.Mpeg4MsV2 },
+      { "COL0", VideoCodec.Mpeg4MsV3 },
+      { "COL1", VideoCodec.Mpeg4MsV3 },
+      { "THEORA", VideoCodec.Theora },
+      { "MJPG", VideoCodec.Mjpg },
+      { "MPEG-4V", VideoCodec.Mpeg4 },
+      { "3IV0", VideoCodec.Mpeg4 },
+      { "3IV1", VideoCodec.Mpeg4 },
+      { "3IV2", VideoCodec.Mpeg4 },
+      { "3IVD", VideoCodec.Mpeg4 },
+      { "3IVX", VideoCodec.Mpeg4 },
+      { "3VID", VideoCodec.Mpeg4 },
+      { "AP41", VideoCodec.Mpeg4 },
+      { "AP42", VideoCodec.Mpeg4 },
+      { "ATM4", VideoCodec.Mpeg4 },
+      { "BLZ0", VideoCodec.Mpeg4 },
+      { "DM4V", VideoCodec.Mpeg4 },
+      { "DP02", VideoCodec.Mpeg4 },
+      { "FMP4", VideoCodec.Mpeg4 },
+      { "M4CC", VideoCodec.Mpeg4 },
+      { "MP41", VideoCodec.Mpeg4MsV1 },
+      { "MP42", VideoCodec.Mpeg4MsV2 },
+      { "MP43", VideoCodec.Mpeg4MsV3 },
+      { "DV", VideoCodec.Dv },
+      { "HDV", VideoCodec.Hdv },
+      { "WMV1", VideoCodec.Wmv1 },
+      { "WMV2", VideoCodec.Wmv2 },
+      { "WMV3", VideoCodec.Wmv3 },
     };
 
     #endregion
@@ -546,59 +793,56 @@ namespace MediaInfo
     /// <value>
     /// The vidoe size.
     /// </value>
+    [PublicAPI]
     public Size Size => new Size(Width, Height);
 
     /// <inheritdoc />
-    protected override void AnalyzeStreamInternal(MediaInfo info)
+    protected override void AnalyzeInternal()
     {
-      base.AnalyzeStreamInternal(info);
-      FrameRate = Get<double>(info, "FrameRate", double.TryParse);
-      Width = Get<int>(info, "Width", int.TryParse);
-      Height = Get<int>(info, "Height", int.TryParse);
-      AspectRatio = GetAspectRatio(Get(info, "DisplayAspectRatio"));
-      Interlaced = GetInterlaced(Get(info, "ScanType").ToLower());
-      Stereoscopic = Get<int>(info, "MultiView_Count", int.TryParse) >= 2
-                       ? GetStereoscopic(Get(info, "MultiView_Layout").ToLower())
+      base.AnalyzeInternal();
+      FrameRate = Get<double>("FrameRate", double.TryParse);
+      Width = Get<int>("Width", int.TryParse);
+      Height = Get<int>("Height", int.TryParse);
+      AspectRatio = Get<AspectRatio>("DisplayAspectRatio", TryGetAspectRatio);
+      Interlaced = GetInterlaced(Get("ScanType"));
+      Stereoscopic = Get<int>("MultiView_Count", int.TryParse) >= 2
+                       ? Get<StereoMode>("MultiView_Layout", TryGetStereoscopic)
                        : StereoMode.Mono;
-      Format = Get(info, "Format");
-      Codec = GetCodecId(Get(info, "CodecID"));
-      if (Codec == VideoCodec.V_UNDEFINED)
+      Format = Get("Format");
+      Codec = Get<VideoCodec>("CodecID", TryGetCodecId);
+      if (Codec == VideoCodec.Undefined)
       {
-        Codec = GetCodec(Get(info, "Codec"));
+        Codec = Get<VideoCodec>("Codec", TryGetCodec);
       }
 
-      Duration = TimeSpan.FromMilliseconds(Get<double>(info, "Duration", double.TryParse));
-      BitDepth = Get<int>(info, "BitDepth", int.TryParse);
-      CodecName = GetFullCodecName(info);
+      Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse));
+      BitDepth = Get<int>("BitDepth", int.TryParse);
+      CodecName = GetFullCodecName();
     }
 
-    private static VideoCodec GetCodecId(string codec)
+    private static bool TryGetCodecId(string codec, out VideoCodec result)
     {
-      VideoCodec result;
-      return VideoCodecs.TryGetValue(codec.ToUpper(), out result) ? result : VideoCodec.V_UNDEFINED;
+      return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
     }
 
-    private static VideoCodec GetCodec(string codec)
+    private static bool TryGetCodec(string codec, out VideoCodec result)
     {
-      VideoCodec result;
-      return VideoCodecs.TryGetValue(codec.ToUpper(), out result) ? result : VideoCodec.V_UNDEFINED;
+      return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
     }
 
-    private static StereoMode GetStereoscopic(string layout)
+    private static bool TryGetStereoscopic(string layout, out StereoMode result)
     {
-      StereoMode result;
-      return StereoModes.TryGetValue(layout, out result) ? result : StereoMode.Mono;
+      return StereoModes.TryGetValue(layout.ToLower(), out result);
     }
 
     private static bool GetInterlaced(string source)
     {
-      return source.Contains("interlaced");
+      return source?.ToLower().Contains("interlaced") ?? false;
     }
 
-    private static AspectRatio GetAspectRatio(string source)
+    private static bool TryGetAspectRatio(string source, out AspectRatio result)
     {
-      AspectRatio result;
-      return Ratios.TryGetValue(source, out result) ? result : AspectRatio.Opaque;
+      return Ratios.TryGetValue(source, out result);
     }
 
     private string GetVideoResolution()
@@ -650,20 +894,20 @@ namespace MediaInfo
       return result;
     }
 
-    private string GetFullCodecName(MediaInfo mediaInfo)
+    private string GetFullCodecName()
     {
-      var strCodec = mediaInfo.Get(StreamKind.Video, StreamPosition, "Format").ToUpper();
-      var strCodecVer = mediaInfo.Get(StreamKind.Video, StreamPosition, "Format_Version").ToUpper();
+      var strCodec = Get("Format").ToUpper();
+      var strCodecVer = Get("Format_Version").ToUpper();
       if (strCodec == "MPEG-4 VISUAL")
       {
-        strCodec = mediaInfo.Get(StreamKind.Video, StreamPosition, "CodecID").ToUpperInvariant();
+        strCodec = Get("CodecID").ToUpperInvariant();
       }
       else
       {
         if (!string.IsNullOrEmpty(strCodecVer))
         {
           strCodec = (strCodec + " " + strCodecVer).Trim();
-          var strCodecProf = mediaInfo.Get(StreamKind.Video, StreamPosition, "Format_Profile").ToUpper();
+          var strCodecProf = Get("Format_Profile").ToUpper();
           if (strCodecProf != "MAIN@MAIN")
           {
             strCodec = (strCodec + " " + strCodecProf).Trim();

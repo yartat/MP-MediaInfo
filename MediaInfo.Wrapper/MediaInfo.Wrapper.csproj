@@ -74,20 +74,33 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioStream.cs" />
-    <Compile Include="Chapter.cs" />
+    <Compile Include="Builder\AudioStreamBuilder.cs" />
+    <Compile Include="Builder\ChapterStreamBuilder.cs" />
+    <Compile Include="Builder\IMediaBuilder.cs" />
+    <Compile Include="Builder\LanguageMediaStreamBuilder.cs" />
+    <Compile Include="Builder\MediaStreamBuilder.cs" />
+    <Compile Include="Builder\MenuStreamBuilder.cs" />
+    <Compile Include="Builder\SubtitleStreamBuilder.cs" />
+    <Compile Include="Builder\VideoStreamBuilder.cs" />
+    <Compile Include="Model\AspectRatio.cs" />
+    <Compile Include="Model\AudioCodec.cs" />
+    <Compile Include="Model\AudioStream.cs" />
+    <Compile Include="Model\ChapterStream.cs" />
     <Compile Include="FileNameExtensions.cs" />
     <Compile Include="GlobalMemory.cs" />
     <Compile Include="LanguageHelper.cs" />
-    <Compile Include="LanguageMediaStream.cs" />
+    <Compile Include="Model\LanguageMediaStream.cs" />
     <Compile Include="MediaInfo.cs" />
     <Compile Include="MediaInfoWrapper.cs" />
-    <Compile Include="MediaStream.cs" />
-    <Compile Include="MenuStream.cs" />
+    <Compile Include="Model\MediaStream.cs" />
+    <Compile Include="Model\MenuStream.cs" />
+    <Compile Include="Model\StereoMode.cs" />
+    <Compile Include="Model\SubtitleCodec.cs" />
+    <Compile Include="Model\VideoCodec.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SubtitleStream.cs" />
-    <Compile Include="VideoStream.cs" />
+    <Compile Include="Model\SubtitleStream.cs" />
+    <Compile Include="Model\VideoStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

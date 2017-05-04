@@ -18,24 +18,14 @@
 
 #endregion
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Builder
 {
   /// <summary>
-  /// Provides properties and overridden methods for the analyze chapter in media 
-  /// and contains information about chapter.
+  /// Describes method to build chapter stream.
   /// </summary>
-  /// <seealso cref="MediaStream" />
-  public class Chapter : MediaStream
+  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
   {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Chapter"/> class.
-    /// </summary>
-    /// <param name="info">The media information.</param>
-    /// <param name="number">The stream number.</param>
-    /// <param name="position">The stream position.</param>
-    public Chapter(MediaInfo info, int number, int position)
+    public ChapterStreamBuilder(MediaInfo info, int number, int position)
       : base(info, number, position)
     {
     }
@@ -45,23 +35,5 @@ namespace MediaInfo
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;
-
-    /// <summary>
-    /// Gets the chapter offset.
-    /// </summary>
-    /// <value>
-    /// The chapter offset.
-    /// </value>
-    [PublicAPI]
-    public double Offset { get; private set; }
-
-    /// <summary>
-    /// Gets the chapter description.
-    /// </summary>
-    /// <value>
-    /// The chapter description.
-    /// </value>
-    [PublicAPI]
-    public string Description { get; private set; }
   }
 }

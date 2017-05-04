@@ -34,11 +34,7 @@ namespace MediaInfo
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuStream"/> class.
     /// </summary>
-    /// <param name="info">The media information.</param>
-    /// <param name="number">The stream number.</param>
-    /// <param name="position">The stream position.</param>
-    public MenuStream(MediaInfo info, int number, int position)
-      : base(info, number, position)
+    public MenuStream()
     {
       Chapters = new List<Chapter>();
     }
@@ -66,22 +62,6 @@ namespace MediaInfo
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Menu;
-
-    /// <inheritdoc />
-    protected override void AnalyzeInternal()
-    {
-      base.AnalyzeInternal();
-      var chapterStartId = Get<int>("Chapters_Pos_Begin", int.TryParse);
-      var chapterEndId = Get<int>("Chapters_Pos_End", int.TryParse);
-      for (var i = chapterStartId; i < chapterEndId; ++i)
-      {
-        Chapters.Add(new Chapter
-                        {
-                          Name = Get(i, InfoKind.Text),
-                          Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse)
-                        });
-      }
-    }
 
     /// <summary>
     /// Describes properties of the menu chapter

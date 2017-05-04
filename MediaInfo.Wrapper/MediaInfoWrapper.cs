@@ -26,6 +26,8 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
+using MediaInfo.Builder;
+
 namespace MediaInfo
 {
   /// <summary>
@@ -94,7 +96,7 @@ namespace MediaInfo
       VideoStreams = new List<VideoStream>();
       AudioStreams = new List<AudioStream>();
       Subtitles = new List<SubtitleStream>();
-      Chapters = new List<Chapter>();
+      Chapters = new List<ChapterStream>();
       MenuStreams = new List<MenuStream>();
 
       if (!MediaInfoExist(pathToDll))
@@ -196,9 +198,7 @@ namespace MediaInfo
         // Setup videos
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
         {
-          var stream = new VideoStream(mediaInfo, streamNumber++, i);
-          stream.Analyze();
-          VideoStreams.Add(stream);
+          VideoStreams.Add(new VideoStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         if (VideoDuration == 0)
@@ -215,33 +215,25 @@ namespace MediaInfo
         // Setup audios
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
         {
-          var stream = new AudioStream(mediaInfo, streamNumber++, i);
-          stream.Analyze();
-          AudioStreams.Add(stream);
+          AudioStreams.Add(new AudioStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         // Setup subtitles
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
         {
-          var stream = new SubtitleStream(mediaInfo, streamNumber++, i);
-          stream.Analyze();
-          Subtitles.Add(stream);
+          Subtitles.Add(new SubtitleStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         // Setup chapters
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
         {
-          var stream = new Chapter(mediaInfo, streamNumber++, i);
-          stream.Analyze();
-          Chapters.Add(stream);
+          Chapters.Add(new ChapterStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         // Setup menus
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
         {
-          var stream = new MenuStream(mediaInfo, streamNumber++, i);
-          stream.Analyze();
-          MenuStreams.Add(stream);
+          MenuStreams.Add(new MenuStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
@@ -541,7 +533,7 @@ namespace MediaInfo
     /// The media chapters.
     /// </value>
     [PublicAPI]
-    public IList<Chapter> Chapters { get; }
+    public IList<ChapterStream> Chapters { get; }
 
     /// <summary>
     /// Gets a value indicating whether media has chapters.

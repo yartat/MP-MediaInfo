@@ -19,48 +19,15 @@
 #endregion
 
 using System;
-
 using JetBrains.Annotations;
 
-namespace MediaInfo
+namespace MediaInfo.Builder
 {
   /// <summary>
-  /// Defines constants for media stream kinds.
+  /// Describes base methods to build media stream
   /// </summary>
-  public enum MediaStreamKind
-  {
-    /// <summary>
-    /// The video stream
-    /// </summary>
-    Video,
-
-    /// <summary>
-    /// The audio stream
-    /// </summary>
-    Audio,
-
-    /// <summary>
-    /// The subtitle stream
-    /// </summary>
-    Text,
-
-    /// <summary>
-    /// The image stream
-    /// </summary>
-    Image,
-
-    /// <summary>
-    /// Menu
-    /// </summary>
-    Menu
-  }
-
-  /// <summary>
-  /// Provides basic properties and instance methods for the analyze stream 
-  /// and contains information about media stream.
-  /// </summary>
-  /// <seealso cref="MarshalByRefObject" />
-  public abstract class MediaStream : MarshalByRefObject
+  /// <typeparam name="TStream">The type of the stream.</typeparam>
+  internal abstract class MediaStreamBuilder<TStream> : IMediaBuilder<TStream> where TStream : MediaStream, new()
   {
     /// <summary>
     /// Converts the string representation of a value to specified type
@@ -72,35 +39,35 @@ namespace MediaInfo
     protected delegate bool ParseDelegate<T>(string source, out T result);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MediaStream"/> class.
+    /// Initializes a new instance of the <see cref="MediaStreamBuilder{TStream}"/> class.
     /// </summary>
-    /// <param name="info">The media information.</param>
+    /// <param name="info">The media info object.</param>
     /// <param name="number">The stream number.</param>
     /// <param name="position">The stream position.</param>
-    protected MediaStream(MediaInfo info, int number, int position)
+    protected MediaStreamBuilder(MediaInfo info, int number, int position)
     {
+      Info = info;
       StreamNumber = number;
       StreamPosition = position;
-      Info = info;
     }
 
     /// <summary>
-    /// Gets or sets the media steam id.
+    /// Gets the stream position.
     /// </summary>
     /// <value>
-    /// The media steam id.
+    /// The stream position.
     /// </value>
     [PublicAPI]
-    public int Id { get; set; }
+    protected int StreamPosition { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of stream.
+    /// Gets the logical stream number.
     /// </summary>
     /// <value>
-    /// The name of stream.
+    /// The logical stream number.
     /// </value>
     [PublicAPI]
-    public string Name { get; set; }
+    protected int StreamNumber { get; set; }
 
     /// <summary>
     /// Gets the kind of media stream.
@@ -121,24 +88,6 @@ namespace MediaInfo
     protected abstract StreamKind StreamKind { get; }
 
     /// <summary>
-    /// Gets the stream position.
-    /// </summary>
-    /// <value>
-    /// The stream position.
-    /// </value>
-    [PublicAPI]
-    public int StreamPosition { get; set; }
-
-    /// <summary>
-    /// Gets the logical stream number.
-    /// </summary>
-    /// <value>
-    /// The logical stream number.
-    /// </value>
-    [PublicAPI]
-    public int StreamNumber { get; set; }
-
-    /// <summary>
     /// Gets the media info object to access to low-level functions.
     /// </summary>
     /// <value>
@@ -147,21 +96,16 @@ namespace MediaInfo
     [PublicAPI]
     protected MediaInfo Info { get; }
 
-    /// <summary>
-    /// Analyzes the stream.
-    /// </summary>
-    protected virtual void AnalyzeInternal()
+    /// <inheritdoc />
+    public virtual TStream Build()
     {
-      Id = Get<int>("ID", int.TryParse);
-      Name = Get("Title");
-    }
-
-    /// <summary>
-    /// Analyzes media stream.
-    /// </summary>
-    public void Analyze()
-    {
-      AnalyzeInternal();
+      return new TStream
+                     {
+                       Id = Get<int>("ID", int.TryParse),
+                       Name = Get("Title"),
+                       StreamPosition = this.StreamPosition,
+                       StreamNumber = this.StreamNumber,
+                     };
     }
 
     /// <summary>

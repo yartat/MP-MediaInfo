@@ -30,17 +30,6 @@ namespace MediaInfo
   public abstract class LanguageMediaStream : MediaStream
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LanguageMediaStream"/> class.
-    /// </summary>
-    /// <param name="info">The media information.</param>
-    /// <param name="number">The stream number.</param>
-    /// <param name="position">The stream position.</param>
-    protected LanguageMediaStream(MediaInfo info, int number, int position)
-        : base(info, number, position)
-    {
-    }
-
-    /// <summary>
     /// Gets the media stream language.
     /// </summary>
     /// <value>
@@ -65,7 +54,7 @@ namespace MediaInfo
     ///   <c>true</c> if default; otherwise, <c>false</c>.
     /// </value>
     [PublicAPI]
-    public bool Default { get; private set; }
+    public bool Default { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is forced.
@@ -74,17 +63,6 @@ namespace MediaInfo
     ///   <c>true</c> if forced; otherwise, <c>false</c>.
     /// </value>
     [PublicAPI]
-    public bool Forced { get; private set; }
-
-    /// <inheritdoc />
-    protected override void AnalyzeInternal()
-    {
-      base.AnalyzeInternal();
-      var language = Get("Language").ToLower();
-      Default = Get<bool>("Default", bool.TryParse);
-      Forced = Get<bool>("Forced", bool.TryParse);
-      Language = LanguageHelper.GetLanguageByShortName(language);
-      Lcid = LanguageHelper.GetLcidByShortName(language);
-    }
+    public bool Forced { get; set; }
   }
 }

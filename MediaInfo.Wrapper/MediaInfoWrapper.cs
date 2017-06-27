@@ -179,8 +179,8 @@ namespace MediaInfo
       // get all other info from main title's 1st vob
       if (programBlocks.Any())
       {
-        VideoDuration = programBlocks.Max(x => x.Item2);
-        filePath = programBlocks.First(x => x.Item2 == VideoDuration).Item1;
+        Duration = programBlocks.Max(x => x.Item2);
+        filePath = programBlocks.First(x => x.Item2 == Duration).Item1;
       }
 
       return filePath;
@@ -201,7 +201,7 @@ namespace MediaInfo
           VideoStreams.Add(new VideoStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
-        if (VideoDuration == 0)
+        if (Duration == 0)
         {
           double duration;
           double.TryParse(
@@ -209,7 +209,7 @@ namespace MediaInfo
             NumberStyles.AllowDecimalPoint,
             providerNumber,
             out duration);
-          VideoDuration = (int)duration;
+          Duration = (int)duration;
         }
 
         // Setup audios
@@ -324,15 +324,6 @@ namespace MediaInfo
     #endregion
 
     #region public video related properties
-
-    /// <summary>
-    /// Gets the duration of the video.
-    /// </summary>
-    /// <value>
-    /// The duration of the video.
-    /// </value>
-    [PublicAPI]
-    public int VideoDuration { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this instance has video.
@@ -591,6 +582,15 @@ namespace MediaInfo
     ///   <c>true</c> if media information was not loaded; otherwise, <c>false</c>.
     /// </value>
     public bool MediaInfoNotloaded { get; private set; }
+
+    /// <summary>
+    /// Gets the duration of the media.
+    /// </summary>
+    /// <value>
+    /// The duration of the media.
+    /// </value>
+    [PublicAPI]
+    public int Duration { get; private set; }
 
     /// <summary>
     /// Gets the mediainfo.dll version.

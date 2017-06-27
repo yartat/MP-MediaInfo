@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>MediaInfo.Wrapper</id>
-        <version>0.7.96</version>
+        <version>0.7.96.1</version>
         <title>MediaInfo .NET Wrapper</title>
         <authors>Team MediaPortal</authors>
         <owners>yartat</owners>

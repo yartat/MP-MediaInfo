@@ -29,6 +29,7 @@ namespace MediaInfo
   /// Describes properties of the menu
   /// </summary>
   /// <seealso cref="MediaStream" />
+  [PublicAPI]
   public class MenuStream : MediaStream
   {
     /// <summary>
@@ -45,7 +46,6 @@ namespace MediaInfo
     /// <value>
     /// The menu duration.
     /// </value>
-    [PublicAPI]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -54,7 +54,6 @@ namespace MediaInfo
     /// <value>
     /// The chapters.
     /// </value>
-    [PublicAPI]
     public IList<Chapter> Chapters { get; }
 
     /// <inheritdoc />
@@ -66,6 +65,7 @@ namespace MediaInfo
     /// <summary>
     /// Describes properties of the menu chapter
     /// </summary>
+    [PublicAPI]
     public sealed class Chapter
     {
       /// <summary>
@@ -74,7 +74,6 @@ namespace MediaInfo
       /// <value>
       /// The menu position.
       /// </value>
-      [PublicAPI]
       public TimeSpan Position { get; set; }
 
       /// <summary>
@@ -83,7 +82,6 @@ namespace MediaInfo
       /// <value>
       /// The menu chapter name.
       /// </value>
-      [PublicAPI]
       public string Name { get; set; }
     }
   }

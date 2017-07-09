@@ -33,6 +33,7 @@ namespace MediaInfo
   /// <summary>
   /// Describes method and properties to retrieve information from media source
   /// </summary>
+  [PublicAPI]
   public class MediaInfoWrapper
   {
     #region private vars
@@ -138,6 +139,11 @@ namespace MediaInfo
           {
             IsBluRay = true;
             filePath = Path.GetDirectoryName(filePath);
+            Size = GetDirectorySize(filePath);
+          }
+          else
+          {
+            Size = new FileInfo(filePath).Length;
           }
 
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
@@ -151,10 +157,23 @@ namespace MediaInfo
       }
     }
 
+    private static long GetDirectorySize(string folderName)
+    {
+      if (!Directory.Exists(folderName))
+      {
+        return 0L;
+      }
+
+      var result = Directory.GetFiles(folderName).Sum(x => new FileInfo(x).Length);
+      result += Directory.GetDirectories(folderName).Sum(x => GetDirectorySize(x));
+      return result;
+    }
+
     private string ProcessDvd(string filePath, string pathToDll, NumberFormatInfo providerNumber)
     {
       IsDvd = true;
       var path = Path.GetDirectoryName(filePath) ?? string.Empty;
+      Size = GetDirectorySize(path);
       var bups = Directory.GetFiles(path, "*.BUP", SearchOption.TopDirectoryOnly);
       var programBlocks = new List<Tuple<string, int>>();
       foreach (var bupFile in bups)
@@ -266,6 +285,7 @@ namespace MediaInfo
           x => (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L) * x.FrameRate)
         .FirstOrDefault();
       VideoCodec = BestVideoStream?.CodecName ?? string.Empty;
+      VideoRate = (int?)BestVideoStream?.Bitrate ?? 0;
       VideoResolution = BestVideoStream?.Resolution ?? string.Empty;
       Width = BestVideoStream?.Width ?? 0;
       Height = BestVideoStream?.Height ?? 0;
@@ -282,6 +302,7 @@ namespace MediaInfo
       BestAudioStream = AudioStreams.OrderByDescending(x => x.Channel * 10000000 + x.Bitrate).FirstOrDefault();
       AudioCodec = BestAudioStream?.CodecName ?? string.Empty;
       AudioRate = (int?)BestAudioStream?.Bitrate ?? 0;
+      AudioSampleRate = (int?)BestAudioStream?.SamplingRate ?? 0;
       AudioChannels = BestAudioStream?.Channel ?? 0;
       AudioChannelsFriendly = BestAudioStream?.AudioChannelsFriendly ?? string.Empty;
     }
@@ -293,7 +314,6 @@ namespace MediaInfo
     /// </summary>
     /// <param name="pathToDll">The path to mediaInfo.dll</param>
     /// <returns>Returns <b>true</b> if mediaInfo.dll is exists; elsewhere <b>false</b>.</returns>
-    [PublicAPI]
     public static bool MediaInfoExist(string pathToDll)
     {
       return File.Exists(Path.Combine(pathToDll, "MediaInfo.dll"));
@@ -331,8 +351,15 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if this instance has video; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool HasVideo => VideoStreams.Count > 0;
+
+    /// <summary>
+    /// Gets a value indicating whether media has at least one video stream with stereoscopic effect.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if is3d; otherwise, <c>false</c>.
+    /// </value>
+    public bool Is3D => VideoStreams.Any(x => x.Stereoscopic != StereoMode.Mono);
 
     /// <summary>
     /// Gets the video streams.
@@ -340,7 +367,6 @@ namespace MediaInfo
     /// <value>
     /// The video streams.
     /// </value>
-    [PublicAPI]
     public IList<VideoStream> VideoStreams { get; }
 
     /// <summary>
@@ -349,7 +375,6 @@ namespace MediaInfo
     /// <value>
     /// The best video stream.
     /// </value>
-    [PublicAPI]
     public VideoStream BestVideoStream { get; private set; }
 
     /// <summary>
@@ -358,7 +383,6 @@ namespace MediaInfo
     /// <value>
     /// The video codec.
     /// </value>
-    [PublicAPI]
     public string VideoCodec { get; private set; }
 
     /// <summary>
@@ -367,7 +391,6 @@ namespace MediaInfo
     /// <value>
     /// The video frame rate.
     /// </value>
-    [PublicAPI]
     public double Framerate { get; private set; }
 
     /// <summary>
@@ -376,7 +399,6 @@ namespace MediaInfo
     /// <value>
     /// The video width.
     /// </value>
-    [PublicAPI]
     public int Width { get; private set; }
 
     /// <summary>
@@ -385,7 +407,6 @@ namespace MediaInfo
     /// <value>
     /// The video height.
     /// </value>
-    [PublicAPI]
     public int Height { get; private set; }
 
     /// <summary>
@@ -394,7 +415,6 @@ namespace MediaInfo
     /// <value>
     /// The video aspect ratio.
     /// </value>
-    [PublicAPI]
     public string AspectRatio { get; private set; }
 
     /// <summary>
@@ -403,7 +423,6 @@ namespace MediaInfo
     /// <value>
     /// The type of the scan.
     /// </value>
-    [PublicAPI]
     public string ScanType { get; private set; }
 
     /// <summary>
@@ -412,7 +431,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if video is interlaced; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool IsInterlaced { get; private set; }
 
     /// <summary>
@@ -421,8 +439,15 @@ namespace MediaInfo
     /// <value>
     /// The video resolution.
     /// </value>
-    [PublicAPI]
     public string VideoResolution { get; private set; }
+
+    /// <summary>
+    /// Gets the video bitrate.
+    /// </summary>
+    /// <value>
+    /// The video bitrate.
+    /// </value>
+    public int VideoRate { get; private set; }
 
     #endregion
 
@@ -434,7 +459,6 @@ namespace MediaInfo
     /// <value>
     /// The audio streams.
     /// </value>
-    [PublicAPI]
     public IList<AudioStream> AudioStreams { get; }
 
     /// <summary>
@@ -443,7 +467,6 @@ namespace MediaInfo
     /// <value>
     /// The best audio stream.
     /// </value>
-    [PublicAPI]
     public AudioStream BestAudioStream { get; private set; }
 
     /// <summary>
@@ -452,7 +475,6 @@ namespace MediaInfo
     /// <value>
     /// The audio codec.
     /// </value>
-    [PublicAPI]
     public string AudioCodec { get; private set; }
 
     /// <summary>
@@ -461,8 +483,15 @@ namespace MediaInfo
     /// <value>
     /// The audio bitrate.
     /// </value>
-    [PublicAPI]
     public int AudioRate { get; private set; }
+
+    /// <summary>
+    /// Gets the audio sample rate.
+    /// </summary>
+    /// <value>
+    /// The audio sample rate.
+    /// </value>
+    public int AudioSampleRate { get; private set; }
 
     /// <summary>
     /// Gets the count of audio channels.
@@ -470,7 +499,6 @@ namespace MediaInfo
     /// <value>
     /// The count of audio channels.
     /// </value>
-    [PublicAPI]
     public int AudioChannels { get; private set; }
 
     /// <summary>
@@ -479,7 +507,6 @@ namespace MediaInfo
     /// <value>
     /// The audio channels friendly name.
     /// </value>
-    [PublicAPI]
     public string AudioChannelsFriendly { get; private set; }
 
     #endregion
@@ -492,7 +519,6 @@ namespace MediaInfo
     /// <value>
     /// The media subtitles.
     /// </value>
-    [PublicAPI]
     public IList<SubtitleStream> Subtitles { get; }
 
     /// <summary>
@@ -501,7 +527,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if media has subtitles; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool HasSubtitles => HasExternalSubtitles || Subtitles.Count > 0;
 
     /// <summary>
@@ -510,7 +535,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if this instance has external subtitles; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool HasExternalSubtitles { get; }
 
     #endregion
@@ -523,7 +547,6 @@ namespace MediaInfo
     /// <value>
     /// The media chapters.
     /// </value>
-    [PublicAPI]
     public IList<ChapterStream> Chapters { get; }
 
     /// <summary>
@@ -532,7 +555,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if media has chapters; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool HasChapters => Chapters.Count > 0;
 
     #endregion
@@ -545,7 +567,6 @@ namespace MediaInfo
     /// <value>
     /// The menu streams.
     /// </value>
-    [PublicAPI]
     public IList<MenuStream> MenuStreams { get; }
 
     /// <summary>
@@ -554,7 +575,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if media has menu; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool HasMenu => MenuStreams.Count > 0;
 
     #endregion
@@ -589,7 +609,6 @@ namespace MediaInfo
     /// <value>
     /// The duration of the media.
     /// </value>
-    [PublicAPI]
     public int Duration { get; private set; }
 
     /// <summary>
@@ -598,7 +617,14 @@ namespace MediaInfo
     /// <value>
     /// The mediainfo.dll version.
     /// </value>
-    [PublicAPI]
     public string Version { get; private set; }
+
+    /// <summary>
+    /// Gets the media size.
+    /// </summary>
+    /// <value>
+    /// The media size.
+    /// </value>
+    public long Size { get; private set; }
   }
 }

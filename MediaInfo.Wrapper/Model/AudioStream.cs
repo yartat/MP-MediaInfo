@@ -30,6 +30,7 @@ namespace MediaInfo
   /// and contains information about audio stream.
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
+  [PublicAPI]
   public class AudioStream : LanguageMediaStream
   {
     #region matching dictionaries
@@ -122,7 +123,6 @@ namespace MediaInfo
     /// <value>
     /// The audio codec.
     /// </value>
-    [PublicAPI]
     public AudioCodec Codec { get; set; }
 
     /// <summary>
@@ -131,7 +131,6 @@ namespace MediaInfo
     /// <value>
     /// The codec friendly name.
     /// </value>
-    [PublicAPI]
     public string CodecFriendly
     {
       get
@@ -147,7 +146,6 @@ namespace MediaInfo
     /// <value>
     /// The stream duration.
     /// </value>
-    [PublicAPI]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -156,7 +154,6 @@ namespace MediaInfo
     /// <value>
     /// The audio bitrate.
     /// </value>
-    [PublicAPI]
     public double Bitrate { get; set; }
 
     /// <summary>
@@ -165,7 +162,6 @@ namespace MediaInfo
     /// <value>
     /// The audio channel amount.
     /// </value>
-    [PublicAPI]
     public int Channel { get; set; }
 
     /// <summary>
@@ -174,7 +170,6 @@ namespace MediaInfo
     /// <value>
     /// The audio sampling rate.
     /// </value>
-    [PublicAPI]
     public double SamplingRate { get; set; }
 
     /// <summary>
@@ -183,7 +178,6 @@ namespace MediaInfo
     /// <value>
     /// The bit depth of stream.
     /// </value>
-    [PublicAPI]
     public int BitDepth { get; set; }
 
     /// <summary>
@@ -192,7 +186,6 @@ namespace MediaInfo
     /// <value>
     /// The audio format.
     /// </value>
-    [PublicAPI]
     public string Format { get; set; }
 
     /// <summary>
@@ -201,7 +194,6 @@ namespace MediaInfo
     /// <value>
     /// The audio codec name.
     /// </value>
-    [PublicAPI]
     public string CodecName { get; set; }
 
     /// <summary>
@@ -210,7 +202,6 @@ namespace MediaInfo
     /// <value>
     /// The audio channels friendly.
     /// </value>
-    [PublicAPI]
     public string AudioChannelsFriendly => ConvertAudioChannels(Channel);
 
     private static string ConvertAudioChannels(int channels)

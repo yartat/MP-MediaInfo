@@ -27,6 +27,7 @@ namespace MediaInfo
   /// <summary>
   /// Defines constants for media stream kinds.
   /// </summary>
+  [PublicAPI]
   public enum MediaStreamKind
   {
     /// <summary>
@@ -60,6 +61,7 @@ namespace MediaInfo
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MarshalByRefObject" />
+  [PublicAPI]
   public abstract class MediaStream : MarshalByRefObject
   {
     /// <summary>
@@ -68,7 +70,6 @@ namespace MediaInfo
     /// <value>
     /// The media steam id.
     /// </value>
-    [PublicAPI]
     public int Id { get; set; }
 
     /// <summary>
@@ -77,7 +78,6 @@ namespace MediaInfo
     /// <value>
     /// The name of stream.
     /// </value>
-    [PublicAPI]
     public string Name { get; set; }
 
     /// <summary>
@@ -86,7 +86,6 @@ namespace MediaInfo
     /// <value>
     /// The kind of media stream.
     /// </value>
-    [PublicAPI]
     public abstract MediaStreamKind Kind { get; }
 
     /// <summary>
@@ -95,7 +94,6 @@ namespace MediaInfo
     /// <value>
     /// The kind of the stream.
     /// </value>
-    [PublicAPI]
     protected abstract StreamKind StreamKind { get; }
 
     /// <summary>
@@ -104,7 +102,6 @@ namespace MediaInfo
     /// <value>
     /// The stream position.
     /// </value>
-    [PublicAPI]
     public int StreamPosition { get; set; }
 
     /// <summary>
@@ -113,7 +110,6 @@ namespace MediaInfo
     /// <value>
     /// The logical stream number.
     /// </value>
-    [PublicAPI]
     public int StreamNumber { get; set; }
   }
 }

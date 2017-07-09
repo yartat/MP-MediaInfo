@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MediaInfo.Builder
 {
@@ -224,6 +225,11 @@ namespace MediaInfo.Builder
       result.FrameRate = Get<double>("FrameRate", double.TryParse);
       result.Width = Get<int>("Width", int.TryParse);
       result.Height = Get<int>("Height", int.TryParse);
+      result.Bitrate = Get<double>("BitRate", double.TryParse);
+      if (Math.Abs(result.Bitrate) < 1E-7)
+      {
+        result.Bitrate = Get<double>("BitRate_Maximum", double.TryParse);
+      }
       result.AspectRatio = Get<AspectRatio>("DisplayAspectRatio", TryGetAspectRatio);
       result.Interlaced = GetInterlaced(Get("ScanType"));
       result.Stereoscopic = Get<int>("MultiView_Count", int.TryParse) >= 2

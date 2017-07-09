@@ -27,6 +27,7 @@ namespace MediaInfo
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MediaStream" />
+  [PublicAPI]
   public abstract class LanguageMediaStream : MediaStream
   {
     /// <summary>
@@ -35,7 +36,6 @@ namespace MediaInfo
     /// <value>
     /// The media stream language.
     /// </value>
-    [PublicAPI]
     public string Language { get; set; }
 
     /// <summary>
@@ -44,7 +44,6 @@ namespace MediaInfo
     /// <value>
     /// The media stream LCID.
     /// </value>
-    [PublicAPI]
     public int Lcid { get; set; }
 
     /// <summary>
@@ -53,7 +52,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if default; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool Default { get; set; }
 
     /// <summary>
@@ -62,7 +60,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if forced; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool Forced { get; set; }
   }
 }

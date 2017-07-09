@@ -33,10 +33,13 @@ namespace MediaInfo.Wrapper.Tests
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(1371743L, _mediaInfoWrapper.Size);
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
+      Assert.AreEqual(310275, _mediaInfoWrapper.VideoRate);
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
     }
 
     [Test]
@@ -45,10 +48,13 @@ namespace MediaInfo.Wrapper.Tests
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(503808L, _mediaInfoWrapper.Size);
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
+      Assert.AreEqual(24000000, _mediaInfoWrapper.VideoRate);
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.AreEqual(2, _mediaInfoWrapper.AudioStreams.Count);
       var atmos = _mediaInfoWrapper.AudioStreams[0];
       Assert.AreEqual(AudioCodec.TruehdAtmos, atmos.Codec);
@@ -60,10 +66,12 @@ namespace MediaInfo.Wrapper.Tests
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(86016L, _mediaInfoWrapper.Size);
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
       var ac3 = _mediaInfoWrapper.AudioStreams[0];
       Assert.AreEqual(AudioCodec.Ac3, ac3.Codec);
@@ -75,10 +83,13 @@ namespace MediaInfo.Wrapper.Tests
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(18432L, _mediaInfoWrapper.Size);
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
+      Assert.AreEqual(5000000, _mediaInfoWrapper.VideoRate);
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.AreEqual(0, _mediaInfoWrapper.AudioStreams.Count);
     }
 
@@ -93,6 +104,7 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.AreEqual(audioStreamCount, _mediaInfoWrapper.AudioStreams.Count);
       var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
       Assert.IsTrue(dts.Codec == AudioCodec.DtsHd);
@@ -103,8 +115,11 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.AreEqual(24716230397L, _mediaInfoWrapper.Size);
       Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
       Assert.IsTrue(_mediaInfoWrapper.HasVideo, "Hasn't video stream");
+      Assert.AreEqual(33837116, _mediaInfoWrapper.VideoRate);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.IsTrue(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);

@@ -27,6 +27,7 @@ namespace MediaInfo
   /// and contains information about chapter.
   /// </summary>
   /// <seealso cref="MediaStream" />
+  [PublicAPI]
   public class ChapterStream : MediaStream
   {
     /// <inheritdoc />
@@ -41,7 +42,6 @@ namespace MediaInfo
     /// <value>
     /// The chapter offset.
     /// </value>
-    [PublicAPI]
     public double Offset { get; private set; }
 
     /// <summary>
@@ -50,7 +50,6 @@ namespace MediaInfo
     /// <value>
     /// The chapter description.
     /// </value>
-    [PublicAPI]
     public string Description { get; private set; }
   }
 }

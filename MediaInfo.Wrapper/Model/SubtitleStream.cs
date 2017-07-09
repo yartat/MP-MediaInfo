@@ -27,6 +27,7 @@ namespace MediaInfo
   /// and contains information about subtitle.
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
+  [PublicAPI]
   public class SubtitleStream : LanguageMediaStream
   {
     /// <summary>
@@ -35,7 +36,6 @@ namespace MediaInfo
     /// <value>
     /// The subtitle format.
     /// </value>
-    [PublicAPI]
     public string Format { get; set; }
 
     /// <summary>
@@ -44,7 +44,6 @@ namespace MediaInfo
     /// <value>
     /// The subtitle codec.
     /// </value>
-    [PublicAPI]
     public SubtitleCodec Codec { get; set; }
 
     /// <inheritdoc />

@@ -30,6 +30,7 @@ namespace MediaInfo
   /// Describes properties of the video stream and method to analyze stream
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
+  [PublicAPI]
   public class VideoStream : LanguageMediaStream
   {
     /// <inheritdoc />
@@ -44,7 +45,6 @@ namespace MediaInfo
     /// <value>
     /// The video frame rate.
     /// </value>
-    [PublicAPI]
     public double FrameRate { get; set; }
 
     /// <summary>
@@ -53,7 +53,6 @@ namespace MediaInfo
     /// <value>
     /// The video width.
     /// </value>
-    [PublicAPI]
     public int Width { get; set; }
 
     /// <summary>
@@ -62,8 +61,15 @@ namespace MediaInfo
     /// <value>
     /// The video height.
     /// </value>
-    [PublicAPI]
     public int Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets the video bitrate.
+    /// </summary>
+    /// <value>
+    /// The video bitrate.
+    /// </value>
+    public double Bitrate { get; set; }
 
     /// <summary>
     /// Gets or sets the video aspect ratio.
@@ -71,7 +77,6 @@ namespace MediaInfo
     /// <value>
     /// The video aspect ratio.
     /// </value>
-    [PublicAPI]
     public AspectRatio AspectRatio { get; set; }
 
     /// <summary>
@@ -80,7 +85,6 @@ namespace MediaInfo
     /// <value>
     ///   <c>true</c> if interlaced; otherwise, <c>false</c>.
     /// </value>
-    [PublicAPI]
     public bool Interlaced { get; set; }
 
     /// <summary>
@@ -89,7 +93,6 @@ namespace MediaInfo
     /// <value>
     /// The video stereoscopic mode.
     /// </value>
-    [PublicAPI]
     public StereoMode Stereoscopic { get; set; }
 
     /// <summary>
@@ -98,7 +101,6 @@ namespace MediaInfo
     /// <value>
     /// The video format.
     /// </value>
-    [PublicAPI]
     public string Format { get; set; }
 
     /// <summary>
@@ -107,7 +109,6 @@ namespace MediaInfo
     /// <value>
     /// The video codec.
     /// </value>
-    [PublicAPI]
     public VideoCodec Codec { get; set; }
 
     /// <summary>
@@ -116,7 +117,6 @@ namespace MediaInfo
     /// <value>
     /// The stream duration.
     /// </value>
-    [PublicAPI]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -125,7 +125,6 @@ namespace MediaInfo
     /// <value>
     /// The video bit depth.
     /// </value>
-    [PublicAPI]
     public int BitDepth { get; set; }
 
     /// <summary>
@@ -134,7 +133,6 @@ namespace MediaInfo
     /// <value>
     /// The name of the video codec.
     /// </value>
-    [PublicAPI]
     public string CodecName { get; set; }
 
     /// <summary>
@@ -151,7 +149,6 @@ namespace MediaInfo
     /// <value>
     /// The vidoe size.
     /// </value>
-    [PublicAPI]
     public Size Size => new Size(Width, Height);
 
     private string GetVideoResolution()

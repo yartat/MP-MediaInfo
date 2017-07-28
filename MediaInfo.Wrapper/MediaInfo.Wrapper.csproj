@@ -81,10 +81,13 @@
     <Compile Include="Builder\MediaStreamBuilder.cs" />
     <Compile Include="Builder\MenuStreamBuilder.cs" />
     <Compile Include="Builder\SubtitleStreamBuilder.cs" />
+    <Compile Include="Builder\TagHelper.cs" />
     <Compile Include="Builder\VideoStreamBuilder.cs" />
     <Compile Include="Model\AspectRatio.cs" />
     <Compile Include="Model\AudioCodec.cs" />
     <Compile Include="Model\AudioStream.cs" />
+    <Compile Include="Model\AudioTags.cs" />
+    <Compile Include="Model\BaseTags.cs" />
     <Compile Include="Model\ChapterStream.cs" />
     <Compile Include="FileNameExtensions.cs" />
     <Compile Include="GlobalMemory.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="Model\StereoMode.cs" />
     <Compile Include="Model\SubtitleCodec.cs" />
     <Compile Include="Model\VideoCodec.cs" />
+    <Compile Include="Model\VideoTags.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\SubtitleStream.cs" />

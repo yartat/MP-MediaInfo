@@ -245,6 +245,7 @@ namespace MediaInfo.Builder
       result.Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse));
       result.BitDepth = Get<int>("BitDepth", int.TryParse);
       result.CodecName = GetFullCodecName();
+      result.Tags = TagHelper.GetAllTags<VideoTags>(Info, StreamKind, StreamPosition);
 
       return result;
     }

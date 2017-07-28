@@ -204,6 +204,14 @@ namespace MediaInfo
     /// </value>
     public string AudioChannelsFriendly => ConvertAudioChannels(Channel);
 
+    /// <summary>
+    /// Gets the stream tags.
+    /// </summary>
+    /// <value>
+    /// The stream tags.
+    /// </value>
+    public AudioTags Tags { get; internal set; } = new AudioTags();
+
     private static string ConvertAudioChannels(int channels)
     {
       string result;

@@ -196,6 +196,7 @@ namespace MediaInfo.Builder
       result.BitDepth = Get<int>("BitDepth", int.TryParse, x => ExtractInfo(x, baseIndex));
       result.Format = Get("Format", x => ExtractInfo(x, 0));
       result.CodecName = GetFullCodecName();
+      result.Tags = TagHelper.GetAllTags<AudioTags>(Info, StreamKind, StreamPosition);
 
       return result;
     }

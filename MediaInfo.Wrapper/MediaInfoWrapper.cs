@@ -214,6 +214,8 @@ namespace MediaInfo
 
         var streamNumber = 0;
 
+        Tags = TagHelper.GetAllTags<AudioTags>(mediaInfo, StreamKind.General, 0);
+
         // Setup videos
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
         {
@@ -626,5 +628,13 @@ namespace MediaInfo
     /// The media size.
     /// </value>
     public long Size { get; private set; }
+
+    /// <summary>
+    /// Gets the tags.
+    /// </summary>
+    /// <value>
+    /// The tags.
+    /// </value>
+    public AudioTags Tags { get; private set; }
   }
 }

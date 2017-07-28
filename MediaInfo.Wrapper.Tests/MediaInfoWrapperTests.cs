@@ -40,6 +40,13 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
       Assert.IsFalse(_mediaInfoWrapper.Is3D);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.EncodedDate);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.TaggedDate);
+      Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
+      Assert.IsNotNull(_mediaInfoWrapper.AudioStreams[0].Tags);
+      Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+      Assert.IsNotEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.Tags);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.EncodedLibrary);
     }
 
     [Test]
@@ -58,6 +65,10 @@ namespace MediaInfo.Wrapper.Tests
       Assert.AreEqual(2, _mediaInfoWrapper.AudioStreams.Count);
       var atmos = _mediaInfoWrapper.AudioStreams[0];
       Assert.AreEqual(AudioCodec.TruehdAtmos, atmos.Codec);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.AudioStreams[1].Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.Tags);
     }
 
     [Test]
@@ -75,6 +86,9 @@ namespace MediaInfo.Wrapper.Tests
       Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
       var ac3 = _mediaInfoWrapper.AudioStreams[0];
       Assert.AreEqual(AudioCodec.Ac3, ac3.Codec);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.Tags);
     }
 
     [Test]
@@ -91,6 +105,9 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
       Assert.IsFalse(_mediaInfoWrapper.Is3D);
       Assert.AreEqual(0, _mediaInfoWrapper.AudioStreams.Count);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsNotEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.Tags);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.EncodedLibrary);
     }
 
     [Test]
@@ -108,6 +125,8 @@ namespace MediaInfo.Wrapper.Tests
       Assert.AreEqual(audioStreamCount, _mediaInfoWrapper.AudioStreams.Count);
       var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
       Assert.IsTrue(dts.Codec == AudioCodec.DtsHd);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsEmpty(_mediaInfoWrapper.VideoStreams[0].Tags.Tags);
     }
 
     [Test, Explicit]
@@ -123,9 +142,63 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsTrue(_mediaInfoWrapper.IsBluRay, "Is BluRay");
       Assert.IsFalse(_mediaInfoWrapper.IsDvd);
       Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.AreEqual(22, _mediaInfoWrapper.AudioStreams.Count);
       var atmos = _mediaInfoWrapper.AudioStreams[0];
       Assert.IsTrue(atmos.Codec == AudioCodec.TruehdAtmos);
       Assert.AreEqual(1, _mediaInfoWrapper.MenuStreams.Count);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Tags);
+    }
+
+    [Test]
+    [TestCase(@".\Data\Test_MP3Tags.mp3", 74406L)]
+    [TestCase(@".\Data\Test_MP3Tags_2.mp3", 212274L)]
+    public void LoadMp3FileWithTags(string fileName, long size)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(size, _mediaInfoWrapper.Size);
+      Assert.IsFalse(_mediaInfoWrapper.HasVideo, "Video stream does not supported int the MP3!");
+      Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
+      Assert.IsFalse(_mediaInfoWrapper.IsDvd);
+      Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
+      Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
+      // MP3 file contains all tags in general stream
+      Assert.IsNotEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Album);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Track);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.TrackPosition);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Artist);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.RecordedDate);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Genre);
+      Assert.IsEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+    }
+
+    [Test]
+    [TestCase(@".\Data\Test_MP3Tags.mka")]
+    public void LoadMultiStreamContainer(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(135172L, _mediaInfoWrapper.Size);
+      Assert.IsFalse(_mediaInfoWrapper.HasVideo, "Video stream does not supported int the MKA!");
+      Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
+      Assert.IsFalse(_mediaInfoWrapper.IsDvd);
+      Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
+      Assert.AreEqual(2, _mediaInfoWrapper.AudioStreams.Count);
+      // MP3 file contains all tags in general stream
+      Assert.IsNotEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.EncodedDate);
+      Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Album);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Track);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Artist);
+      Assert.IsNotNull(_mediaInfoWrapper.AudioStreams[0].Tags.ReleasedDate);
+      Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[1].Tags.Tags);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[1].Tags.Album);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[1].Tags.Track);
+      Assert.IsNotNullOrEmpty(_mediaInfoWrapper.AudioStreams[1].Tags.Artist);
     }
   }
 }

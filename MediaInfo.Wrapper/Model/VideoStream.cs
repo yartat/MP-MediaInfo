@@ -151,6 +151,14 @@ namespace MediaInfo
     /// </value>
     public Size Size => new Size(Width, Height);
 
+    /// <summary>
+    /// Gets the video stream tags.
+    /// </summary>
+    /// <value>
+    /// The video stream tags.
+    /// </value>
+    public VideoTags Tags { get; internal set; } = new VideoTags();
+
     private string GetVideoResolution()
     {
       string result;

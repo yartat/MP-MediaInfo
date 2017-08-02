@@ -33,10 +33,13 @@ namespace MediaInfo.Builder
       new Tuple<string, ParseDelegate<object>>("Original/Track", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Track/More", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Track/Position", TryGetInt),
+      new Tuple<string, ParseDelegate<object>>("Track/Position_Total", TryGetInt),
       new Tuple<string, ParseDelegate<object>>("Part/Position", TryGetInt),
+      new Tuple<string, ParseDelegate<object>>("Part/Position_Total", TryGetInt),
       new Tuple<string, ParseDelegate<object>>("Album/Track_Total", TryGetInt),
       new Tuple<string, ParseDelegate<object>>("Album/Part/Track_Total", TryGetInt),
       new Tuple<string, ParseDelegate<object>>("Album/Part_Total", TryGetInt),
+      new Tuple<string, ParseDelegate<object>>("Album/Performer", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Performer", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Performer/Sort", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Performer/Url", TryGetString),
@@ -135,6 +138,12 @@ namespace MediaInfo.Builder
       new Tuple<string, ParseDelegate<object>>("LCCN", TryGetString),
       new Tuple<string, ParseDelegate<object>>("CatalogNumber", TryGetString),
       new Tuple<string, ParseDelegate<object>>("LabelCode", TryGetString),
+      new Tuple<string, ParseDelegate<object>>("BPM", TryGetInt),
+      new Tuple<string, ParseDelegate<object>>("Cover", TryGetString),
+      new Tuple<string, ParseDelegate<object>>("Cover_Description", TryGetString),
+      new Tuple<string, ParseDelegate<object>>("Cover_Type", TryGetString),
+      new Tuple<string, ParseDelegate<object>>("Cover_Mime", TryGetString),
+      new Tuple<string, ParseDelegate<object>>("Cover_Data", TryGetBase64),
     };
 
     #endregion
@@ -170,6 +179,18 @@ namespace MediaInfo.Builder
     {
       value = source;
       return !string.IsNullOrEmpty(source);
+    }
+
+    private static bool TryGetBase64(string source, out object value)
+    {
+      if (!string.IsNullOrEmpty(source))
+      {
+        value = Convert.FromBase64String(source);
+        return true;
+      }
+
+      value = null;
+      return false;
     }
 
     private static bool TryGetInt(string source, out object value)

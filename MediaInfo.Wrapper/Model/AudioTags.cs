@@ -10,10 +10,10 @@ namespace MediaInfo
   public class AudioTags : BaseTags
   {
     /// <summary>
-    /// Gets the media album name.
+    /// Gets the title of the album.
     /// </summary>
     /// <value>
-    /// The media album name.
+    /// The title of the album.
     /// </value>
     public string Album
     {
@@ -37,10 +37,10 @@ namespace MediaInfo
     }
 
     /// <summary>
-    /// Gets the media track name.
+    /// Gets the title of the track.
     /// </summary>
     /// <value>
-    /// The media track name.
+    /// The title of the track.
     /// </value>
     public string Track
     {
@@ -60,42 +60,66 @@ namespace MediaInfo
     }
 
     /// <summary>
-    /// Gets the media sub track name.
+    /// Gets the title of the subtrack.
     /// </summary>
     /// <value>
-    /// The media sub track name.
+    /// The title of the subtrack.
     /// </value>
     public string SubTrack => Tags.TryGetValue("SubTrack", out var result) ? (string)result : null;
 
     /// <summary>
-    /// Gets the original album name.
+    /// Gets the original album name (in case of a remake/remix).
     /// </summary>
     /// <value>
-    /// The original album name.
+    /// The original album name (in case of a remake/remix).
     /// </value>
     public string OriginalAlbum => Tags.TryGetValue("Original/Album", out var result) ? (string)result : null;
 
     /// <summary>
-    /// Gets the original track.
+    /// Gets the original track name (in case of a remake/remix).
     /// </summary>
     /// <value>
-    /// The original track.
+    /// The original track name (in case of a remake/remix).
     /// </value>
     public string OriginalTrack => Tags.TryGetValue("Original/Track", out var result) ? (string)result : null;
 
     /// <summary>
-    /// Gets the track position.
+    /// Gets the number of the current track.
     /// </summary>
     /// <value>
-    /// The track position.
+    /// The number of the current track.
     /// </value>
     public int? TrackPosition => Tags.TryGetValue("Track/Position", out var result) ? (int?)result : null;
 
     /// <summary>
-    /// Gets the artist name.
+    /// Gets the number of all tracks.
     /// </summary>
     /// <value>
-    /// The artist name.
+    /// The number of all tracks.
+    /// </value>
+    public int? TotalTracks => Tags.TryGetValue("Track/Position_Total", out var result) ? (int?)result : null;
+
+    /// <summary>
+    /// Gets the number of the current part in a multi-disc album.
+    /// </summary>
+    /// <value>
+    /// The number of the current part in a multi-disc album.
+    /// </value>
+    public int? DiscNumber => Tags.TryGetValue("Part/Position", out var result) ? (int?)result : null;
+
+    /// <summary>
+    /// Gets the number of all parts in a multi-disc album.
+    /// </summary>
+    /// <value>
+    /// The number of all parts in a multi-disc album.
+    /// </value>
+    public int? TotalDiscs => Tags.TryGetValue("Part/Position_Total", out var result) ? (int?)result : null;
+
+    /// <summary>
+    /// Gets a person or band/collective generally considered responsible for the work : Singer, Implementor.
+    /// </summary>
+    /// <value>
+    /// A person or band/collective generally considered responsible for the work : Singer, Implementor.
     /// </value>
     public string Artist
     {
@@ -109,10 +133,18 @@ namespace MediaInfo
     }
 
     /// <summary>
-    /// Gets the artist URL.
+    /// Gets the album artist.
     /// </summary>
     /// <value>
-    /// The artist URL.
+    /// The album artist.
+    /// </value>
+    public string AlbumArtist => Tags.TryGetValue("Album/Performer", out var result) ? (string)result : null;
+
+    /// <summary>
+    /// Gets the official artist/performer web page.
+    /// </summary>
+    /// <value>
+    /// The official artist/performer web page.
     /// </value>
     public string ArtistUrl => Tags.TryGetValue("Performer/Url", out var result) ? (string)result : null;
 

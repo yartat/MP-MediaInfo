@@ -30,12 +30,28 @@ namespace MediaInfo
   public abstract class BaseTags
   {
     /// <summary>
+    /// Initializes a new instance of the <see cref="BaseTags"/> class.
+    /// </summary>
+    protected BaseTags()
+    {
+      Cover = new CoverInfo(this);
+    }
+
+    /// <summary>
     /// Gets or sets the tags.
     /// </summary>
     /// <value>
     /// The tags.
     /// </value>
     internal IDictionary<string, object> Tags { get; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Gets the title of the media.
+    /// </summary>
+    /// <value>
+    /// The title of the media.
+    /// </value>
+    public string Title => Tags.TryGetValue("Title", out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets a short description of the contents, such as "Two birds flying".
@@ -132,5 +148,87 @@ namespace MediaInfo
     /// The name of the organization distributing track.
     /// </value>
     public string DistributedBy => Tags.TryGetValue("DistributedBy", out var result) ? (string)result : null;
+
+    /// <summary>
+    /// Gets the average number of beats per minute in the complete target.
+    /// </summary>
+    /// <value>
+    /// The average number of beats per minute in the complete target.
+    /// </value>
+    public int? Bpm => Tags.TryGetValue("BPM", out var result) ? (int?)result : null;
+
+    /// <summary>
+    /// Gets the cover media.
+    /// </summary>
+    /// <value>
+    /// The cover media.
+    /// </value>
+    public CoverInfo Cover { get; }
+
+    /// <summary>
+    /// Describes properties of the cover tags
+    /// </summary>
+    public class CoverInfo
+    {
+      private BaseTags _tags;
+
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Cover"/> class.
+      /// </summary>
+      /// <param name="tags">The tags.</param>
+      public CoverInfo(BaseTags tags)
+      {
+        _tags = tags;
+      }
+
+      /// <summary>
+      /// Gets a value indicating whether this <see cref="CoverInfo"/> is exists.
+      /// </summary>
+      /// <value>
+      /// <c>true</c> if exists; otherwise, <c>false</c>.
+      /// </value>
+      public bool Exists => _tags.Tags.TryGetValue("Cover", out var result) && ToBool((string)result);
+
+      /// <summary>
+      /// Gets the description of the cover.
+      /// </summary>
+      /// <value>
+      /// The description of the cover.
+      /// </value>
+      public string Description => _tags.Tags.TryGetValue("Cover_Description", out var result) ? (string)result : null;
+
+      /// <summary>
+      /// Gets the type of the cover.
+      /// </summary>
+      /// <value>
+      /// The type of the cover.
+      /// </value>
+      public string Type => _tags.Tags.TryGetValue("Cover_Type", out var result) ? (string)result : null;
+
+      /// <summary>
+      /// Gets the MIME of the cover.
+      /// </summary>
+      /// <value>
+      /// The MIME of the cover.
+      /// </value>
+      public string Mime => _tags.Tags.TryGetValue("Cover_Mime", out var result) ? (string)result : null;
+
+      /// <summary>
+      /// Gets the cover data.
+      /// </summary>
+      /// <value>
+      /// The cover data.
+      /// </value>
+      public byte[] Data => _tags.Tags.TryGetValue("Cover_Data", out var result) ? (byte[])result : null;
+
+      private bool ToBool(string source)
+      {
+        return string.Equals(source, "t", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(source, "true", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(source, "y", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(source, "yes", StringComparison.OrdinalIgnoreCase)
+               || string.Equals(source, "1", StringComparison.OrdinalIgnoreCase);
+      }
+    }
   }
 }

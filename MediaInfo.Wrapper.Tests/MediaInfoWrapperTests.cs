@@ -174,6 +174,32 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
     }
 
+    [Test, Explicit]
+    [TestCase(@"E:\Music\Anugama\Healing\01 - Healing Earth.flac")]
+    public void LoadFlacWithCover(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(141439565L, _mediaInfoWrapper.Size);
+      Assert.IsFalse(_mediaInfoWrapper.HasVideo, "Video stream does not supported int the MP3!");
+      Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
+      Assert.IsFalse(_mediaInfoWrapper.IsDvd);
+      Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
+      Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
+      // MP3 file contains all tags in general stream
+      Assert.IsNotEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Album);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Track);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.TrackPosition);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Artist);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.RecordedDate);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Genre);
+      Assert.IsTrue(_mediaInfoWrapper.Tags.Cover.Exists);
+      Assert.AreEqual("image/jpeg", _mediaInfoWrapper.Tags.Cover.Mime);
+      Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+    }
+
     [Test]
     [TestCase(@".\Data\Test_MP3Tags.mka")]
     public void LoadMultiStreamContainer(string fileName)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using static MediaInfo.BaseTags;
 
 namespace MediaInfo.Builder
 {
@@ -143,7 +145,7 @@ namespace MediaInfo.Builder
       new Tuple<string, ParseDelegate<object>>("Cover_Description", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Cover_Type", TryGetString),
       new Tuple<string, ParseDelegate<object>>("Cover_Mime", TryGetString),
-      new Tuple<string, ParseDelegate<object>>("Cover_Data", TryGetBase64),
+      new Tuple<string, ParseDelegate<object>>("Cover_Data", TryGetString),
     };
 
     #endregion
@@ -172,7 +174,67 @@ namespace MediaInfo.Builder
           }
         }
       }
+
+      // parse covers
+      object coverType = null;
+      object coverMime = null;
+      object coverDescription = null;
+      object cover = null;
+      result.Tags.TryGetValue("Cover_Type", out coverType);
+      result.Tags.TryGetValue("Cover_Mime", out coverMime);
+      result.Tags.TryGetValue("Cover_Description", out coverDescription);
+      result.Tags.TryGetValue("Cover", out cover);
+
+      if (result.Tags.TryGetValue("Cover_Data", out var coverData) ||
+          coverType != null ||
+          coverMime != null ||
+          coverDescription != null ||
+          cover != null)
+      {
+        var coverDataItems = ((string)coverData).Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var coverTypeItems = ((string)coverType)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var coverMimeItems = ((string)coverMime)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var coverItems = ((string)cover)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var coverDescriptionItems = ((string)coverDescription)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var itemCount = new int[] { coverDataItems.Length, coverTypeItems?.Length ?? 0, coverMimeItems?.Length ?? 0, coverDescriptionItems?.Length ?? 0, coverItems?.Length ?? 0 }.Max();
+        if (itemCount > 0)
+        {
+          var covers = new List<CoverInfo>(itemCount);
+          for (var i = 0; i < itemCount; ++i)
+          {
+            var data = coverDataItems.TryGet(i, string.Empty) ?? string.Empty;
+            covers.Add(new CoverInfo
+            {
+              Exists = ToBool(coverItems.TryGet(i, string.Empty)),
+              Description = coverDescriptionItems?.TryGet(i, string.Empty) ?? string.Empty,
+              Type = coverTypeItems?.TryGet(i, string.Empty) ?? string.Empty,
+              Mime = coverMimeItems?.TryGet(i, string.Empty) ?? string.Empty,
+              Data = string.IsNullOrEmpty(data) ? null : Convert.FromBase64String(data)
+            });
+          }
+
+          result.Covers = covers;
+        }
+        else
+        {
+          result.Covers = Enumerable.Empty<CoverInfo>();
+        }
+      }
+      else
+      {
+        result.Covers = Enumerable.Empty<CoverInfo>();
+      }
+
       return result;
+    }
+
+    private static bool ToBool(string source)
+    {
+      return string.Equals(source, "t", StringComparison.OrdinalIgnoreCase)
+             || string.Equals(source, "true", StringComparison.OrdinalIgnoreCase)
+             || string.Equals(source, "y", StringComparison.OrdinalIgnoreCase)
+             || string.Equals(source, "yes", StringComparison.OrdinalIgnoreCase)
+             || string.Equals(source, "1", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool TryGetString(string source, out object value)
@@ -224,6 +286,24 @@ namespace MediaInfo.Builder
         out resultValue);
       value = resultValue;
       return result;
+    }
+  }
+
+  internal static class ArrayExtensions
+  {
+    public static T TryGet<T>(this T[] array, int index, T defaultValue)
+    {
+      if (index < 0)
+      {
+        throw new ArgumentException($"Parameter {nameof(index)} is a negative value.");
+      }
+
+      if (array == null)
+      {
+        return defaultValue;
+      }
+
+      return array.Length > index ? array[index] : defaultValue;
     }
   }
 }

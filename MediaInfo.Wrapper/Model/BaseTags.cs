@@ -30,14 +30,6 @@ namespace MediaInfo
   public abstract class BaseTags
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseTags"/> class.
-    /// </summary>
-    protected BaseTags()
-    {
-      Cover = new CoverInfo(this);
-    }
-
-    /// <summary>
     /// Gets or sets the tags.
     /// </summary>
     /// <value>
@@ -163,31 +155,20 @@ namespace MediaInfo
     /// <value>
     /// The cover media.
     /// </value>
-    public CoverInfo Cover { get; }
+    public IEnumerable<CoverInfo> Covers { get; set; }
 
     /// <summary>
     /// Describes properties of the cover tags
     /// </summary>
     public class CoverInfo
     {
-      private BaseTags _tags;
-
-      /// <summary>
-      /// Initializes a new instance of the <see cref="Cover"/> class.
-      /// </summary>
-      /// <param name="tags">The tags.</param>
-      public CoverInfo(BaseTags tags)
-      {
-        _tags = tags;
-      }
-
       /// <summary>
       /// Gets a value indicating whether this <see cref="CoverInfo"/> is exists.
       /// </summary>
       /// <value>
       /// <c>true</c> if exists; otherwise, <c>false</c>.
       /// </value>
-      public bool Exists => _tags.Tags.TryGetValue("Cover", out var result) && ToBool((string)result);
+      public bool Exists { get; internal set; }
 
       /// <summary>
       /// Gets the description of the cover.
@@ -195,7 +176,7 @@ namespace MediaInfo
       /// <value>
       /// The description of the cover.
       /// </value>
-      public string Description => _tags.Tags.TryGetValue("Cover_Description", out var result) ? (string)result : null;
+      public string Description { get; internal set; }
 
       /// <summary>
       /// Gets the type of the cover.
@@ -203,7 +184,7 @@ namespace MediaInfo
       /// <value>
       /// The type of the cover.
       /// </value>
-      public string Type => _tags.Tags.TryGetValue("Cover_Type", out var result) ? (string)result : null;
+      public string Type { get; internal set; }
 
       /// <summary>
       /// Gets the MIME of the cover.
@@ -211,7 +192,7 @@ namespace MediaInfo
       /// <value>
       /// The MIME of the cover.
       /// </value>
-      public string Mime => _tags.Tags.TryGetValue("Cover_Mime", out var result) ? (string)result : null;
+      public string Mime { get; internal set; }
 
       /// <summary>
       /// Gets the cover data.
@@ -219,16 +200,7 @@ namespace MediaInfo
       /// <value>
       /// The cover data.
       /// </value>
-      public byte[] Data => _tags.Tags.TryGetValue("Cover_Data", out var result) ? (byte[])result : null;
-
-      private bool ToBool(string source)
-      {
-        return string.Equals(source, "t", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(source, "true", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(source, "y", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(source, "yes", StringComparison.OrdinalIgnoreCase)
-               || string.Equals(source, "1", StringComparison.OrdinalIgnoreCase);
-      }
+      public byte[] Data { get; internal set; }
     }
   }
 }

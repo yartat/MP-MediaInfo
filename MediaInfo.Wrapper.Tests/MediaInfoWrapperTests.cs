@@ -19,6 +19,7 @@
 #endregion
 
 using NUnit.Framework;
+using System.Linq;
 
 namespace MediaInfo.Wrapper.Tests
 {
@@ -195,8 +196,35 @@ namespace MediaInfo.Wrapper.Tests
       Assert.IsNotNull(_mediaInfoWrapper.Tags.Artist);
       Assert.IsNotNull(_mediaInfoWrapper.Tags.RecordedDate);
       Assert.IsNotNull(_mediaInfoWrapper.Tags.Genre);
-      Assert.IsTrue(_mediaInfoWrapper.Tags.Cover.Exists);
-      Assert.AreEqual("image/jpeg", _mediaInfoWrapper.Tags.Cover.Mime);
+      Assert.IsNotEmpty(_mediaInfoWrapper.Tags.Covers);
+      Assert.AreEqual(1, _mediaInfoWrapper.Tags.Covers.Count());
+      var cover = _mediaInfoWrapper.Tags.Covers.First();
+      Assert.AreEqual("image/jpeg", cover.Mime);
+      Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
+    }
+
+    [Test, Explicit]
+    [TestCase(@"E:\Music\01. HARLEYS&INDIANS [RIDERS IN THE SKY].mp3")]
+    public void LoadFlacWithoutCovers(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      Assert.IsFalse(_mediaInfoWrapper.MediaInfoNotloaded, "InfoWrapper not loaded");
+      Assert.AreEqual(4171517L, _mediaInfoWrapper.Size);
+      Assert.IsFalse(_mediaInfoWrapper.HasVideo, "Video stream does not supported int the MP3!");
+      Assert.IsFalse(_mediaInfoWrapper.IsBluRay, "Is BluRay");
+      Assert.IsFalse(_mediaInfoWrapper.IsDvd);
+      Assert.IsFalse(_mediaInfoWrapper.IsInterlaced);
+      Assert.IsFalse(_mediaInfoWrapper.Is3D);
+      Assert.AreEqual(1, _mediaInfoWrapper.AudioStreams.Count);
+      // MP3 file contains all tags in general stream
+      Assert.IsNotEmpty(_mediaInfoWrapper.Tags.Tags);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Album);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Track);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.TrackPosition);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Artist);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.RecordedDate);
+      Assert.IsNotNull(_mediaInfoWrapper.Tags.Genre);
+      Assert.IsEmpty(_mediaInfoWrapper.Tags.Covers);
       Assert.IsNotEmpty(_mediaInfoWrapper.AudioStreams[0].Tags.Tags);
     }
 

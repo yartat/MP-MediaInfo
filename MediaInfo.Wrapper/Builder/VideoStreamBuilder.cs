@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2005-2017 Team MediaPortal
+﻿#region Copyright (C) 2005-2019 Team MediaPortal
 
-// Copyright (C) 2005-2017 Team MediaPortal
+// Copyright (C) 2005-2019 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
 // MediaPortal is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MediaInfo.Builder
 {

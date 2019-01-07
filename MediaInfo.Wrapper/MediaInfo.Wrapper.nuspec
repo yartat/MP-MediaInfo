@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>MediaInfo.Wrapper</id>
-        <version>17.12</version>
+        <version>18.12</version>
         <title>MediaInfo .NET Wrapper</title>
         <authors>Team MediaPortal</authors>
         <owners>yartat</owners>
@@ -12,15 +12,15 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
 MediaInfo .NET wrapper with support network AV streams</description>
-        <summary>Copyright (C) 2005-2017 Team MediaPortal
+        <summary>Copyright (C) 2005-2019 Team MediaPortal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</summary>
-        <releaseNotes>Release 17.12 MediaInfo .NET wrapper with support network AV streams</releaseNotes>
-        <copyright>Copyright (C) 2005-2017 Team MediaPortal</copyright>
+        <releaseNotes>Release 18.12 MediaInfo .NET wrapper with support network AV streams</releaseNotes>
+        <copyright>Copyright (C) 2005-2019 Team MediaPortal</copyright>
         <language />
         <tags>MediaInfo</tags>
         <dependencies>
-            <dependency id="MediaInfo.Native" version="17.12" />
+            <dependency id="MediaInfo.Native" version="18.12" />
             <dependency id="JetBrains.Annotations" version="11.1.0" />
         </dependencies>
     </metadata>

@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2005-2017 Team MediaPortal
+﻿#region Copyright (C) 2005-2019 Team MediaPortal
 
-// Copyright (C) 2005-2017 Team MediaPortal
+// Copyright (C) 2005-2019 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
 // MediaPortal is free software: you can redistribute it and/or modify
@@ -122,8 +122,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-      T parsedValue;
-      return convert(Get(parameter, extractResult), out parsedValue) ? parsedValue : default(T);
+        return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default(T);
     }
 
     /// <summary>
@@ -141,8 +140,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-      T parsedValue;
-      return convert(Get(parameter, infoKind, extractResult), out parsedValue) ? parsedValue : default(T);
+        return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default(T);
     }
 
     /// <summary>

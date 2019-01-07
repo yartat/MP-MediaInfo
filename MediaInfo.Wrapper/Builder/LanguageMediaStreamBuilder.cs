@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2005-2017 Team MediaPortal
+﻿#region Copyright (C) 2005-2019 Team MediaPortal
 
-// Copyright (C) 2005-2017 Team MediaPortal
+// Copyright (C) 2005-2019 Team MediaPortal
 // http://www.team-mediaportal.com
 // 
 // MediaPortal is free software: you can redistribute it and/or modify
@@ -43,8 +43,8 @@ namespace MediaInfo.Builder
       var result = base.Build();
       var language = Get("Language").ToLower();
       result.Language = LanguageHelper.GetLanguageByShortName(language);
-      result.Default = Get<bool>("Default", bool.TryParse);
-      result.Forced = Get<bool>("Forced", bool.TryParse);
+      result.Default = Get<bool>("Default", TagHelper.TryParse);
+      result.Forced = Get<bool>("Forced", TagHelper.TryParse);
       result.Lcid = LanguageHelper.GetLcidByShortName(language);
       return result;
     }

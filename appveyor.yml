@@ -1,11 +1,10 @@
-version: 17.12
+version: 18.12
 
 branches:
   only:
   - master
 
 image: Visual Studio 2017
-
 configuration: Release
 
 platform: Any CPU

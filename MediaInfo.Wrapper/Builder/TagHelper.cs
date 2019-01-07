@@ -1,5 +1,26 @@
-﻿using System;
+﻿#region Copyright (C) 2005-2019 Team MediaPortal
+
+// Copyright (C) 2005-2019 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using static MediaInfo.BaseTags;
@@ -8,6 +29,20 @@ namespace MediaInfo.Builder
 {
   internal static class TagHelper
   {
+    private static readonly Dictionary<string, bool> BooleanValues = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
+    {
+      { "1", true },
+      { "0", false },
+      { "y", true },
+      { "n", false },
+      { "yes", true },
+      { "no", false },
+      { "t", true },
+      { "f", false },
+      { "true", true },
+      { "false", false }
+    };
+    
     /// <summary>
     /// Converts the string representation of a value to specified type
     /// </summary>
@@ -226,6 +261,11 @@ namespace MediaInfo.Builder
       }
 
       return result;
+    }
+
+    public static bool TryParse(string source, out bool result)
+    {
+      return BooleanValues.TryGetValue(source, out result);
     }
 
     private static bool ToBool(string source)

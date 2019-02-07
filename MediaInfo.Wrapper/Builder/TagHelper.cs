@@ -226,12 +226,12 @@ namespace MediaInfo.Builder
           coverDescription != null ||
           cover != null)
       {
-        var coverDataItems = ((string)coverData).Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
+        var coverDataItems = ((string)coverData)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
         var coverTypeItems = ((string)coverType)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
         var coverMimeItems = ((string)coverMime)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
         var coverItems = ((string)cover)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
         var coverDescriptionItems = ((string)coverDescription)?.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries);
-        var itemCount = new int[] { coverDataItems.Length, coverTypeItems?.Length ?? 0, coverMimeItems?.Length ?? 0, coverDescriptionItems?.Length ?? 0, coverItems?.Length ?? 0 }.Max();
+        var itemCount = new int[] { coverDataItems?.Length ?? 0, coverTypeItems?.Length ?? 0, coverMimeItems?.Length ?? 0, coverDescriptionItems?.Length ?? 0, coverItems?.Length ?? 0 }.Max();
         if (itemCount > 0)
         {
           var covers = new List<CoverInfo>(itemCount);

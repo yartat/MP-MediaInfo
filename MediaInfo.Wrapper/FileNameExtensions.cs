@@ -24,8 +24,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using JetBrains.Annotations;
-
 namespace MediaInfo
 {
   /// <summary>
@@ -185,7 +183,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is live TV; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsLiveTv(this string path)
     {
       return !string.IsNullOrEmpty(path) && TsBufferMatch.Match(path).Success;
@@ -198,8 +195,7 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is RTSP; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
-    public static bool IsRTSP(this string path)
+    public static bool IsRtsp(this string path)
     {
       return !string.IsNullOrEmpty(path) && path.IndexOf("rtsp:", StringComparison.OrdinalIgnoreCase) >= 0;
     }
@@ -211,7 +207,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is network video; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsNetworkVideo(this string path)
     {
       if (string.IsNullOrEmpty(path)) return false;
@@ -230,7 +225,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is video; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsVideo(string path)
     {
       if (string.IsNullOrEmpty(path) || path.IsLastFmStream()) return false;
@@ -249,7 +243,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is picture; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsPicture(this string path)
     {
       if (string.IsNullOrEmpty(path) || path.Contains(Path.DirectorySeparatorChar) || path.Contains(Path.AltDirectorySeparatorChar)) return false;
@@ -265,7 +258,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is LastFM stream; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsLastFmStream(this string path)
     {
       return path.StartsWith(@"http://play.last.fm", StringComparison.OrdinalIgnoreCase);
@@ -278,7 +270,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is network path; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsNetwork(this string path)
     {
       return !string.IsNullOrEmpty(path) && 
@@ -299,7 +290,6 @@ namespace MediaInfo
     /// <b>5</b> - CD/DVD drive
     /// <b>6</b> - RAM disk drive
     /// </returns>
-    [PublicAPI]
     public static int GetDriveType(this string drive)
     {
       if (string.IsNullOrEmpty(drive)) return 2;
@@ -318,7 +308,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified string path is UNC network; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsUncNetwork(string strPath)
     {
       return !string.IsNullOrEmpty(strPath) && strPath.StartsWith(@"\\");
@@ -331,7 +320,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified string path is A/V stream; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsAvStream(this string strPath)
     {
       return !string.IsNullOrEmpty(strPath) &&
@@ -349,11 +337,9 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified string path is remote URL; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsRemoteUrl(string strPath)
     {
-      Uri playbackUri;
-      return Uri.TryCreate(strPath, UriKind.Absolute, out playbackUri) && playbackUri.Scheme != "file";
+      return Uri.TryCreate(strPath, UriKind.Absolute, out Uri playbackUri) && playbackUri.Scheme != "file";
     }
 
     /// <summary>
@@ -363,7 +349,6 @@ namespace MediaInfo
     /// <returns>
     ///   <c>true</c> if the specified path is audio; otherwise, <c>false</c>.
     /// </returns>
-    [PublicAPI]
     public static bool IsAudio(this string path)
     {
       if (string.IsNullOrEmpty(path) || path.Contains(Path.DirectorySeparatorChar) || path.Contains(Path.AltDirectorySeparatorChar)) return false;

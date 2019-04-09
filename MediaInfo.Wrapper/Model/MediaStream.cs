@@ -20,14 +20,11 @@
 
 using System;
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Defines constants for media stream kinds.
   /// </summary>
-  [PublicAPI]
   public enum MediaStreamKind
   {
     /// <summary>
@@ -61,7 +58,6 @@ namespace MediaInfo
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MarshalByRefObject" />
-  [PublicAPI]
   public abstract class MediaStream : MarshalByRefObject
   {
     /// <summary>

@@ -18,6 +18,8 @@
 
 #endregion
 
+using MediaInfo.Model;
+
 namespace MediaInfo.Builder
 {
   /// <summary>

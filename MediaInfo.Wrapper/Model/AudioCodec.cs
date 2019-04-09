@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Defines constants for different kind of audio codecs.
@@ -66,7 +66,7 @@ namespace MediaInfo
     Ac3,
 
     /// <summary>
-    /// Dolby Digital Atmos
+    /// Dolby Digital with Dolby Atmos
     /// </summary>
     Ac3Atmos,
 
@@ -86,7 +86,7 @@ namespace MediaInfo
     Eac3,
 
     /// <summary>
-    /// Dolby Digital Plus Atmos
+    /// Dolby Digital Plus with Dolby Atmos
     /// </summary>
     Eac3Atmos,
 
@@ -96,7 +96,7 @@ namespace MediaInfo
     Truehd,
 
     /// <summary>
-    /// Dolby TrueHD Atmos
+    /// Dolby TrueHD with Dolby Atmos
     /// </summary>
     TruehdAtmos,
 
@@ -106,9 +106,34 @@ namespace MediaInfo
     Dts,
 
     /// <summary>
-    /// DTS-HD
+    /// DTS:X
+    /// </summary>
+    DtsX,
+
+    /// <summary>
+    /// DTS-HD MA
+    /// </summary>
+    DtsHdMa,
+
+    /// <summary>
+    /// DTS Express
+    /// </summary>
+    DtsExpress,
+
+    /// <summary>
+    /// DTS-HD HRA
+    /// </summary>
+    DtsHdHra,
+
+    /// <summary>
+    /// DTS-HD 96/24
     /// </summary>
     DtsHd,
+
+    /// <summary>
+    /// DTS-ES
+    /// </summary>
+    DtsEs,
 
     /// <summary>
     /// Free Lossless Audio Codec
@@ -300,6 +325,11 @@ namespace MediaInfo
     /// <summary>
     /// ATRAC9
     /// </summary>
-    Atrac9
+    Atrac9,
+
+    /// <summary>
+    /// Direct Stream Digital
+    /// </summary>
+    Dsd
   }
 }

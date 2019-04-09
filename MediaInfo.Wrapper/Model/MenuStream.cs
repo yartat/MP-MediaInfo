@@ -21,15 +21,12 @@
 using System;
 using System.Collections.Generic;
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Describes properties of the menu
   /// </summary>
   /// <seealso cref="MediaStream" />
-  [PublicAPI]
   public class MenuStream : MediaStream
   {
     /// <summary>
@@ -65,7 +62,6 @@ namespace MediaInfo
     /// <summary>
     /// Describes properties of the menu chapter
     /// </summary>
-    [PublicAPI]
     public sealed class Chapter
     {
       /// <summary>

@@ -21,16 +21,13 @@
 using System;
 using System.Collections.Generic;
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Provides properties and overridden methods for the analyze audio stream 
   /// and contains information about audio stream.
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
-  [PublicAPI]
   public class AudioStream : LanguageMediaStream
   {
     #region matching dictionaries
@@ -195,6 +192,14 @@ namespace MediaInfo
     /// The audio codec name.
     /// </value>
     public string CodecName { get; set; }
+
+      /// <summary>
+      /// Gets the audio codec description.
+      /// </summary>
+      /// <value>
+      /// The audio codec description.
+      /// </value>
+      public string CodecDescription { get; set; }
 
     /// <summary>
     /// Gets the audio channels friendly.

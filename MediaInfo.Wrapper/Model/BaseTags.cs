@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Base class to read tags from stream
@@ -30,12 +30,12 @@ namespace MediaInfo
   public abstract class BaseTags
   {
     /// <summary>
-    /// Gets or sets the tags.
+    /// Gets or sets the general tags.
     /// </summary>
     /// <value>
-    /// The tags.
+    /// The general tags.
     /// </value>
-    internal IDictionary<string, object> Tags { get; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+    internal IDictionary<NativeMethods.General, object> GeneralTags { get; } = new Dictionary<NativeMethods.General, object>();
 
     /// <summary>
     /// Gets the title of the media.
@@ -43,7 +43,7 @@ namespace MediaInfo
     /// <value>
     /// The title of the media.
     /// </value>
-    public string Title => Tags.TryGetValue("Title", out var result) ? (string)result : null;
+    public string Title => GeneralTags.TryGetValue(NativeMethods.General.General_Title, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets a short description of the contents, such as "Two birds flying".
@@ -51,7 +51,7 @@ namespace MediaInfo
     /// <value>
     /// A short description of the contents, such as "Two birds flying".
     /// </value>
-    public string Description => Tags.TryGetValue("Description", out var result) ? (string)result : null;
+    public string Description => GeneralTags.TryGetValue(NativeMethods.General.General_Description, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the keywords to the item separated by a comma, used for searching.
@@ -59,7 +59,7 @@ namespace MediaInfo
     /// <value>
     /// The keywords to the item separated by a comma, used for searching.
     /// </value>
-    public string[] Keywords => Tags.TryGetValue("Keywords", out var result) ? ((string)result).Split(new[]  { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : null;
+    public string[] Keywords => GeneralTags.TryGetValue(NativeMethods.General.General_Keywords, out var result) ? ((string)result).Split(new[]  { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : null;
 
     /// <summary>
     /// Gets the country.
@@ -67,7 +67,7 @@ namespace MediaInfo
     /// <value>
     /// The country.
     /// </value>
-    public string Country => Tags.TryGetValue("Country", out var result) ? (string)result : null;
+    public string Country => GeneralTags.TryGetValue(NativeMethods.General.General_Country, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the time that the item was originally released.
@@ -75,7 +75,7 @@ namespace MediaInfo
     /// <value>
     /// The time that the item was originally released.
     /// </value>
-    public DateTime? ReleasedDate => Tags.TryGetValue("Released_Date", out var result) ? (DateTime?)result : null;
+    public DateTime? ReleasedDate => GeneralTags.TryGetValue(NativeMethods.General.General_Released_Date, out var result) ? (DateTime?)result : null;
 
     /// <summary>
     /// Gets the time that the encoding of this item was completed began.
@@ -83,7 +83,7 @@ namespace MediaInfo
     /// <value>
     /// The time that the encoding of this item was completed began.
     /// </value>
-    public DateTime? EncodedDate => Tags.TryGetValue("Encoded_Date", out var result) ? (DateTime?)result : null;
+    public DateTime? EncodedDate => GeneralTags.TryGetValue(NativeMethods.General.General_Encoded_Date, out var result) ? (DateTime?)result : null;
 
     /// <summary>
     /// Gets the time that the tags were done for this item.
@@ -91,7 +91,7 @@ namespace MediaInfo
     /// <value>
     /// The time that the tags were done for this item.
     /// </value>
-    public DateTime? TaggedDate => Tags.TryGetValue("Tagged_Date", out var result) ? (DateTime?)result : null;
+    public DateTime? TaggedDate => GeneralTags.TryGetValue(NativeMethods.General.General_Tagged_Date, out var result) ? (DateTime?)result : null;
 
     /// <summary>
     /// Gets any comment related to the content.
@@ -99,7 +99,7 @@ namespace MediaInfo
     /// <value>
     /// Any comment related to the content.
     /// </value>
-    public string Comment => Tags.TryGetValue("Comment", out var result) ? (string)result : null;
+    public string Comment => GeneralTags.TryGetValue(NativeMethods.General.General_Comment, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets a numeric value defining how much a person likes the song/movie. The number is between 0 and 5 with decimal values possible (e.g. 2.7), 5(.0) being the highest possible rating.
@@ -107,7 +107,7 @@ namespace MediaInfo
     /// <value>
     /// a numeric value defining how much a person likes the song/movie. The number is between 0 and 5 with decimal values possible (e.g. 2.7), 5(.0) being the highest possible rating.
     /// </value>
-    public double? Rating => Tags.TryGetValue("Rating", out var result) ? (double?)result : null;
+    public double? Rating => GeneralTags.TryGetValue(NativeMethods.General.General_Rating, out var result) ? (double?)result : null;
 
     /// <summary>
     /// Gets the copyright attribution.
@@ -115,7 +115,7 @@ namespace MediaInfo
     /// <value>
     /// The copyright attribution.
     /// </value>
-    public string Copyright => Tags.TryGetValue("Copyright", out var result) ? (string)result : null;
+    public string Copyright => GeneralTags.TryGetValue(NativeMethods.General.General_Copyright, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the name of the organization producing the track (i.e. the 'record label').
@@ -123,7 +123,7 @@ namespace MediaInfo
     /// <value>
     /// The name of the organization producing the track (i.e. the 'record label').
     /// </value>
-    public string Publisher => Tags.TryGetValue("Publisher", out var result) ? (string)result : null;
+    public string Publisher => GeneralTags.TryGetValue(NativeMethods.General.General_Publisher, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the publishers official web page.
@@ -131,7 +131,7 @@ namespace MediaInfo
     /// <value>
     /// The publishers official web page.
     /// </value>
-    public string PublisherUrl => Tags.TryGetValue("Publisher/URL", out var result) ? (string)result : null;
+    public string PublisherUrl => GeneralTags.TryGetValue(NativeMethods.General.General_Publisher_URL, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the name of the organization distributing track.
@@ -139,7 +139,7 @@ namespace MediaInfo
     /// <value>
     /// The name of the organization distributing track.
     /// </value>
-    public string DistributedBy => Tags.TryGetValue("DistributedBy", out var result) ? (string)result : null;
+    public string DistributedBy => GeneralTags.TryGetValue(NativeMethods.General.General_DistributedBy, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the average number of beats per minute in the complete target.
@@ -147,7 +147,7 @@ namespace MediaInfo
     /// <value>
     /// The average number of beats per minute in the complete target.
     /// </value>
-    public int? Bpm => Tags.TryGetValue("BPM", out var result) ? (int?)result : null;
+    public int? Bpm => GeneralTags.TryGetValue(NativeMethods.General.General_BPM, out var result) ? (int?)result : null;
 
     /// <summary>
     /// Gets the cover media.

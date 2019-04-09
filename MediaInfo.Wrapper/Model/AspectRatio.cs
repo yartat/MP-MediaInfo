@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Describes video aspect ratio

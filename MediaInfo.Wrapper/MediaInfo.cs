@@ -21,8 +21,6 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using JetBrains.Annotations;
-
 #pragma warning disable 1591 // Disable XML documentation warnings
 
 namespace MediaInfo
@@ -100,7 +98,6 @@ namespace MediaInfo
   /// Describes low-level functions to access to media information
   /// </summary>
   /// <seealso cref="IDisposable" />
-  [PublicAPI]
   public class MediaInfo : IDisposable
   {
     private const string MediaInfoFileName = "MediaInfo.dll";
@@ -418,7 +415,6 @@ namespace MediaInfo
   /// Describes low-level function to access to mediaInfo lists
   /// </summary>
   /// <seealso cref="IDisposable" />
-  [PublicAPI]
   public class MediaInfoList : IDisposable
   {
     private IntPtr _handle;

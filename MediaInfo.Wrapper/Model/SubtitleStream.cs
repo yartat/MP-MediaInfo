@@ -18,16 +18,13 @@
 
 #endregion
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Provides properties and overridden methods for the analyze subtitle stream 
   /// and contains information about subtitle.
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
-  [PublicAPI]
   public class SubtitleStream : LanguageMediaStream
   {
     /// <summary>

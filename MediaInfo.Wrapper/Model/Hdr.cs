@@ -18,24 +18,48 @@
 
 #endregion
 
-using MediaInfo.Model;
-
-namespace MediaInfo.Builder
+namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Describes method to build chapter stream.
-  /// </summary>
-  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
+  public enum Hdr
   {
-    public ChapterStreamBuilder(MediaInfo info, int number, int position)
-      : base(info, number, position)
-    {
-    }
+    /// <summary>
+    /// No HDR 
+    /// </summary>
+    None,
 
-    /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
+    /// <summary>
+    /// HDR10
+    /// </summary>
+    HDR10,
 
-    /// <inheritdoc />
-    protected override StreamKind StreamKind => StreamKind.Other;
+    /// <summary>
+    /// HDR10+
+    /// </summary>
+    HDR10Plus,
+
+    /// <summary>
+    /// Dolby Vision
+    /// </summary>
+    DolbyVision,
+
+    /// <summary>
+    /// Hybrid Log Gamma 
+    /// </summary>
+    HLG,
+
+    /// <summary>
+    /// Advanced HDR by Technicolor (SL-HDR1)
+    /// </summary>
+    SLHDR1,
+
+    /// <summary>
+    /// Advanced HDR by Technicolor (SL-HDR2)
+    /// </summary>
+    SLHDR2,
+
+    /// <summary>
+    /// Advanced HDR by Technicolor (SL-HDR3)
+    /// </summary>
+    SLHDR3
   }
 }

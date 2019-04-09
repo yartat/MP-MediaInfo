@@ -18,16 +18,13 @@
 
 #endregion
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Provides properties and overridden methods for the analyze stream 
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MediaStream" />
-  [PublicAPI]
   public abstract class LanguageMediaStream : MediaStream
   {
     /// <summary>

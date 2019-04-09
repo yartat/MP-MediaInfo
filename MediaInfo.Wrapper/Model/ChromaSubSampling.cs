@@ -18,24 +18,61 @@
 
 #endregion
 
-using MediaInfo.Model;
-
-namespace MediaInfo.Builder
+namespace MediaInfo.Model
 {
   /// <summary>
-  /// Describes method to build chapter stream.
+  /// Describes video chroma sub sampling
   /// </summary>
-  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
+  public enum ChromaSubSampling
   {
-    public ChapterStreamBuilder(MediaInfo info, int number, int position)
-      : base(info, number, position)
-    {
-    }
+    /// <summary>
+    /// 3:3:2
+    /// </summary>
+    Sampling332,
 
-    /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
+    /// <summary>
+    /// 4:1:0
+    /// </summary>
+    Sampling410,
 
-    /// <inheritdoc />
-    protected override StreamKind StreamKind => StreamKind.Other;
+    /// <summary>
+    /// 4:1:1
+    /// </summary>
+    Sampling411,
+
+    /// <summary>
+    /// 4:2:0
+    /// </summary>
+    Sampling420,
+
+    /// <summary>
+    /// 4:2:2
+    /// </summary>
+    Sampling422,
+
+    /// <summary>
+    /// 4:4:4
+    /// </summary>
+    Sampling444,
+
+    /// <summary>
+    /// 4:4:4:4
+    /// </summary>
+    Sampling4444,
+
+    /// <summary>
+    /// 5:5:5
+    /// </summary>
+    Sampling555,
+
+    /// <summary>
+    /// 5:6:5
+    /// </summary>
+    Sampling565,
+
+    /// <summary>
+    /// 8:8:8
+    /// </summary>
+    Sampling888
   }
 }

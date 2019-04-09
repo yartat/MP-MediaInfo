@@ -18,24 +18,19 @@
 
 #endregion
 
-using MediaInfo.Model;
+using System.Diagnostics;
+using Xunit;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Wrapper.Tests
 {
-  /// <summary>
-  /// Describes method to build chapter stream.
-  /// </summary>
-  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
+  public class FactInDebugOnlyAttribute : FactAttribute
   {
-    public ChapterStreamBuilder(MediaInfo info, int number, int position)
-      : base(info, number, position)
+    public FactInDebugOnlyAttribute()
     {
+      if (!Debugger.IsAttached)
+      {
+        Skip = "Only running in interactive mode.";
+      }
     }
-
-    /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
-
-    /// <inheritdoc />
-    protected override StreamKind StreamKind => StreamKind.Other;
   }
 }

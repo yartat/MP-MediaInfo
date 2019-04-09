@@ -19,7 +19,8 @@
 #endregion
 
 using System;
-using JetBrains.Annotations;
+using System.Linq;
+using MediaInfo.Model;
 
 namespace MediaInfo.Builder
 {
@@ -57,7 +58,6 @@ namespace MediaInfo.Builder
     /// <value>
     /// The stream position.
     /// </value>
-    [PublicAPI]
     protected int StreamPosition { get; set; }
 
     /// <summary>
@@ -66,7 +66,6 @@ namespace MediaInfo.Builder
     /// <value>
     /// The logical stream number.
     /// </value>
-    [PublicAPI]
     protected int StreamNumber { get; set; }
 
     /// <summary>
@@ -75,7 +74,6 @@ namespace MediaInfo.Builder
     /// <value>
     /// The kind of media stream.
     /// </value>
-    [PublicAPI]
     public abstract MediaStreamKind Kind { get; }
 
     /// <summary>
@@ -84,7 +82,6 @@ namespace MediaInfo.Builder
     /// <value>
     /// The kind of the stream.
     /// </value>
-    [PublicAPI]
     protected abstract StreamKind StreamKind { get; }
 
     /// <summary>
@@ -93,15 +90,28 @@ namespace MediaInfo.Builder
     /// <value>
     /// The media info object.
     /// </value>
-    [PublicAPI]
     protected MediaInfo Info { get; }
 
     /// <inheritdoc />
     public virtual TStream Build()
     {
+      // Check for video stereo stream
+      var idString = Get("ID");
+      if (!TagBuilderHelper.TryGetInt(idString, out object id))
+      { 
+        var idValues = idString.Split('/').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray();
+        if (idValues.Length >= 1)
+        {
+          if (!TagBuilderHelper.TryGetInt(idValues.First(), out id))
+          { 
+            id = 0;
+          }
+        }
+      }
+
       return new TStream
                      {
-                       Id = Get<int>("ID", int.TryParse),
+                       Id = (int)id,
                        Name = Get("Title"),
                        StreamPosition = this.StreamPosition,
                        StreamNumber = this.StreamNumber,

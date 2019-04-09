@@ -19,6 +19,7 @@
 #endregion
 
 using System;
+using MediaInfo.Model;
 
 namespace MediaInfo.Builder
 {
@@ -42,8 +43,8 @@ namespace MediaInfo.Builder
     public override MenuStream Build()
     {
       var result = base.Build();
-      var chapterStartId = Get<int>("Chapters_Pos_Begin", int.TryParse);
-      var chapterEndId = Get<int>("Chapters_Pos_End", int.TryParse);
+      var chapterStartId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_Begin, InfoKind.Text, TagBuilderHelper.TryGetInt);
+      var chapterEndId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_End, InfoKind.Text, TagBuilderHelper.TryGetInt);
       for (var i = chapterStartId; i < chapterEndId; ++i)
       {
         result.Chapters.Add(new MenuStream.Chapter

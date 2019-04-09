@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Defines constants for different kind of subtitles.

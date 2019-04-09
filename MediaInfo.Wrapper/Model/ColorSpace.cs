@@ -21,88 +21,108 @@
 namespace MediaInfo.Model
 {
   /// <summary>
-  /// Describes 3D stereo mode
+  /// Describes video color space
   /// </summary>
-  public enum StereoMode
+  public enum ColorSpace
   {
     /// <summary>
-    /// No 3D (mono)
+    /// Generic film
     /// </summary>
-    Mono,
+    Generic,
 
     /// <summary>
-    /// Stereo mode without additional info
+    /// Printing density
     /// </summary>
-    Stereo,
+    PrintingDensity,
 
     /// <summary>
-    /// The side by side left eye is first
+    /// BT.601 NTSC
     /// </summary>
-    SideBySideLeft,
+    NTSC,
 
     /// <summary>
-    /// The top bottom right eye is first
+    /// BT.601 PAL
     /// </summary>
-    TopBottomRight,
+    PAL,
 
     /// <summary>
-    /// The top bottom left eye is first
+    /// ADX
     /// </summary>
-    TopBottomLeft,
+    ADX,
 
     /// <summary>
-    /// The checkerboard right eye is first
+    /// BT.470 System M
     /// </summary>
-    CheckerboardRight,
+    BT470M,
 
     /// <summary>
-    /// The checkerboard left eye is first
+    /// BT.470 System B/G
     /// </summary>
-    CheckerboardLeft,
+    BT470BG,
 
     /// <summary>
-    /// The row interleaved right eye is first
+    /// BT.601 PAL or NTSC
     /// </summary>
-    RowInterleavedRight,
+    BT601,
 
     /// <summary>
-    /// The row interleaved left eye is first
+    /// BT.709
     /// </summary>
-    RowInterleavedLeft,
+    BT709,
 
     /// <summary>
-    /// The column interleaved right eye is first
+    /// BT.1361
     /// </summary>
-    ColumnInterleavedRight,
+    BT1361,
 
     /// <summary>
-    /// The column interleaved left eye is first
+    /// BT.2020 (10 bit or 12 bit)
     /// </summary>
-    ColumnInterleavedLeft,
+    BT2020,
 
     /// <summary>
-    /// The anaglyph cyan-red
+    /// BT.2100
     /// </summary>
-    AnaglyphCyanRed,
+    BT2100,
 
     /// <summary>
-    /// The side by side right eye is first
+    /// EBU Tech 3213
     /// </summary>
-    SideBySideRight,
+    EBUTech3213,
 
     /// <summary>
-    /// The anaglyph green-magenta
+    /// SMPTE 240M
     /// </summary>
-    AnaglyphGreenMagenta,
+    SMPTE240M,
 
     /// <summary>
-    /// The both eyes laced left eye is first
+    /// SMPTE 274M
     /// </summary>
-    BothEyesLacedLeft,
+    SMPTE274M,
 
     /// <summary>
-    /// The both eyes laced right eye is first
+    /// SMPTE 428M
     /// </summary>
-    BothEyesLacedRight
+    SMPTE428M,
+
+    /// <summary>
+    ///  SMPTE ST 2065-1
+    /// </summary>
+    ACES,
+
+    /// <summary>
+    /// SMPTE ST 2067-40 / ISO 11664-3
+    /// </summary>
+    XYZ,
+
+    /// <summary>
+    /// DCI-P3
+    /// </summary>
+    DCIP3,
+
+    /// <summary>
+    /// Display P3
+    /// </summary>
+    DisplayP3
   }
 }

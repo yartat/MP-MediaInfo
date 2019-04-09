@@ -252,3 +252,11 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Test data
+3D/
+HDR/
+UHD/
+HD/
+HD Audio/
+Audio/

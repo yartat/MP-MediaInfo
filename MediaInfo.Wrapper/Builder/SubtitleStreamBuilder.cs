@@ -19,6 +19,7 @@
 #endregion
 
 using System.Collections.Generic;
+using MediaInfo.Model;
 
 namespace MediaInfo.Builder
 {
@@ -68,8 +69,8 @@ namespace MediaInfo.Builder
     public override SubtitleStream Build()
     {
       var result = base.Build();
-      result.Format = Get("Format");
-      result.Codec = Get<SubtitleCodec>("CodecID", TryGetCodec);
+      result.Format = Get((int)NativeMethods.Text.Text_Format, InfoKind.Text);
+      result.Codec = Get<SubtitleCodec>((int)NativeMethods.Text.Text_CodecID, InfoKind.Text, TryGetCodec);
       return result;
     }
 

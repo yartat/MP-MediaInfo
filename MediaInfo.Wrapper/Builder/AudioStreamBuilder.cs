@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MediaInfo.Model;
 
 namespace MediaInfo.Builder
 {
@@ -73,6 +74,9 @@ namespace MediaInfo.Builder
       { "A_ALAC", AudioCodec.Alac },
       { "A_APE", AudioCodec.Ape },
       { "SAMR", AudioCodec.Amr },
+      { "160", AudioCodec.Wma1 },
+      { "161", AudioCodec.Wma2 },
+      { "162", AudioCodec.Wma9 },
     };
 
     private static readonly Dictionary<string, AudioCodec> Codecs = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
@@ -80,6 +84,7 @@ namespace MediaInfo.Builder
       { "MPA1L1", AudioCodec.MpegLayer1 },
       { "MPA1L2", AudioCodec.MpegLayer2 },
       { "MPA1L3", AudioCodec.MpegLayer3 },
+      { "MPEG Audio", AudioCodec.MpegLayer3 },
       { "PCM BIG", AudioCodec.PcmIntBig },
       { "PCM LITTLE", AudioCodec.PcmIntLit },
       { "PCM", AudioCodec.PcmIntLit },
@@ -137,6 +142,34 @@ namespace MediaInfo.Builder
       { "160", AudioCodec.Wma1 },
       { "161", AudioCodec.Wma2 },
       { "162", AudioCodec.Wma9 },
+      { "DSD", AudioCodec.Dsd },
+    };
+
+    private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
+    {
+      { "MLP FBA 16-ch", AudioCodec.TruehdAtmos },
+      { "16-ch", AudioCodec.TruehdAtmos },
+      { "MLP 16-ch", AudioCodec.TruehdAtmos },
+      { "Dep JOC", AudioCodec.Eac3Atmos },
+      { "JOC", AudioCodec.Eac3Atmos },
+      { "Dep", AudioCodec.Eac3 },
+      { "XLL", AudioCodec.DtsHdMa },
+      { "ES XXCH XLL", AudioCodec.DtsHdMa },
+      { "ES XXCH XLL X", AudioCodec.DtsX },
+      { "XLL X", AudioCodec.DtsX },
+      { "XBR", AudioCodec.DtsHdHra },
+      { "XXCh", AudioCodec.DtsHd },
+      { "XCh", AudioCodec.DtsEs },
+      { "ES XXCH", AudioCodec.DtsEs },
+      { "96/24", AudioCodec.DtsHd },
+      { "LC", AudioCodec.AacMpeg4Lc },
+      { "LC SBR", AudioCodec.AacMpeg4LcSbr },
+      { "LC-SBR", AudioCodec.AacMpeg4LcSbr },
+      { "LC SBR PS", AudioCodec.AacMpeg4LcSbrPs },
+      { "LC-SBR PS", AudioCodec.AacMpeg4LcSbrPs },
+      { "LC-SBR-PS", AudioCodec.AacMpeg4LcSbrPs },
+      { "LTP", AudioCodec.AacMpeg4Ltp },
+      { "SSR", AudioCodec.AacMpeg4Ssr },
     };
 
     #endregion
@@ -156,47 +189,119 @@ namespace MediaInfo.Builder
     {
       var result = base.Build();
       var baseIndex = 0;
-      result.Codec = Get<AudioCodec>("CodecID", TryGetCodecByCodecId);
+      result.Codec = Get<AudioCodec>((int)NativeMethods.Audio.Audio_CodecID, InfoKind.Text, TryGetCodecByCodecId);
       if (result.Codec == AudioCodec.Undefined)
       {
-        var codecValue = Get("Codec");
+        var codecValue = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text);
         if (codecValue.Equals("PCM", StringComparison.OrdinalIgnoreCase))
         {
-          var endianness = Get("Codec_Settings_Endianness");
+          var endianness = Get((int)NativeMethods.Audio.Audio_Codec_Settings_Endianness, InfoKind.Text);
           codecValue = $"{codecValue}{(string.IsNullOrEmpty(endianness) ? string.Empty : " " + endianness)}";
         }
 
         result.Codec = GetCodecIdByCodecName(codecValue);
-        // Correction for Atmos audio
-        switch (result.Codec)
+      }
+
+      switch (result.Codec)
+      {
+        case AudioCodec.MpegLayer3:
         {
-          case AudioCodec.DtsHd:
+          var formatProfile = Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text)?.Trim();
+          switch (formatProfile?.ToLower())
+          {
+            case "layer 2":
+              result.Codec = AudioCodec.MpegLayer2;
+              break;
+            case "layer 1":
+              result.Codec = AudioCodec.MpegLayer1;
+              break;
+          }
+          break;
+        }
+        case AudioCodec.Dts:
+        {
+          var formatProfile = GetCodecIdByCodecName(Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text).Split('/')[0].Trim());
+          if (formatProfile != AudioCodec.Undefined)
+          {
+            result.Codec = formatProfile;
             baseIndex = 1;
-            break;
-          case AudioCodec.Ac3:
-          case AudioCodec.Ac3Bsid10:
-          case AudioCodec.Ac3Bsid9:
-          case AudioCodec.Eac3:
-          case AudioCodec.Truehd:
-            var formatProfile = GetCodecIdByCodecName(Get("Format_Profile").Split('/')[0].Trim());
+          }
+          else
+          {
+            formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_AdditionalFeatures, InfoKind.Text).Trim());
             if (formatProfile != AudioCodec.Undefined)
             {
               result.Codec = formatProfile;
               baseIndex = 1;
             }
+          }
 
-            break;
+          break;
+        }
+        case AudioCodec.Aac:
+        {
+          var formatProfile = GetCodecIdByCodecName(Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text).Split('/')[0].Trim());
+          if (formatProfile != AudioCodec.Undefined)
+          {
+            result.Codec = formatProfile;
+            baseIndex = 1;
+          }
+          else
+          {
+            formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_AdditionalFeatures, InfoKind.Text).Trim());
+            if (formatProfile != AudioCodec.Undefined)
+            {
+              result.Codec = formatProfile;
+              baseIndex = 1;
+            }
+          }
+
+          break;
+        }
+        case AudioCodec.DtsHd:
+          baseIndex = 1;
+          break;
+        // Correction for Atmos audio
+        case AudioCodec.Ac3:
+        case AudioCodec.Ac3Bsid10:
+        case AudioCodec.Ac3Bsid9:
+        case AudioCodec.Eac3:
+        case AudioCodec.Truehd:
+        {
+          var formatProfile = GetCodecIdByCodecName(Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text).Split('/')[0].Trim());
+          if (formatProfile != AudioCodec.Undefined)
+          {
+            result.Codec = formatProfile;
+            baseIndex = 1;
+          }
+          else 
+          {
+            formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_AdditionalFeatures, InfoKind.Text).Trim());
+            if (formatProfile != AudioCodec.Undefined)
+            {
+              result.Codec = formatProfile;
+              baseIndex = 1;
+            }
+          }
+
+          break;
         }
       }
 
-      result.Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse, x => ExtractInfo(x, 0)));
-      result.Bitrate = Get<double>("BitRate", double.TryParse, x => ExtractInfo(x, baseIndex));
-      result.Channel = Get<int>("Channel(s)", int.TryParse, x => ExtractInfo(x, baseIndex));
-      result.SamplingRate = Get<double>("SamplingRate", double.TryParse, x => ExtractInfo(x, baseIndex));
-      result.BitDepth = Get<int>("BitDepth", int.TryParse, x => ExtractInfo(x, baseIndex));
-      result.Format = Get("Format", x => ExtractInfo(x, 0));
-      result.CodecName = GetFullCodecName();
-      result.Tags = TagHelper.GetAllTags<AudioTags>(Info, StreamKind, StreamPosition);
+      result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Audio.Audio_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, 0)));
+      result.Bitrate = Get<double>((int)NativeMethods.Audio.Audio_BitRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
+      result.Channel = Get<int>((int)NativeMethods.Audio.Audio_Channel_s_, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+      result.SamplingRate = Get<double>((int)NativeMethods.Audio.Audio_SamplingRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
+      result.BitDepth = Get<int>((int)NativeMethods.Audio.Audio_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+      if (result.Codec == AudioCodec.Dsd)
+      {
+        result.BitDepth = 1;
+      }
+
+      result.Format = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text, x => ExtractInfo(x, 0));
+      result.CodecName = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text).ToUpper();
+      result.CodecDescription = Get((int)NativeMethods.Audio.Audio_Format_Commercial, InfoKind.Text);
+      result.Tags = new AudioTagBuilder(Info, StreamPosition).Build();
 
       return result;
     }
@@ -208,32 +313,6 @@ namespace MediaInfo.Builder
                source;
     }
 
-    private string GetFullCodecName()
-    {
-      var strCodec = Get("Format").ToUpper();
-      var strCodecVer = Get("Format_Version").ToUpper();
-      if (strCodec == "MPEG-4 VISUAL")
-      {
-        strCodec = Get("CodecID").ToUpperInvariant();
-      }
-      else
-      {
-        if (!string.IsNullOrEmpty(strCodecVer))
-        {
-          strCodec = (strCodec + " " + strCodecVer).Trim();
-        }
-      }
-
-      var formatName = Get("Format_Profile").Split('/')[0].Trim();
-      if (formatName.IndexOf("ATMOS", StringComparison.OrdinalIgnoreCase) >= 0)
-      {
-        return formatName;
-      }
-
-      strCodec = (strCodec + " " + formatName).Trim();
-      return strCodec.Replace("+", "PLUS");
-    }
-
     private static bool TryGetCodecByCodecId(string source, out AudioCodec result)
     {
       return CodecIds.TryGetValue(source, out result);
@@ -243,6 +322,12 @@ namespace MediaInfo.Builder
     {
       AudioCodec result;
       return Codecs.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
+    }
+
+    private static AudioCodec GetMlpCodecIdByAdditionalFeatures(string source)
+    {
+      AudioCodec result;
+      return MlpCodecsAdditionalFeatures.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
     }
   }
 }

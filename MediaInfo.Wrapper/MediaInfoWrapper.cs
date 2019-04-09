@@ -24,16 +24,14 @@ using System.IO;
 using System.Globalization;
 using System.Linq;
 
-using JetBrains.Annotations;
-
 using MediaInfo.Builder;
+using MediaInfo.Model;
 
 namespace MediaInfo
 {
   /// <summary>
   /// Describes method and properties to retrieve information from media source
   /// </summary>
-  [PublicAPI]
   public class MediaInfoWrapper
   {
     #region private vars
@@ -75,7 +73,7 @@ namespace MediaInfo
 
     #endregion
 
-    #region ctor's
+    #region ctor
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
@@ -114,11 +112,11 @@ namespace MediaInfo
 
       var isTv = filePath.IsLiveTv();
       var isRadio = filePath.IsLiveTv();
-      var isRTSP = filePath.IsRTSP(); //rtsp for live TV and recordings.
+      var isRtsp = filePath.IsRtsp(); // RTSP for live TV and recordings.
       var isAvStream = filePath.IsAvStream(); //other AV streams
 
       //currently disabled for all tv/radio
-      if (isTv || isRadio || isRTSP)
+      if (isTv || isRadio || isRtsp)
       {
         MediaInfoNotloaded = true;
         return;
@@ -151,9 +149,9 @@ namespace MediaInfo
 
         ExtractInfo(filePath, pathToDll, providerNumber);
       }
-      catch
+      catch(Exception exception)
       {
-        // ignored
+          Console.WriteLine(exception.Message);
       }
     }
 
@@ -184,12 +182,11 @@ namespace MediaInfo
           var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
           if (profile == "Program")
           {
-            double duration;
-            double.TryParse(
+              double.TryParse(
               mi.Get(StreamKind.Video, 0, "Duration"),
               NumberStyles.AllowDecimalPoint,
               providerNumber,
-              out duration);
+              out var duration);
             programBlocks.Add(new Tuple<string, int>(bupFile, (int)duration));
           }
         }
@@ -214,7 +211,7 @@ namespace MediaInfo
 
         var streamNumber = 0;
 
-        Tags = TagHelper.GetAllTags<AudioTags>(mediaInfo, StreamKind.General, 0);
+        Tags = new AudioTagBuilder(mediaInfo, 0).Build();
 
         // Setup videos
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
@@ -224,19 +221,42 @@ namespace MediaInfo
 
         if (Duration == 0)
         {
-          double duration;
-          double.TryParse(
-            mediaInfo.Get(StreamKind.Video, 0, "Duration"),
+            double.TryParse(
+            mediaInfo.Get(StreamKind.Video, 0, (int)NativeMethods.Video.Video_Duration),
             NumberStyles.AllowDecimalPoint,
             providerNumber,
-            out duration);
+            out var duration);
           Duration = (int)duration;
+        }
+
+        // Fix 3D for some containers
+        if (VideoStreams.Count == 1 && Tags.GeneralTags.TryGetValue((NativeMethods.General)1000, out var isStereo))
+        {
+          var video = VideoStreams.First();
+          if (Tags.GeneralTags.TryGetValue((NativeMethods.General)1001, out var stereoMode))
+          { 
+            video.Stereoscopic = (StereoMode) stereoMode;
+          }
+          else
+          { 
+            video.Stereoscopic = (bool) isStereo ? StereoMode.Stereo : StereoMode.Mono;
+          }
         }
 
         // Setup audios
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
         {
           AudioStreams.Add(new AudioStreamBuilder(mediaInfo, streamNumber++, i).Build());
+        }
+
+        if (Duration == 0)
+        {
+            double.TryParse(
+                mediaInfo.Get(StreamKind.Audio, 0, (int)NativeMethods.Audio.Audio_Duration),
+                NumberStyles.AllowDecimalPoint,
+                providerNumber,
+                out var duration);
+            Duration = (int)duration;
         }
 
         // Setup subtitles
@@ -259,7 +279,7 @@ namespace MediaInfo
 
         MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
 
-        // Produce copability properties
+        // Produce capability properties
         if (MediaInfoNotloaded)
         {
           SetPropertiesDefault();
@@ -284,7 +304,7 @@ namespace MediaInfo
     private void SetupProperties(MediaInfo mediaInfo)
     {
       BestVideoStream = VideoStreams.OrderByDescending(
-          x => (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L) * x.FrameRate)
+          x => (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L) * x.FrameRate * (x.Bitrate <= 1e-7 ? 1 : x.Bitrate))
         .FirstOrDefault();
       VideoCodec = BestVideoStream?.CodecName ?? string.Empty;
       VideoRate = (int?)BestVideoStream?.Bitrate ?? 0;
@@ -299,7 +319,9 @@ namespace MediaInfo
       AspectRatio = BestVideoStream != null
                       ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "DisplayAspectRatio")
                       : string.Empty;
-      AspectRatio = AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen";
+      AspectRatio = BestVideoStream != null ?
+          AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen" : 
+          string.Empty;
 
       BestAudioStream = AudioStreams.OrderByDescending(x => x.Channel * 10000000 + x.Bitrate).FirstOrDefault();
       AudioCodec = BestAudioStream?.CodecName ?? string.Empty;

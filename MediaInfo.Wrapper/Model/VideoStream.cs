@@ -21,16 +21,13 @@
 using System;
 using System.Drawing;
 
-using JetBrains.Annotations;
-
-namespace MediaInfo
+namespace MediaInfo.Model
 {
 
   /// <summary>
   /// Describes properties of the video stream and method to analyze stream
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
-  [PublicAPI]
   public class VideoStream : LanguageMediaStream
   {
     /// <inheritdoc />
@@ -112,12 +109,54 @@ namespace MediaInfo
     public VideoCodec Codec { get; set; }
 
     /// <summary>
+    /// Gets or sets the video codec profile.
+    /// </summary>
+    /// <value>
+    /// The video codec profile.
+    /// </value>
+    public string CodecProfile { get; set; }
+
+    /// <summary>
+    /// Gets or sets the video standard.
+    /// </summary>
+    /// <value>
+    /// Possible values:
+    /// PAL
+    /// NTSC
+    /// </value>
+    public VideoStandard Standard { get; set; }
+
+    /// <summary>
+    /// Gets or sets the video color space.
+    /// </summary>
+    /// <value>
+    /// The video color space.
+    /// </value>
+    public ColorSpace ColorSpace { get; set; }
+
+    /// <summary>
+    /// Gets or sets the video chroma subsampling.
+    /// </summary>
+    /// <value>
+    /// The video chroma subsampling.
+    /// </value>
+    public ChromaSubSampling SubSampling { get; set; }
+
+    /// <summary>
     /// Gets or sets the stream duration.
     /// </summary>
     /// <value>
     /// The stream duration.
     /// </value>
     public TimeSpan Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the video HDR type.
+    /// </summary>
+    /// <value>
+    /// The video HDR type.
+    /// </value>
+    public Hdr Hdr { get;set; }
 
     /// <summary>
     /// Gets or sets the video bit depth.
@@ -147,7 +186,7 @@ namespace MediaInfo
     /// Gets the video size.
     /// </summary>
     /// <value>
-    /// The vidoe size.
+    /// The video size.
     /// </value>
     public Size Size => new Size(Width, Height);
 

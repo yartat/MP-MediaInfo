@@ -18,7 +18,7 @@
 
 #endregion
 
-namespace MediaInfo
+namespace MediaInfo.Model
 {
   /// <summary>
   /// Describes type of video codecs
@@ -123,7 +123,7 @@ namespace MediaInfo
     /// <summary>
     /// The ProRes
     /// </summary>
-    Prores,
+    ProRes,
 
     /// <summary>
     /// Real Video v1
@@ -334,5 +334,15 @@ namespace MediaInfo
     /// Bink video
     /// </summary>
     BinkVideo,
+
+    /// <summary>
+    /// AV1
+    /// </summary>
+    Av1,
+
+    /// <summary>
+    /// HuffYUV
+    /// </summary>
+    HuffYUV,
   }
 }

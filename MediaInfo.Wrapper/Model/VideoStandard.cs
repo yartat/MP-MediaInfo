@@ -18,24 +18,21 @@
 
 #endregion
 
-using MediaInfo.Model;
-
-namespace MediaInfo.Builder
+namespace MediaInfo.Model
 {
   /// <summary>
-  /// Describes method to build chapter stream.
+  /// Describes video standards
   /// </summary>
-  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
+  public enum VideoStandard
   {
-    public ChapterStreamBuilder(MediaInfo info, int number, int position)
-      : base(info, number, position)
-    {
-    }
+    /// <summary>
+    /// NTSC standard
+    /// </summary>
+    NTSC,
 
-    /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
-
-    /// <inheritdoc />
-    protected override StreamKind StreamKind => StreamKind.Other;
+    /// <summary>
+    /// PAL standard
+    /// </summary>
+    PAL
   }
 }

@@ -18,6 +18,8 @@
 
 #endregion
 
+using MediaInfo.Model;
+
 namespace MediaInfo.Builder
 {
   /// <summary>
@@ -43,8 +45,8 @@ namespace MediaInfo.Builder
       var result = base.Build();
       var language = Get("Language").ToLower();
       result.Language = LanguageHelper.GetLanguageByShortName(language);
-      result.Default = Get<bool>("Default", TagHelper.TryParse);
-      result.Forced = Get<bool>("Forced", TagHelper.TryParse);
+      result.Default = Get<bool>("Default", TagBuilderHelper.TryGetBool);
+      result.Forced = Get<bool>("Forced", TagBuilderHelper.TryGetBool);
       result.Lcid = LanguageHelper.GetLcidByShortName(language);
       return result;
     }

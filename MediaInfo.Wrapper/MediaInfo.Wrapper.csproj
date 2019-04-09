@@ -1,100 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9A2608E4-1AA5-41DA-A33D-4D20F2AD6458}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <AssemblyName>MediaInfo.Wrapper</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <Version>18.12</Version>
+    <AssemblyVersion>18.12.0.0</AssemblyVersion>
+    <FileVersion>18.12.0.0</FileVersion>
+    <Company>Team MediaPortal</Company>
+    <Authors>yartat</Authors>
+    <Product>MP-MediaInfo</Product>
+    <Copyright>Copyright © 2005-2019 Team MediaPortal</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/yartat/MP-MediaInfo</PackageProjectUrl>
+    <PackageLicense>https://github.com/yartat/MP-MediaInfo/blob/master/LICENSE</PackageLicense>
+    <RepositoryUrl>https://github.com/yartat/MP-MediaInfo</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIconUrl>https://mediaarea.net/_/img/MediaInfo_90x90.png</PackageIconUrl>
+    <Description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
+MediaInfo .NET wrapper with support network AV streams</Description>
+    <PackageReleaseNotes>Copyright © 2005-2019 Team MediaPortal
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\$(Configuration)\MediaInfo.Wrapper.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x64' ">
-    <OutputPath>bin\x64\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\x64\$(Configuration)\MediaInfo.Wrapper.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
-    <OutputPath>bin\x86\$(Configuration)\</OutputPath>
-    <DocumentationFile>bin\x86\$(Configuration)\MediaInfo.Wrapper.xml</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Builder\AudioStreamBuilder.cs" />
-    <Compile Include="Builder\ChapterStreamBuilder.cs" />
-    <Compile Include="Builder\IMediaBuilder.cs" />
-    <Compile Include="Builder\LanguageMediaStreamBuilder.cs" />
-    <Compile Include="Builder\MediaStreamBuilder.cs" />
-    <Compile Include="Builder\MenuStreamBuilder.cs" />
-    <Compile Include="Builder\SubtitleStreamBuilder.cs" />
-    <Compile Include="Builder\TagHelper.cs" />
-    <Compile Include="Builder\VideoStreamBuilder.cs" />
-    <Compile Include="Model\AspectRatio.cs" />
-    <Compile Include="Model\AudioCodec.cs" />
-    <Compile Include="Model\AudioStream.cs" />
-    <Compile Include="Model\AudioTags.cs" />
-    <Compile Include="Model\BaseTags.cs" />
-    <Compile Include="Model\ChapterStream.cs" />
-    <Compile Include="FileNameExtensions.cs" />
-    <Compile Include="GlobalMemory.cs" />
-    <Compile Include="LanguageHelper.cs" />
-    <Compile Include="Model\LanguageMediaStream.cs" />
-    <Compile Include="MediaInfo.cs" />
-    <Compile Include="MediaInfoWrapper.cs" />
-    <Compile Include="Model\MediaStream.cs" />
-    <Compile Include="Model\MenuStream.cs" />
-    <Compile Include="Model\StereoMode.cs" />
-    <Compile Include="Model\SubtitleCodec.cs" />
-    <Compile Include="Model\VideoCodec.cs" />
-    <Compile Include="Model\VideoTags.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\SubtitleStream.cs" />
-    <Compile Include="Model\VideoStream.cs" />
+    <PackageReference Include="MediaInfo.Native" Version="18.12.2" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\packages\MediaInfo.Native.18.12.0\build\MediaInfo.Native.targets" Condition="Exists('..\packages\MediaInfo.Native.18.12.0\build\MediaInfo.Native.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\MediaInfo.Native.18.12.0\build\MediaInfo.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MediaInfo.Native.18.12.0\build\MediaInfo.Native.targets'))" />
-  </Target>
+
 </Project>

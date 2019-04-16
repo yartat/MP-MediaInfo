@@ -343,6 +343,10 @@ namespace MediaInfo.Builder
       if (result.Codec == VideoCodec.Undefined)
       {
         result.Codec = Get<VideoCodec>((int)NativeMethods.Video.Video_Codec, InfoKind.Text, TryGetCodec);
+        if (result.Codec == VideoCodec.Undefined)
+        {
+          result.Codec = Get<VideoCodec>((int)NativeMethods.Video.Video_CodecID, InfoKind.Text, TryGetCodec);
+        }
       }
 
       switch (result.Codec)

@@ -76,7 +76,10 @@ namespace MediaInfo.Builder
       { "SAMR", AudioCodec.Amr },
       { "160", AudioCodec.Wma1 },
       { "161", AudioCodec.Wma2 },
-      { "162", AudioCodec.Wma9 },
+      //{ "162", AudioCodec.WmaPro },
+      //{ "163", AudioCodec.WmaLossless },
+      { "MAC3", AudioCodec.Mac3 },
+      { "MAC6", AudioCodec.Mac6 },
     };
 
     private static readonly Dictionary<string, AudioCodec> Codecs = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
@@ -104,6 +107,7 @@ namespace MediaInfo.Builder
       { "FLAC", AudioCodec.Flac },
       { "OPUS", AudioCodec.Opus },
       { "TTA1", AudioCodec.Tta1 },
+      { "TTA", AudioCodec.Tta1 },
       { "VORBIS", AudioCodec.Vorbis },
       { "WAVPACK4", AudioCodec.WavPack4 },
       { "WAVPACK", AudioCodec.WavPack },
@@ -141,8 +145,23 @@ namespace MediaInfo.Builder
       { "AMR", AudioCodec.Amr },
       { "160", AudioCodec.Wma1 },
       { "161", AudioCodec.Wma2 },
-      { "162", AudioCodec.Wma9 },
+      { "WMAPRO", AudioCodec.WmaPro },
+      { "WMAVOICE", AudioCodec.WmaVoice },
+      { "WMALossless", AudioCodec.WmaLossless },
+      { "WMA3", AudioCodec.Wma3 },
       { "DSD", AudioCodec.Dsd },
+      { "Atrac3", AudioCodec.Atrac3 },
+      { "Atrac1", AudioCodec.Atrac1 },
+      { "Atrac9", AudioCodec.Atrac9 },
+      { "ADPCM", AudioCodec.Adpcm },
+      { "G.723.1", AudioCodec.G_723_1 },
+      { "Truespeech", AudioCodec.Truespeech },
+      { "Monkey's Audio", AudioCodec.Ape },
+      { "RK Audio", AudioCodec.RkAudio },
+      { "RealAudio Lossless", AudioCodec.Real10 },
+      { "ALS", AudioCodec.Als },
+      { "IAC2", AudioCodec.Iac2 },
+      { "MLP FBA", AudioCodec.Truehd },
     };
 
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
@@ -202,8 +221,13 @@ namespace MediaInfo.Builder
         var codecValue = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text);
         if (codecValue.Equals("PCM", StringComparison.OrdinalIgnoreCase))
         {
-          var endianness = Get((int)NativeMethods.Audio.Audio_Codec_Settings_Endianness, InfoKind.Text);
+          var endianness = Get((int)NativeMethods.Audio.Audio_Format_Settings_Endianness, InfoKind.Text);
           codecValue = $"{codecValue}{(string.IsNullOrEmpty(endianness) ? string.Empty : " " + endianness)}";
+        }
+        if (codecValue.Equals("WMA", StringComparison.OrdinalIgnoreCase))
+        {
+          var profile = Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text);
+          codecValue = $"{codecValue}{(string.IsNullOrEmpty(profile) ? string.Empty : profile)}";
         }
 
         result.Codec = GetCodecIdByCodecName(codecValue);

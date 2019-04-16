@@ -77,7 +77,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\HD Audio\8_Channel_ID.m4a", 8, 0, 48000.0, AudioCodec.AacMpeg4Lc)]
     [InlineData(@"..\..\..\..\HD Audio\96-24.dts", 6, 24, 96000.0, AudioCodec.DtsHd)]
     [InlineData(@"..\..\..\..\HD Audio\Berlioz - Hungarian March.aac", 6, 0, 48000.0, AudioCodec.AacMpeg4LcSbr)]
-    [InlineData(@"..\..\..\..\HD Audio\Berlioz - Hungarian March.wma", 6, 24, 96000.0, AudioCodec.Wma9)]
+    [InlineData(@"..\..\..\..\HD Audio\Berlioz - Hungarian March.wma", 6, 24, 96000.0, AudioCodec.WmaPro)]
     [InlineData(@"..\..\..\..\HD Audio\Broadway-5.1-48khz-448kbit.ac3", 6, 16, 48000.0, AudioCodec.Ac3)]
     [InlineData(@"..\..\..\..\HD Audio\csi_miami_5.1_256_spx.eac3", 6, 0, 48000.0, AudioCodec.Eac3)]
     [InlineData(@"..\..\..\..\HD Audio\csi_miami_5.1_256_spx_nero.flac", 6, 24, 48000.0, AudioCodec.Flac)]
@@ -108,12 +108,116 @@ namespace MediaInfo.Wrapper.Tests
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("FLAC file");
+      _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
       _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream does not exist");
       _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream does not exist");
       _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+      var audio = _mediaInfoWrapper.AudioStreams[0];
+      audio.Codec.Should().Be(codec);
+      audio.Channel.Should().Be(channels);
+      audio.BitDepth.Should().Be(bitDepth);
+      audio.SamplingRate.Should().Be(samplingRate);
+    }
+
+    [TheoryInDebugOnly]
+    [InlineData(@"..\..\..\..\Audio\8_Channel_ID.wav", 8, 24, 48000.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\8_Channel_ID.wma", 8, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\16bit.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\24bit.wv", 2, 24, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\24kbps.wvc", 1, 16, 8000.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\27 MC Solaar - Rmi.mp3", 2, 0, 22050.0, AudioCodec.MpegLayer3)]
+    [InlineData(@"..\..\..\..\Audio\32bit_float.wv", 2, 32, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\32bit_int.wv", 2, 32, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\32bit_int_p.wv", 2, 32, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\320kbps.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\320kbps.wvc", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\440hz.mlp", 2, 16, 44100.0, AudioCodec.Mlp)]
+    [InlineData(@"..\..\..\..\Audio\440hz.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\adpcmtst.wav", 2, 4, 11025.0, AudioCodec.Adpcm)]
+    [InlineData(@"..\..\..\..\Audio\ALAC_6ch.mov", 6, 0, 48000.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\ALAC_24bits2.mov", 2, 0, 48000.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\alac_encoding_failes.wav", 2, 16, 44100.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\ambient4_192_mulitchannel.wma", 6, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\at3p_sample1.oma", 2, 0, 44100.0, AudioCodec.Atrac3)]
+    [InlineData(@"..\..\..\..\Audio\at3p_sample6.oma", 2, 0, 44100.0, AudioCodec.Atrac3)]
+    [InlineData(@"..\..\..\..\Audio\Ayumi Hamasaki - ever free.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\Bach1-1.aiff", 1, 8, 22255.0, AudioCodec.PcmIntBig)]
+    [InlineData(@"..\..\..\..\Audio\basicinstinct.ogm", 2, 0, 44100.0, AudioCodec.Vorbis)]
+    [InlineData(@"..\..\..\..\Audio\Beethovens nionde symfoni (Scherzo)-2.wma", 2, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\Boys3-1.aiff", 1, 8, 22255.0, AudioCodec.Mac3)]
+    [InlineData(@"..\..\..\..\Audio\Boys6-1.aiff", 1, 8, 22255.0, AudioCodec.Mac6)]
+    [InlineData(@"..\..\..\..\Audio\chrisrock-nosex.asf", 1, 16, 16000.0, AudioCodec.Wma1)]
+    [InlineData(@"..\..\..\..\Audio\classical_16_16_1_8000_off_0_off_1_29.wma", 1, 16, 16000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\Classical_96_24_6_256000_1_20.wma", 6, 24, 96000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\cristinreel.mov", 2, 8, 44100.0, AudioCodec.Mac6)]
+    [InlineData(@"..\..\..\..\Audio\DG.wmv", 2, 16, 48000.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\dune2.avi", 2, 0, 48000.0, AudioCodec.MpegLayer3)]
+    [InlineData(@"..\..\..\..\Audio\edward_4.0_24bit.wv", 4, 24, 48000.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\eoa.wma", 2, 16, 44100.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\farm.wav", 1, 8, 11025.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\ffvorbis_crash.ogm", 2, 0, 48000.0, AudioCodec.Vorbis)]
+    [InlineData(@"..\..\..\..\Audio\format-0x42-speechtest-MSG5.3.asf", 1, 0, 8000.0, AudioCodec.G_723_1)]
+    [InlineData(@"..\..\..\..\Audio\God Save The Queen.mlp", 6, 24, 96000.0, AudioCodec.Mlp)]
+    [InlineData(@"..\..\..\..\Audio\H263_ALAC_24bits.mov", 2, 0, 48000.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\intro - Creative ADPCM.wav", 1, 4, 44100.0, AudioCodec.Adpcm)]
+    [InlineData(@"..\..\..\..\Audio\jpg_in_mp3.mp3", 2, 0, 44100.0, AudioCodec.MpegLayer3)]
+    [InlineData(@"..\..\..\..\Audio\large_superframe.wma", 2, 16, 44100.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\lbd-ts.wav", 1, 1, 8000.0, AudioCodec.Truespeech)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.ape", 2, 16, 44100.0, AudioCodec.Ape)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.flac", 2, 16, 44100.0, AudioCodec.Flac)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.m4a", 2, 16, 44100.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.rka", 2, 16, 44100.0, AudioCodec.RkAudio)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.rmvb", 0, 0, 0.0, AudioCodec.Real10)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.tta", 2, 16, 44100.0, AudioCodec.Tta1)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.wma", 2, 16, 44100.0, AudioCodec.WmaLossless)]
+    [InlineData(@"..\..\..\..\Audio\luckynight.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\luckynight-als.mp4", 2, 0, 44100.0, AudioCodec.Als)]
+    [InlineData(@"..\..\..\..\Audio\Lumme-Badloop.ogg", 2, 0, 44100.0, AudioCodec.Vorbis)]
+    [InlineData(@"..\..\..\..\Audio\mac3audio.mov", 2, 8, 22050.0, AudioCodec.Mac3)]
+    [InlineData(@"..\..\..\..\Audio\mjpega.mov", 1, 8, 8000.0, AudioCodec.Mac6)]
+    [InlineData(@"..\..\..\..\Audio\mp3_with_embedded_albumart.mp3", 2, 0, 44100.0, AudioCodec.MpegLayer3)]
+    [InlineData(@"..\..\..\..\Audio\mpeg-in-ogm.ogm", 2, 0, 48000.0, AudioCodec.Vorbis)]
+    [InlineData(@"..\..\..\..\Audio\mpeg_layer1_audio.mpg", 2, 0, 44100.0, AudioCodec.MpegLayer1)]
+    [InlineData(@"..\..\..\..\Audio\mplayer_sample-audio_0x161.wmv", 2, 16, 44100.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\newedition-coolitnow.24bit-lpcm.vob", 2, 24, 48000.0, AudioCodec.PcmIntBig)]
+    [InlineData(@"..\..\..\..\Audio\newOrleans_192_mulitchannel.wma", 6, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\old_midi_stuff.m4a", 2, 16, 44100.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\panslab_sample_5.1_16bit.wv", 6, 16, 48000.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\panslab_sample_5.1_16bit_lossy.wv", 6, 16, 48000.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\panslab_sample_7.1_16bit_lossy.wv", 8, 16, 48000.0, AudioCodec.WavPack)]
+    [InlineData(@"..\..\..\..\Audio\piece.wmv", 6, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\qanda_2008_ep10.wmv", 2, 16, 44100.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\quicktime-newcodec-applelosslessaudiocodec.m4a", 2, 16, 44100.0, AudioCodec.Alac)]
+    [InlineData(@"..\..\..\..\Audio\raam28mb.wmv", 2, 16, 22050.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\rum.wma", 2, 16, 32000.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\saltnpepa-doyouwantme.asf", 2, 16, 32000.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\sonateno14op27-2.aa3", 2, 0, 44100.0, AudioCodec.Atrac3)]
+    [InlineData(@"..\..\..\..\Audio\streaming.wina.com-live.asx", 1, 16, 22050.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\streaming_CBR-19K-timecomp.wma", 1, 16, 16000.0, AudioCodec.WmaVoice)]
+    [InlineData(@"..\..\..\..\Audio\surge-1-8-MAC3.mov", 1, 8, 44100.0, AudioCodec.Mac3)]
+    [InlineData(@"..\..\..\..\Audio\surge-1-8-MAC3.wav", 1, 16, 44100.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\TAXI8BIT.wav", 1, 8, 11111.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\test-96.wav", 2, 24, 96000.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\testvector01.ogg", 2, 0, 44100.0, AudioCodec.Opus)]
+    [InlineData(@"..\..\..\..\Audio\testvector07.ogg", 2, 0, 44100.0, AudioCodec.Opus)]
+    [InlineData(@"..\..\..\..\Audio\tide_8-bit_22KHz.wav", 1, 8, 22050.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\tide_16-bit_44KHz_master.wav", 1, 16, 44100.0, AudioCodec.PcmIntLit)]
+    [InlineData(@"..\..\..\..\Audio\toesidebackroll.AVI", 2, 2, 44100.0, AudioCodec.Iac2)]
+    [InlineData(@"..\..\..\..\Audio\traciespencer-allaboutyou.asf", 2, 16, 22050.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\TrueHD.raw", 6, 0, 48000.0, AudioCodec.Truehd)]
+    [InlineData(@"..\..\..\..\Audio\truespeech_a5.wav", 1, 1, 8000.0, AudioCodec.Truespeech)]
+    [InlineData(@"..\..\..\..\Audio\vc1-with-truehd.m2ts", 6, 16, 48000.0, AudioCodec.Ac3)]
+    [InlineData(@"..\..\..\..\Audio\vorbis3plus_sample.avi", 2, 0, 48000.0, AudioCodec.Vorbis)]
+    [InlineData(@"..\..\..\..\Audio\WMA_protected_napster.wma", 2, 16, 44100.0, AudioCodec.Wma2)]
+    [InlineData(@"..\..\..\..\Audio\wmav_8.wma", 1, 16, 8000.0, AudioCodec.WmaVoice)]
+    [InlineData(@"..\..\..\..\Audio\wmv-surroundtest_720p.wmv", 6, 24, 48000.0, AudioCodec.WmaPro)]
+    [InlineData(@"..\..\..\..\Audio\wmv3-wmaspeeech.wmv", 1, 16, 8000.0, AudioCodec.WmaVoice)]
+    public void LoadAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       var audio = _mediaInfoWrapper.AudioStreams[0];
       audio.Codec.Should().Be(codec);
       audio.Channel.Should().Be(channels);

@@ -81,7 +81,7 @@ namespace MediaInfo.Model
       { AudioCodec.Ape, "Monkey's Audio" },
       { AudioCodec.Wma1, "Windows Audio" },
       { AudioCodec.Wma2, "Windows Audio" },
-      { AudioCodec.Wma9, "Windows Audio Pro" },
+      { AudioCodec.WmaPro, "Windows Audio Pro" },
       { AudioCodec.Adpcm, "ADPCM" },
       { AudioCodec.Amr, "Adaptive Multi-Rate" },
       { AudioCodec.Atrac1, "SDSS" },

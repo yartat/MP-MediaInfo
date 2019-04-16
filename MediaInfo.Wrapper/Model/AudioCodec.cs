@@ -188,6 +188,11 @@ namespace MediaInfo.Model
     Real28_8,
 
     /// <summary>
+    /// The RealAudio Lossless (RealAudio 10)
+    /// </summary>
+    Real10,
+
+    /// <summary>
     /// The Real Audio
     /// </summary>
     RealCook,
@@ -288,9 +293,24 @@ namespace MediaInfo.Model
     Wma2,
 
     /// <summary>
-    /// Windows Media Audio 9
+    /// Windows Media Audio v3
     /// </summary>
-    Wma9,
+    Wma3,
+
+    /// <summary>
+    /// Windows Media Audio Voice
+    /// </summary>
+    WmaVoice,
+
+    /// <summary>
+    /// Windows Media Audio Pro
+    /// </summary>
+    WmaPro,
+
+    /// <summary>
+    /// Windows Media Audio Lossless
+    /// </summary>
+    WmaLossless,
 
     /// <summary>
     /// Adaptive differential pulse-code modulation
@@ -330,6 +350,41 @@ namespace MediaInfo.Model
     /// <summary>
     /// Direct Stream Digital
     /// </summary>
-    Dsd
+    Dsd,
+
+    /// <summary>
+    /// MAC3
+    /// </summary>
+    Mac3,
+
+    /// <summary>
+    /// MAC6
+    /// </summary>
+    Mac6,
+
+    /// <summary>
+    /// G.723.1
+    /// </summary>
+    G_723_1,
+
+    /// <summary>
+    /// Truespeech
+    /// </summary>
+    Truespeech,
+
+    /// <summary>
+    /// RK Audio
+    /// </summary>
+    RkAudio,
+
+    /// <summary>
+    /// MPEG-4 Audio Lossless Coding
+    /// </summary>
+    Als,
+
+    /// <summary>
+    /// Ligos IAC2
+    /// </summary>
+    Iac2,
   }
 }

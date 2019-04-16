@@ -140,6 +140,17 @@ namespace MediaInfo.Builder
       { "V_MPEGH/ISO/HEVC", VideoCodec.MpeghIsoHevc },
       { "V_MPEG4/MS/V2", VideoCodec.Mpeg4MsV2 },
       { "V_MPEG4/MS/V3", VideoCodec.Mpeg4MsV3 },
+      { "V_MS/VFW/FOURCC / DX50", VideoCodec.Divx50 },
+      { "V_MS/VFW/FOURCC / DVX1", VideoCodec.Divx1 },
+      { "V_MS/VFW/FOURCC / DIV1", VideoCodec.Divx1 },
+      { "V_MS/VFW/FOURCC / DVX2", VideoCodec.Divx2 },
+      { "V_MS/VFW/FOURCC / DIV2", VideoCodec.Divx2 },
+      { "V_MS/VFW/FOURCC / DVX3", VideoCodec.Divx3 },
+      { "V_MS/VFW/FOURCC / DIV3", VideoCodec.Divx3 },
+      { "V_MS/VFW/FOURCC / DIV4", VideoCodec.Divx4 },
+      { "V_MS/VFW/FOURCC / DIV5", VideoCodec.Divx50 },
+      { "V_MS/VFW/FOURCC / DIV6", VideoCodec.Mpeg4MsV3 },
+      { "V_MS/VFW/FOURCC / DIVX", VideoCodec.Divx4 },
       { "V_MPEG1", VideoCodec.Mpeg1 },
       { "MPEG1", VideoCodec.Mpeg1 },
       { "MPEG-1", VideoCodec.Mpeg1 },
@@ -337,7 +348,14 @@ namespace MediaInfo.Builder
       switch (result.Codec)
       { 
         case VideoCodec.Mpeg4:
-          var additionalCodec = Get<VideoCodec>((int)NativeMethods.Video.Video_Format_Settings_Matrix, InfoKind.Text, TryGetCodec);
+          var additionalCodec = Get<VideoCodec>((int)NativeMethods.Video.Video_CodecID, InfoKind.Text, TryGetCodec);
+          if (additionalCodec != VideoCodec.Undefined)
+          {
+            result.Codec = additionalCodec;
+            break;
+          }
+          
+          additionalCodec = Get<VideoCodec>((int)NativeMethods.Video.Video_Format_Settings_Matrix, InfoKind.Text, TryGetCodec);
           if (additionalCodec != VideoCodec.Undefined)
           { 
             result.Codec = additionalCodec;

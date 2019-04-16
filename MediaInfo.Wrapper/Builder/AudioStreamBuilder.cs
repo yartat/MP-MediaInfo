@@ -148,6 +148,7 @@ namespace MediaInfo.Builder
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
     {
       { "MLP FBA 16-ch", AudioCodec.TruehdAtmos },
+      { "FBA 16-ch", AudioCodec.TruehdAtmos },
       { "16-ch", AudioCodec.TruehdAtmos },
       { "MLP 16-ch", AudioCodec.TruehdAtmos },
       { "Dep JOC", AudioCodec.Eac3Atmos },
@@ -155,9 +156,15 @@ namespace MediaInfo.Builder
       { "Dep", AudioCodec.Eac3 },
       { "XLL", AudioCodec.DtsHdMa },
       { "ES XXCH XLL", AudioCodec.DtsHdMa },
+      { "ES XLL", AudioCodec.DtsHdMa },
       { "ES XXCH XLL X", AudioCodec.DtsX },
+      { "XXCH XLL X", AudioCodec.DtsX },
       { "XLL X", AudioCodec.DtsX },
+      { "ES XLL X", AudioCodec.DtsX },
       { "XBR", AudioCodec.DtsHdHra },
+      { "ES XXCH XBR", AudioCodec.DtsHdHra },
+      { "ES XBR", AudioCodec.DtsHdHra },
+      { "XXCH XBR", AudioCodec.DtsHdHra },
       { "XXCh", AudioCodec.DtsHd },
       { "XCh", AudioCodec.DtsEs },
       { "ES XXCH", AudioCodec.DtsEs },

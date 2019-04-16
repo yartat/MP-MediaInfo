@@ -121,7 +121,7 @@ namespace MediaInfo.Wrapper.Tests
       audio.SamplingRate.Should().Be(samplingRate);
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"..\..\..\..\HD Audio\7.1auditionOutLeader_v2_rtb.mp4", 8, 0, 48000.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"..\..\..\..\HD Audio\7_pt_1_sample.evo", 8, 0, 48000.0, AudioCodec.Eac3, 0, 1)]
     [InlineData(@"..\..\..\..\HD Audio\12-10_19-18-52_BBC HD_Wild China.ts", 6, 0, 48000.0, AudioCodec.AacMpeg4Lc, 0, 2)]

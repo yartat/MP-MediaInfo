@@ -7,27 +7,28 @@ branches:
 image: Visual Studio 2017
 configuration: Release
 
-platform: Any CPU
-
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
   assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
-cache:
-  - packages -> **\packages.config
+  file_version: '{version}'
+  informational_version: '{version}'
 
 before_build:
 - cmd: >-
     appveyor-retry dotnet restore
 
 build:
-  publish_nuget: true
   verbosity: minimal
 
 test_script:
+- cmd: >-
+    dotnet build .\MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj /p:Configuration=Release
 
-- cmd: dotnet test .\MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj --no-build
+    dotnet test .\MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj /p:Configuration=Release
 
+artifacts:
+- path: .\MediaInfo.Wrapper\bin\Release\*.nupkg
+  name: package

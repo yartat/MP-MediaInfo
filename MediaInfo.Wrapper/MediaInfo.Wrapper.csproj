@@ -60,6 +60,7 @@
     <Compile Include="FileNameExtensions.cs" />
     <Compile Include="GlobalMemory.cs" />
     <Compile Include="LanguageHelper.cs" />
+    <Compile Include="Model\FrameRateMode.cs" />
     <Compile Include="Model\LanguageMediaStream.cs" />
     <Compile Include="MediaInfo.cs" />
     <Compile Include="MediaInfoWrapper.cs" />

@@ -2,35 +2,41 @@
 
 // Copyright (C) 2005-2019 Team MediaPortal
 // http://www.team-mediaportal.com
-// 
+//
 // MediaPortal is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // MediaPortal is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
 
-#endregion
+#endregion Copyright (C) 2005-2019 Team MediaPortal
 
 using System;
 using System.Collections.Generic;
 
 namespace MediaInfo.Builder
 {
-  /// <summary>
-  /// Describes base methods to build video stream.
-  /// </summary>
-  internal class VideoStreamBuilder : LanguageMediaStreamBuilder<VideoStream>
-  {
-    #region match dictionaries
+    /// <summary>
+    /// Describes base methods to build video stream.
+    /// </summary>
+    internal class VideoStreamBuilder : LanguageMediaStreamBuilder<VideoStream>
+    {
+        #region match dictionaries
 
-    private static readonly Dictionary<string, AspectRatio> Ratios = new Dictionary<string, AspectRatio>
+        private static readonly Dictionary<string, FrameRateMode> FrameRateModes = new Dictionary<string, FrameRateMode>
+    {
+      { "CFR", FrameRateMode.CFR},
+      { "VFR", FrameRateMode.VFR },
+    };
+
+        private static readonly Dictionary<string, AspectRatio> Ratios = new Dictionary<string, AspectRatio>
     {
       { "1:1", AspectRatio.Opaque },
       { "5:4", AspectRatio.HighEndDataGraphics },
@@ -49,7 +55,7 @@ namespace MediaInfo.Builder
       { "2.334", AspectRatio.CinemaScope }
     };
 
-    private static readonly Dictionary<string, StereoMode> StereoModes = new Dictionary<string, StereoMode>
+        private static readonly Dictionary<string, StereoMode> StereoModes = new Dictionary<string, StereoMode>
     {
       { "side-by-side (left eye is first)", StereoMode.SideBySideLeft },
       { "top-bottom (right eye is first)", StereoMode.TopBottomRight },
@@ -67,7 +73,7 @@ namespace MediaInfo.Builder
       { "both eyes laced in one block (right eye is first)", StereoMode.BothEyesLacedRight }
     };
 
-    private static readonly Dictionary<string, VideoCodec> VideoCodecs = new Dictionary<string, VideoCodec>
+        private static readonly Dictionary<string, VideoCodec> VideoCodecs = new Dictionary<string, VideoCodec>
     {
       { "V_UNCOMPRESSED", VideoCodec.Uncompressed },
       { "V_DIRAC", VideoCodec.Dirac },
@@ -199,103 +205,109 @@ namespace MediaInfo.Builder
       { "WMV3", VideoCodec.Wmv3 },
     };
 
-    #endregion
+        #endregion match dictionaries
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="VideoStreamBuilder"/> class.
-    /// </summary>
-    /// <param name="info">The media info object.</param>
-    /// <param name="number">The stream number.</param>
-    /// <param name="position">The stream position.</param>
-    public VideoStreamBuilder(MediaInfo info, int number, int position)
+        /// <inheritdoc />
+        public override MediaStreamKind Kind => MediaStreamKind.Video;
+
+        /// <inheritdoc />
+        protected override StreamKind StreamKind => StreamKind.Video;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VideoStreamBuilder"/> class.
+        /// </summary>
+        /// <param name="info">The media info object.</param>
+        /// <param name="number">The stream number.</param>
+        /// <param name="position">The stream position.</param>
+        public VideoStreamBuilder(MediaInfo info, int number, int position)
       : base(info, number, position)
-    {
-    }
-
-    /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Video;
-
-    /// <inheritdoc />
-    protected override StreamKind StreamKind => StreamKind.Video;
-
-    public override VideoStream Build()
-    {
-      var result = base.Build();
-      result.FrameRate = Get<double>("FrameRate", double.TryParse);
-      result.Width = Get<int>("Width", int.TryParse);
-      result.Height = Get<int>("Height", int.TryParse);
-      result.Bitrate = Get<double>("BitRate", double.TryParse);
-      if (Math.Abs(result.Bitrate) < 1E-7)
-      {
-        result.Bitrate = Get<double>("BitRate_Maximum", double.TryParse);
-      }
-      result.AspectRatio = Get<AspectRatio>("DisplayAspectRatio", TryGetAspectRatio);
-      result.Interlaced = GetInterlaced(Get("ScanType"));
-      result.Stereoscopic = Get<int>("MultiView_Count", int.TryParse) >= 2
-                       ? Get<StereoMode>("MultiView_Layout", TryGetStereoscopic)
-                       : StereoMode.Mono;
-      result.Format = Get("Format");
-      result.Codec = Get<VideoCodec>("CodecID", TryGetCodecId);
-      if (result.Codec == VideoCodec.Undefined)
-      {
-        result.Codec = Get<VideoCodec>("Codec", TryGetCodec);
-      }
-
-      result.Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse));
-      result.BitDepth = Get<int>("BitDepth", int.TryParse);
-      result.CodecName = GetFullCodecName();
-      result.Tags = TagHelper.GetAllTags<VideoTags>(Info, StreamKind, StreamPosition);
-
-      return result;
-    }
-
-    private static bool TryGetCodecId(string codec, out VideoCodec result)
-    {
-      return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
-    }
-
-    private static bool TryGetCodec(string codec, out VideoCodec result)
-    {
-      return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
-    }
-
-    private static bool TryGetStereoscopic(string layout, out StereoMode result)
-    {
-      return StereoModes.TryGetValue(layout.ToLower(), out result);
-    }
-
-    private static bool GetInterlaced(string source)
-    {
-      return source?.ToLower().Contains("interlaced") ?? false;
-    }
-
-    private static bool TryGetAspectRatio(string source, out AspectRatio result)
-    {
-      return Ratios.TryGetValue(source, out result);
-    }
-
-    private string GetFullCodecName()
-    {
-      var strCodec = Get("Format").ToUpper();
-      var strCodecVer = Get("Format_Version").ToUpper();
-      if (strCodec == "MPEG-4 VISUAL")
-      {
-        strCodec = Get("CodecID").ToUpperInvariant();
-      }
-      else
-      {
-        if (!string.IsNullOrEmpty(strCodecVer))
         {
-          strCodec = (strCodec + " " + strCodecVer).Trim();
-          var strCodecProf = Get("Format_Profile").ToUpper();
-          if (strCodecProf != "MAIN@MAIN")
-          {
-            strCodec = (strCodec + " " + strCodecProf).Trim();
-          }
         }
-      }
 
-      return strCodec.Replace("+", "PLUS");
+        public override VideoStream Build()
+        {
+            var result = base.Build();
+            result.FrameRateMode = Get<FrameRateMode>("FrameRate_Mode", TryGetFrameRateMode);
+            result.FrameRate = Get<double>("FrameRate", double.TryParse);
+            result.Width = Get<int>("Width", int.TryParse);
+            result.Height = Get<int>("Height", int.TryParse);
+            result.Bitrate = Get<double>("BitRate", double.TryParse);
+            if (Math.Abs(result.Bitrate) < 1E-7)
+            {
+                result.Bitrate = Get<double>("BitRate_Maximum", double.TryParse);
+            }
+            result.AspectRatio = Get<AspectRatio>("DisplayAspectRatio", TryGetAspectRatio);
+            result.Interlaced = GetInterlaced(Get("ScanType"));
+            result.Stereoscopic = Get<int>("MultiView_Count", int.TryParse) >= 2
+                             ? Get<StereoMode>("MultiView_Layout", TryGetStereoscopic)
+                             : StereoMode.Mono;
+            result.Format = Get("Format");
+            result.Codec = Get<VideoCodec>("CodecID", TryGetCodecId);
+            if (result.Codec == VideoCodec.Undefined)
+            {
+                result.Codec = Get<VideoCodec>("Codec", TryGetCodec);
+            }
+
+            result.Duration = TimeSpan.FromMilliseconds(Get<double>("Duration", double.TryParse));
+            result.BitDepth = Get<int>("BitDepth", int.TryParse);
+            result.CodecName = GetFullCodecName();
+            result.Tags = TagHelper.GetAllTags<VideoTags>(Info, StreamKind, StreamPosition);
+
+            return result;
+        }
+
+        private static bool GetInterlaced(string source)
+        {
+            return source?.ToLower().Contains("interlaced") ?? false;
+        }
+
+        private static bool TryGetAspectRatio(string source, out AspectRatio result)
+        {
+            return Ratios.TryGetValue(source, out result);
+        }
+
+        private static bool TryGetCodec(string codec, out VideoCodec result)
+        {
+            return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
+        }
+
+        private static bool TryGetCodecId(string codec, out VideoCodec result)
+        {
+            return VideoCodecs.TryGetValue(codec.ToUpper(), out result);
+        }
+
+        private static bool TryGetFrameRateMode(string source, out FrameRateMode result)
+        {
+            return FrameRateModes.TryGetValue(source, out result);
+        }
+
+        private static bool TryGetStereoscopic(string layout, out StereoMode result)
+        {
+            return StereoModes.TryGetValue(layout.ToLower(), out result);
+        }
+
+        private string GetFullCodecName()
+        {
+            var strCodec = Get("Format").ToUpper();
+            var strCodecVer = Get("Format_Version").ToUpper();
+            if (strCodec == "MPEG-4 VISUAL")
+            {
+                strCodec = Get("CodecID").ToUpperInvariant();
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(strCodecVer))
+                {
+                    strCodec = (strCodec + " " + strCodecVer).Trim();
+                    var strCodecProf = Get("Format_Profile").ToUpper();
+                    if (strCodecProf != "MAIN@MAIN")
+                    {
+                        strCodec = (strCodec + " " + strCodecProf).Trim();
+                    }
+                }
+            }
+
+            return strCodec.Replace("+", "PLUS");
+        }
     }
-  }
 }

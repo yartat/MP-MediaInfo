@@ -386,6 +386,14 @@ namespace MediaInfo
     public bool Is3D => VideoStreams.Any(x => x.Stereoscopic != StereoMode.Mono);
 
     /// <summary>
+    /// Gets a value indicating whether media has at least one video stream with HDR effect.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if video stream with HDR effect; otherwise, <c>false</c>.
+    /// </value>
+    public bool IsHdr => VideoStreams.Any(x => x.Hdr != Hdr.None);
+
+    /// <summary>
     /// Gets the video streams.
     /// </summary>
     /// <value>

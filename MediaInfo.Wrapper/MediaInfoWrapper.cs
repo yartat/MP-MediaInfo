@@ -71,6 +71,9 @@ namespace MediaInfo
       { ".ZEG", true },
     };
 
+    private readonly ILogger _logger;
+    private readonly string _filePath;
+
     #endregion
 
     #region ctor
@@ -79,8 +82,9 @@ namespace MediaInfo
     /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
     /// </summary>
     /// <param name="filePath">The file path.</param>
-    public MediaInfoWrapper(string filePath)
-      : this (filePath, Environment.Is64BitProcess ? @".\x64" : @".\x86")
+    /// <param name="logger">The logger instance.</param>
+    public MediaInfoWrapper(string filePath, ILogger logger = null)
+      : this (filePath, Environment.Is64BitProcess ? @".\x64" : @".\x86", logger)
     {
     }
 
@@ -89,8 +93,11 @@ namespace MediaInfo
     /// </summary>
     /// <param name="filePath">The file path.</param>
     /// <param name="pathToDll">The path to DLL.</param>
-    protected MediaInfoWrapper(string filePath, string pathToDll)
+    protected MediaInfoWrapper(string filePath, string pathToDll, ILogger logger)
     {
+      _filePath = filePath;
+      _logger = logger;
+      logger.LogDebug("Analyzing media {0}.", filePath);
       MediaInfoNotloaded = false;
       VideoStreams = new List<VideoStream>();
       AudioStreams = new List<AudioStream>();
@@ -98,17 +105,14 @@ namespace MediaInfo
       Chapters = new List<ChapterStream>();
       MenuStreams = new List<MenuStream>();
 
-      if (!MediaInfoExist(pathToDll))
-      {
-        MediaInfoNotloaded = true;
-        return;
-      }
-
       if (string.IsNullOrEmpty(filePath))
       {
         MediaInfoNotloaded = true;
+        logger.LogError("Media file name to processing is null or empty");
         return;
       }
+
+      var realPathToDll = IfExistsPath(logger, ".\\", () => IfExistsPath(logger, pathToDll, () => null));
 
       var isTv = filePath.IsLiveTv();
       var isRadio = filePath.IsLiveTv();
@@ -119,6 +123,7 @@ namespace MediaInfo
       if (isTv || isRadio || isRtsp)
       {
         MediaInfoNotloaded = true;
+        logger.LogError($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
         return;
       }
 
@@ -131,7 +136,7 @@ namespace MediaInfo
         {
           if (filePath.EndsWith(".ifo", StringComparison.OrdinalIgnoreCase))
           {
-            filePath = ProcessDvd(filePath, pathToDll, providerNumber);
+            filePath = ProcessDvd(filePath, realPathToDll, providerNumber);
           }
           else if (filePath.EndsWith(".bdmv", StringComparison.OrdinalIgnoreCase))
           {
@@ -147,12 +152,92 @@ namespace MediaInfo
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
         }
 
-        ExtractInfo(filePath, pathToDll, providerNumber);
+        ExtractInfo(filePath, realPathToDll, providerNumber);
+        logger.LogDebug($"Process file {filePath} was completed successfully");
       }
-      catch(Exception exception)
+      catch (Exception exception)
       {
-          Console.WriteLine(exception.Message);
+        logger.LogError(exception, "Error processing media file");
       }
+    }
+
+    public void WriteInfo()
+    {
+      _logger.LogInformation($"Inspecting media    : {_filePath}");
+      if (MediaInfoNotloaded)
+      { 
+        _logger.LogWarning($"MediaInfo.dll was not loaded!");
+      }
+      else
+      {
+        _logger.LogDebug($"DLL version         : {Version}");
+        
+        // General
+        _logger.LogDebug($"Media duration      : {TimeSpan.FromMilliseconds(Duration)}");
+        _logger.LogDebug($"Has audio           : {(AudioStreams?.Count ?? 0) > 0}");
+        _logger.LogDebug($"Has video           : {HasVideo}");
+        _logger.LogDebug($"Has subtitles       : {HasSubtitles}");
+        _logger.LogDebug($"Has chapters        : {HasChapters}");
+        _logger.LogDebug($"Is DVD              : {IsDvd}");
+        _logger.LogDebug($"Is Blu-Ray disk     : {IsBluRay}");
+
+        // Video
+        if (HasVideo)
+        {
+          _logger.LogDebug($"Video duration      : {BestVideoStream?.Duration ?? TimeSpan.MinValue}");
+          _logger.LogDebug($"Video frame rate    : {Framerate}");
+          _logger.LogDebug($"Video width         : {Width}");
+          _logger.LogDebug($"Video height        : {Height}");
+          _logger.LogDebug($"Video aspect ratio  : {AspectRatio}");
+          _logger.LogDebug($"Video codec         : {VideoCodec}");
+          _logger.LogDebug($"Video scan type     : {ScanType}");
+          _logger.LogDebug($"Is video interlaced : {IsInterlaced}");
+          _logger.LogDebug($"Video resolution    : {VideoResolution}");
+          _logger.LogDebug($"Video 3D mode       : {BestVideoStream?.Stereoscopic ?? StereoMode.Mono}");
+          _logger.LogDebug($"Video HDR standard  : {BestVideoStream?.Hdr ?? Hdr.None}");
+        }
+
+        // Audio
+        if ((AudioStreams?.Count ?? 0) > 0)
+        {
+          _logger.LogDebug($"Audio duration      : {BestAudioStream?.Duration ?? TimeSpan.MinValue}");
+          _logger.LogDebug($"Audio rate          : {AudioRate}");
+          _logger.LogDebug($"Audio channels      : {AudioChannelsFriendly}");
+          _logger.LogDebug($"Audio codec         : {AudioCodec}");
+          _logger.LogDebug($"Audio bit depth     : {BestAudioStream?.BitDepth ?? 0}");
+        }
+
+        // Subtitles
+        if (HasSubtitles)
+        { 
+          _logger.LogDebug($"Subtitles count     : {Subtitles?.Count ?? 0}");
+        }
+
+        // Chapters
+        if (HasChapters)
+        {
+          _logger.LogDebug($"Chapters count      : {Chapters?.Count ?? 0}");
+        }
+      }
+    }
+
+    private string IfExistsPath(ILogger logger, string pathToDll, Func<string> anotherPath)
+    {
+      var result = anotherPath();
+      if (!string.IsNullOrEmpty(result))
+      { 
+        return result;
+      }
+
+      logger.LogDebug("Check MediaInfo.dll from {0}.", pathToDll);
+      if (!MediaInfoExist(pathToDll))
+      {
+        MediaInfoNotloaded = true;
+        logger.LogWarning($"Library MediaInfo.dll was not found at {pathToDll}");
+        return null;
+      }
+
+      return pathToDll;
     }
 
     private static long GetDirectorySize(string folderName)
@@ -178,6 +263,7 @@ namespace MediaInfo
       {
         using (var mi = new MediaInfo(pathToDll))
         {
+          Version = mi.Option("Info_Version");
           mi.Open(bupFile);
           var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
           if (profile == "Program")

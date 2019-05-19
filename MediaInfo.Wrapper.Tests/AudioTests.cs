@@ -22,19 +22,26 @@ using System.Linq;
 using FluentAssertions;
 using MediaInfo.Model;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MediaInfo.Wrapper.Tests
 {
   public class AudioTests
   {
+    private readonly ILogger _logger;
     private MediaInfoWrapper _mediaInfoWrapper;
+
+    public AudioTests(ITestOutputHelper testOutputHelper)
+    {
+      _logger = new TestLogger(testOutputHelper);
+    }
 
     [Theory]
     [InlineData(@".\Data\Test_H264_DTS1.m2ts", 9, 1)]
     [InlineData(@".\Data\Test_H264_DTS2.m2ts", 6, 0)]
     public void LoadVideoWithDtsMa(string fileName, int audioStreamCount, int dtsIndex)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -106,7 +113,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\HD Audio\working_dts_with_dtscore.dts", 6, 16, 48000.0, AudioCodec.Dts)]
     public void LoadHdAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -216,7 +223,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\Audio\wmv3-wmaspeeech.wmv", 1, 16, 8000.0, AudioCodec.WmaVoice)]
     public void LoadAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       var audio = _mediaInfoWrapper.AudioStreams[0];
       audio.Codec.Should().Be(codec);
@@ -266,7 +273,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\HD Audio\zx.eva.renewal.01.divx511.mkv", 6, 0, 44100.0, AudioCodec.AacMpeg4LcSbr, 0, 2)]
     public void LoadHdAudioFromVideoContainer(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, int index, int audioCount)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
@@ -283,7 +290,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@".\Data\Test_MP3Tags_2.mp3", 212274L)]
     public void LoadMp3FileWithTags(string fileName, long size)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(size);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
@@ -311,7 +318,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"E:\Music\Anugama\Healing\01 - Healing Earth.flac")]
     public void LoadFlacWithCover(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(141439565L);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in FLAC!");
@@ -343,7 +350,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"E:\Music\01. HARLEYS&INDIANS [RIDERS IN THE SKY].mp3")]
     public void LoadFlacWithoutCovers(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(4171517L);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
@@ -371,7 +378,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@".\Data\Test_MP3Tags.mka")]
     public void LoadMultiStreamContainer(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(135172L);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MKA!");

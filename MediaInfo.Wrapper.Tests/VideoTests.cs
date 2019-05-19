@@ -21,6 +21,7 @@
 using FluentAssertions;
 using MediaInfo.Model;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MediaInfo.Wrapper.Tests
 {
@@ -28,12 +29,18 @@ namespace MediaInfo.Wrapper.Tests
   public class VideoTests
   {
     private MediaInfoWrapper _mediaInfoWrapper;
+    private readonly ILogger _logger;
+
+    public VideoTests(ITestOutputHelper testOutputHelper)
+    {
+      _logger = new TestLogger(testOutputHelper);
+    }
 
     [Theory]
     [InlineData(@".\Data\RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
     public void LoadSimpleVideo(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(1371743L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
@@ -62,7 +69,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@".\Data\Test_H264_Atmos.m2ts")]
     public void LoadVideoWithDolbyAtmos(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(503808L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
@@ -96,7 +103,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@".\Data\Test_H264_Ac3.m2ts")]
     public void LoadVideoWithDolbyDigital(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(86016L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
@@ -124,7 +131,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@".\Data\Test_H264.m2ts")]
     public void LoadVideoWithoutAudio(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(18432L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
@@ -150,7 +157,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"\\192.168.1.187\Video_O\2016 DOLBY ATMOS DEMO DISC\BDMV\index.bdmv")]
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(24716230397L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
@@ -190,7 +197,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\HDR\TravelXP 4K HDR HLG Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HLG, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 1)]
     public void LoadHdrDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, ChromaSubSampling subSampling, AudioCodec audioCodec, int channels)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -220,7 +227,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\UHD\4k_Rec709_ProResHQ.mov", VideoCodec.ProRes, 3072, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
     public void LoadUhdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling subSampling)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -242,7 +249,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\3D\small-00000.ssif", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
     public void Load3dDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, StereoMode stereoMode, ChromaSubSampling subSampling)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.Is3D.Should().BeTrue("Video stream is 3D");
@@ -285,7 +292,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"..\..\..\..\HD\VC-1_29.970_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     public void LoadHdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling chromaSubSampling)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName);
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       var video = _mediaInfoWrapper.VideoStreams[0];

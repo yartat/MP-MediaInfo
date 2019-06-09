@@ -20,6 +20,9 @@
 
 namespace MediaInfo.Model
 {
+  /// <summary>
+  /// Describes HDR modes
+  /// </summary>
   public enum Hdr
   {
     /// <summary>

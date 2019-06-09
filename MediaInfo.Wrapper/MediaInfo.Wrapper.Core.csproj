@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>MediaInfo</RootNamespace>
     <Version>19.4</Version>
     <AssemblyVersion>19.04.0.0</AssemblyVersion>
@@ -21,8 +21,7 @@ MediaInfo .NET wrapper with support network AV streams</Description>
     <PackageReleaseNotes>Copyright © 2005-2019 Team MediaPortal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageReleaseNotes>
-    <Platforms>AnyCPU;x64;x86</Platforms>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.xml</DocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,7 +37,9 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="MediaInfo.Native" Version="19.4.0" />
+    <PackageReference Include="MediaInfo.Core.Native" Version="19.4.0" />
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
   </ItemGroup>
 
 </Project>

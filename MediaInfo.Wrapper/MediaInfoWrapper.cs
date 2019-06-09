@@ -84,6 +84,7 @@ namespace MediaInfo
     /// <param name="filePath">The file path.</param>
     /// <param name="logger">The logger instance.</param>
     public MediaInfoWrapper(string filePath, ILogger logger = null)
+#if (NET40 || NET45)
       : this (filePath, Environment.Is64BitProcess ? @".\x64" : @".\x86", logger)
     {
     }
@@ -93,12 +94,13 @@ namespace MediaInfo
     /// </summary>
     /// <param name="filePath">The file path.</param>
     /// <param name="pathToDll">The path to DLL.</param>
+    /// <param name="logger">the logger instance.</param>
     protected MediaInfoWrapper(string filePath, string pathToDll, ILogger logger)
+#endif
     {
       _filePath = filePath;
       _logger = logger;
       logger.LogDebug("Analyzing media {0}.", filePath);
-      MediaInfoNotloaded = false;
       VideoStreams = new List<VideoStream>();
       AudioStreams = new List<AudioStream>();
       Subtitles = new List<SubtitleStream>();
@@ -112,7 +114,9 @@ namespace MediaInfo
         return;
       }
 
+#if (NET40 || NET45)
       var realPathToDll = IfExistsPath(logger, ".\\", () => IfExistsPath(logger, pathToDll, () => null));
+#endif
 
       var isTv = filePath.IsLiveTv();
       var isRadio = filePath.IsLiveTv();
@@ -136,7 +140,11 @@ namespace MediaInfo
         {
           if (filePath.EndsWith(".ifo", StringComparison.OrdinalIgnoreCase))
           {
+#if (NET40 || NET45)
             filePath = ProcessDvd(filePath, realPathToDll, providerNumber);
+#else
+            filePath = ProcessDvd(filePath, providerNumber);
+#endif
           }
           else if (filePath.EndsWith(".bdmv", StringComparison.OrdinalIgnoreCase))
           {
@@ -152,8 +160,12 @@ namespace MediaInfo
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
         }
 
+#if (NET40 || NET45)
         ExtractInfo(filePath, realPathToDll, providerNumber);
-        logger.LogDebug($"Process file {filePath} was completed successfully");
+#else
+        ExtractInfo(filePath, providerNumber);
+#endif
+        logger.LogDebug($"Process file {filePath} was completed successfully. Video={VideoStreams.Count}, Audio={AudioStreams.Count}, Subtitle={Subtitles.Count}");
       }
       catch (Exception exception)
       {
@@ -161,6 +173,9 @@ namespace MediaInfo
       }
     }
 
+    /// <summary>
+    /// Writes the media information data to log.
+    /// </summary>
     public void WriteInfo()
     {
       _logger.LogInformation($"Inspecting media    : {_filePath}");
@@ -221,6 +236,7 @@ namespace MediaInfo
       }
     }
 
+#if (NET40 || NET45)
     private string IfExistsPath(ILogger logger, string pathToDll, Func<string> anotherPath)
     {
       var result = anotherPath();
@@ -239,6 +255,7 @@ namespace MediaInfo
 
       return pathToDll;
     }
+#endif
 
     private static long GetDirectorySize(string folderName)
     {
@@ -252,7 +269,12 @@ namespace MediaInfo
       return result;
     }
 
+#if (NET40 || NET45)
+
     private string ProcessDvd(string filePath, string pathToDll, NumberFormatInfo providerNumber)
+#else
+    private string ProcessDvd(string filePath, NumberFormatInfo providerNumber)
+#endif
     {
       IsDvd = true;
       var path = Path.GetDirectoryName(filePath) ?? string.Empty;
@@ -261,7 +283,11 @@ namespace MediaInfo
       var programBlocks = new List<Tuple<string, int>>();
       foreach (var bupFile in bups)
       {
+#if (NET40 || NET45)
         using (var mi = new MediaInfo(pathToDll))
+#else
+        using (var mi = new MediaInfo())
+#endif
         {
           Version = mi.Option("Info_Version");
           mi.Open(bupFile);
@@ -288,12 +314,41 @@ namespace MediaInfo
       return filePath;
     }
 
+#if (NET40 || NET45)
     private void ExtractInfo(string filePath, string pathToDll, NumberFormatInfo providerNumber)
+#else
+    private void ExtractInfo(string filePath, NumberFormatInfo providerNumber)
+#endif
     {
+#if (NET40 || NET45)
       using (var mediaInfo = new MediaInfo(pathToDll))
+#else
+      using (var mediaInfo = new MediaInfo())
+#endif
       {
-        Version = mediaInfo.Option("Info_Version");
-        mediaInfo.Open(filePath);
+        if (mediaInfo.Handle == IntPtr.Zero)
+        {
+          MediaInfoNotloaded = true;
+          _logger.LogWarning("MediaInfo library was not loaded!");
+          return;
+        }
+        else
+        {
+          Version = mediaInfo.Option("Info_Version");
+          _logger.LogDebug($"MediaInfo library was loaded. Handle={mediaInfo.Handle} Version is {Version}");
+        }
+
+        var filePricessingHandle = mediaInfo.Open(filePath);
+        if (filePricessingHandle == IntPtr.Zero)
+        {
+          MediaInfoNotloaded = true;
+          _logger.LogWarning($"MediaInfo library has not been opened media {filePath}");
+          return;
+        }
+        else
+        {
+          _logger.LogDebug($"MediaInfo library successfully opened {filePath}. Handle={filePricessingHandle}");
+        }
 
         var streamNumber = 0;
 
@@ -417,7 +472,7 @@ namespace MediaInfo
       AudioChannelsFriendly = BestAudioStream?.AudioChannelsFriendly ?? string.Empty;
     }
 
-    #endregion
+#endregion
 
     /// <summary>
     /// Checks if mediaInfo.dll file exist.
@@ -429,7 +484,7 @@ namespace MediaInfo
       return File.Exists(Path.Combine(pathToDll, "MediaInfo.dll"));
     }
 
-    #region private methods
+#region private methods
 
     private static bool CheckHasExternalSubtitles(string strFile)
     {
@@ -451,9 +506,9 @@ namespace MediaInfo
       }
     }
 
-    #endregion
+#endregion
 
-    #region public video related properties
+#region public video related properties
 
     /// <summary>
     /// Gets a value indicating whether this instance has video.
@@ -567,9 +622,9 @@ namespace MediaInfo
     /// </value>
     public int VideoRate { get; private set; }
 
-    #endregion
+#endregion
 
-    #region public audio related properties
+#region public audio related properties
 
     /// <summary>
     /// Gets the audio streams.
@@ -627,9 +682,9 @@ namespace MediaInfo
     /// </value>
     public string AudioChannelsFriendly { get; private set; }
 
-    #endregion
+#endregion
 
-    #region public subtitles related properties
+#region public subtitles related properties
 
     /// <summary>
     /// Gets the list of media subtitles.
@@ -655,9 +710,9 @@ namespace MediaInfo
     /// </value>
     public bool HasExternalSubtitles { get; }
 
-    #endregion
+#endregion
 
-    #region public chapters related properties
+#region public chapters related properties
 
     /// <summary>
     /// Gets the media chapters.
@@ -675,9 +730,9 @@ namespace MediaInfo
     /// </value>
     public bool HasChapters => Chapters.Count > 0;
 
-    #endregion
+#endregion
 
-    #region public menu related properties
+#region public menu related properties
 
     /// <summary>
     /// Gets the menu streams from media.
@@ -695,7 +750,7 @@ namespace MediaInfo
     /// </value>
     public bool HasMenu => MenuStreams.Count > 0;
 
-    #endregion
+#endregion
 
     /// <summary>
     /// Gets a value indicating whether media is DVD.

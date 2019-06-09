@@ -293,12 +293,8 @@ namespace MediaInfo
     public static int GetDriveType(this string drive)
     {
       if (string.IsNullOrEmpty(drive)) return 2;
-      if ((NativeMethods.GetDriveType(drive) & 5) == 5) return 5; //cd
-      if ((NativeMethods.GetDriveType(drive) & 3) == 3) return 3; //fixed
-      if ((NativeMethods.GetDriveType(drive) & 2) == 2) return 2; //removable
-      if ((NativeMethods.GetDriveType(drive) & 4) == 4) return 4; //remote disk
-      if ((NativeMethods.GetDriveType(drive) & 6) == 6) return 6; //ram disk
-      return 0;
+      var info = new DriveInfo(drive);
+      return (int)info.DriveType;
     }
 
     /// <summary>

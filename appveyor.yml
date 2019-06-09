@@ -1,4 +1,4 @@
-version: 18.12.2
+version: 19.04
 
 branches:
   only:
@@ -16,18 +16,24 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 
+environment:
+  matrix:
+  - solution_name: MP-MediaInfo.sln
+    test_project: MediaInfo.Wrapper.Tests.csproj
+  - solution_name: MP-MediaInfo.Core.sln
+    test_project: MediaInfo.Wrapper.Core.Tests.csproj
+
 before_build:
 - cmd: >-
-    appveyor-retry dotnet restore
+    dotnet restore %solution_name%
 
-build:
-  verbosity: minimal
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+  - cmd: msbuild %solution_name% /verbosity:minimal /p:Configuration=Release /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 test_script:
 - cmd: >-
-    dotnet build .\MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj /p:Configuration=Release
-
-    dotnet test .\MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj /p:Configuration=Release
+    dotnet test .\MediaInfo.Wrapper.Tests\%test_project% /p:Configuration=Release
 
 artifacts:
 - path: .\MediaInfo.Wrapper\bin\Release\*.nupkg

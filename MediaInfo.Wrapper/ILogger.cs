@@ -23,11 +23,34 @@ namespace MediaInfo
   /// <summary>Values that represent log levels.</summary>
   public enum LogLevel
   {
+    /// <summary>
+    /// The verbose level
+    /// </summary>
     Verbose,
+
+    /// <summary>
+    /// The debug level
+    /// </summary>
     Debug,
+
+    /// <summary>
+    /// The information level
+    /// </summary>
     Information,
+
+    /// <summary>
+    /// The warning level
+    /// </summary>
     Warning,
+
+    /// <summary>
+    /// The error level
+    /// </summary>
     Error,
+
+    /// <summary>
+    /// The critical error level
+    /// </summary>
     Critical
   }
 

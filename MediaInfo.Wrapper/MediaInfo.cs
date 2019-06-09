@@ -100,14 +100,16 @@ namespace MediaInfo
   /// <seealso cref="IDisposable" />
   public class MediaInfo : IDisposable
   {
+#if (NET40 || NET45)
     private const string MediaInfoFileName = "MediaInfo.dll";
-    private IntPtr _handle;
     private IntPtr _module;
+#endif
     private readonly bool _mustUseAnsi;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaInfo"/> class.
     /// </summary>
+#if (NET40 || NET45)
     public MediaInfo() :
       this(Environment.Is64BitProcess ? @".\x64" : @".\x86")
     {
@@ -122,15 +124,30 @@ namespace MediaInfo
       _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
       try
       {
-        _handle = NativeMethods.MediaInfo_New();
+        Handle = NativeMethods.MediaInfo_New();
       }
       catch
       {
-        _handle = IntPtr.Zero;
+        Handle = IntPtr.Zero;
       }
 
       _mustUseAnsi = Environment.OSVersion.ToString().IndexOf("Windows", StringComparison.OrdinalIgnoreCase) == -1;
     }
+#else
+    public MediaInfo()
+    {
+      try
+      {
+        Handle = NativeMethods.MediaInfo_New();
+      }
+      catch
+      {
+        Handle = IntPtr.Zero;
+      }
+
+      _mustUseAnsi = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+    }
+#endif
 
     /// <summary>
     /// Finalizes an instance of the <see cref="MediaInfo"/> class.
@@ -147,24 +164,21 @@ namespace MediaInfo
     /// <returns>Return internal handle to access to low-level functions.</returns>
     public IntPtr Open(string fileName)
     {
-      if (_handle == IntPtr.Zero)
+      if (Handle == IntPtr.Zero)
       {
         return IntPtr.Zero;
       }
 
-      if (_mustUseAnsi)
-      {
-        IntPtr result;
-        using (var fileNameMemory = GlobalMemory.StringToGlobalAnsi(fileName))
-        {
-          result = NativeMethods.MediaInfoA_Open(_handle, fileNameMemory.Handle);
-        }
-
-        return result;
-      }
-      
-      return NativeMethods.MediaInfo_Open(_handle, fileName);
+      return _mustUseAnsi ?
+              NativeMethods.MediaInfoA_Open(Handle, fileName) :
+              NativeMethods.MediaInfo_Open(Handle, fileName);
     }
+
+    /// <summary>
+    /// Gets the library handle.
+    /// </summary>
+    /// <value>The library handle.</value>
+    internal IntPtr Handle { get; private set; }
 
     /// <summary>
     /// Opens the buffer initialize.
@@ -174,7 +188,7 @@ namespace MediaInfo
     /// <returns></returns>
     public IntPtr OpenBufferInit(long fileSize, long fileOffset)
     {
-      return _handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Init(_handle, fileSize, fileOffset);
+      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Init(Handle, fileSize, fileOffset);
     }
 
     /// <summary>
@@ -185,7 +199,7 @@ namespace MediaInfo
     /// <returns></returns>
     public IntPtr OpenBufferContinue(IntPtr buffer, IntPtr bufferSize)
     {
-      return _handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Continue(_handle, buffer, bufferSize);
+      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Continue(Handle, buffer, bufferSize);
     }
 
     /// <summary>
@@ -194,7 +208,7 @@ namespace MediaInfo
     /// <returns></returns>
     public long OpenBufferContinueGoToGet()
     {
-      return _handle == IntPtr.Zero ? 0 : NativeMethods.MediaInfo_Open_Buffer_Continue_GoTo_Get(_handle);
+      return Handle == IntPtr.Zero ? 0 : NativeMethods.MediaInfo_Open_Buffer_Continue_GoTo_Get(Handle);
     }
 
     /// <summary>
@@ -203,7 +217,7 @@ namespace MediaInfo
     /// <returns></returns>
     public IntPtr OpenBufferFinalize()
     {
-      return _handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Finalize(_handle);
+      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Finalize(Handle);
     }
 
     /// <summary>
@@ -211,10 +225,10 @@ namespace MediaInfo
     /// </summary>
     public void Close()
     {
-      if (_handle != IntPtr.Zero)
+      if (Handle != IntPtr.Zero)
       {
-        NativeMethods.MediaInfo_Delete(_handle);
-        _handle = IntPtr.Zero;
+        NativeMethods.MediaInfo_Delete(Handle);
+        Handle = IntPtr.Zero;
       }
     }
 
@@ -224,14 +238,14 @@ namespace MediaInfo
     /// <returns></returns>
     public string Inform()
     {
-      if (_handle == IntPtr.Zero)
+      if (Handle == IntPtr.Zero)
       {
         return "Unable to load MediaInfo library";
       }
 
-      return _mustUseAnsi
-               ? Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Inform(_handle, IntPtr.Zero))
-               : Marshal.PtrToStringUni(NativeMethods.MediaInfo_Inform(_handle, IntPtr.Zero));
+      return _mustUseAnsi ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Inform(Handle, IntPtr.Zero)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfo_Inform(Handle, IntPtr.Zero));
     }
 
     /// <summary>
@@ -245,34 +259,23 @@ namespace MediaInfo
     /// <returns>Returns property value</returns>
     public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch)
     {
-      if (_handle == IntPtr.Zero)
+      if (Handle == IntPtr.Zero)
       {
         return "Unable to load MediaInfo library";
       }
 
-      if (_mustUseAnsi)
-      {
-        string result;
-        using (var parameterPtr = GlobalMemory.StringToGlobalAnsi(parameter))
-        {
-          result =
-            Marshal.PtrToStringAnsi(
-              NativeMethods.MediaInfoA_Get(
-                _handle,
-                (IntPtr)streamKind,
-                (IntPtr)streamNumber,
-                parameterPtr.Handle,
-                (IntPtr)kindOfInfo,
-                (IntPtr)kindOfSearch));
-        }
-
-        return result;
-      }
-
-      return
+      return _mustUseAnsi ?
+        Marshal.PtrToStringAnsi(
+          NativeMethods.MediaInfoA_Get(
+            Handle,
+            (IntPtr)streamKind,
+            (IntPtr)streamNumber,
+            parameter,
+            (IntPtr)kindOfInfo,
+            (IntPtr)kindOfSearch)) :
         Marshal.PtrToStringUni(
           NativeMethods.MediaInfo_Get(
-            _handle,
+            Handle,
             (IntPtr)streamKind,
             (IntPtr)streamNumber,
             parameter,
@@ -282,14 +285,14 @@ namespace MediaInfo
 
     public string Get(StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo)
     {
-      if (_handle == IntPtr.Zero)
+      if (Handle == IntPtr.Zero)
       {
         return "Unable to load MediaInfo library";
       }
 
-      return _mustUseAnsi ? 
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_GetI(_handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo)) : 
-        Marshal.PtrToStringUni(NativeMethods.MediaInfo_GetI(_handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
+      return _mustUseAnsi ?
+        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo)) :
+        Marshal.PtrToStringUni(NativeMethods.MediaInfo_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
     }
 
     /// <summary>
@@ -300,24 +303,14 @@ namespace MediaInfo
     /// <returns></returns>
     public string Option(string option, string value)
     {
-      if (_handle == IntPtr.Zero)
+      if (Handle == IntPtr.Zero)
       {
         return "Unable to load MediaInfo library";
       }
 
-      if (_mustUseAnsi)
-      {
-        string result;
-        using (var optionPtr = GlobalMemory.StringToGlobalAnsi(option))
-        using (var valuePtr = GlobalMemory.StringToGlobalAnsi(value))
-        {
-          result = Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Option(_handle, optionPtr.Handle, valuePtr.Handle));
-        }
-
-        return result;
-      }
-      
-      return Marshal.PtrToStringUni(NativeMethods.MediaInfo_Option(_handle, option, value));
+      return _mustUseAnsi ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Option(Handle, option, value)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfo_Option(Handle, option, value));
     }
 
     /// <summary>
@@ -326,7 +319,7 @@ namespace MediaInfo
     /// <returns></returns>
     public IntPtr StateGet()
     {
-      return _handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_State_Get(_handle);
+      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_State_Get(Handle);
     }
 
     /// <summary>
@@ -337,7 +330,7 @@ namespace MediaInfo
     /// <returns></returns>
     public int CountGet(StreamKind streamKind, int streamNumber)
     {
-      return _handle == IntPtr.Zero ? 0 : (int)NativeMethods.MediaInfo_Count_Get(_handle, (IntPtr)streamKind, (IntPtr)streamNumber);
+      return Handle == IntPtr.Zero ? 0 : (int)NativeMethods.MediaInfo_Count_Get(Handle, (IntPtr)streamKind, (IntPtr)streamNumber);
     }
 
     //Default values, if you know how to set default values in C#, say me
@@ -403,11 +396,13 @@ namespace MediaInfo
     private void Dispose(bool disposing)
     {
       Close();
+#if (NET40 || NET45)
       if (_module != IntPtr.Zero)
       {
         NativeMethods.FreeLibrary(_module);
         _module = IntPtr.Zero;
       }
+#endif
     }
   }
 
@@ -417,13 +412,15 @@ namespace MediaInfo
   /// <seealso cref="IDisposable" />
   public class MediaInfoList : IDisposable
   {
+    private readonly bool _useAnsiStrings;
     private IntPtr _handle;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaInfoList"/> class.
     /// </summary>
-    public MediaInfoList()
+    public MediaInfoList(bool useAnsiStrings)
     {
+      _useAnsiStrings = useAnsiStrings;
       _handle = NativeMethods.MediaInfoList_New();
     }
 
@@ -443,7 +440,9 @@ namespace MediaInfo
     /// <returns></returns>
     public int Open(string fileName, InfoFileOptions options)
     {
-      return (int)NativeMethods.MediaInfoList_Open(_handle, fileName, (IntPtr)options);
+      return _useAnsiStrings ?
+        (int)NativeMethods.MediaInfoListA_Open(_handle, fileName, (IntPtr)options) :
+        (int)NativeMethods.MediaInfoList_Open(_handle, fileName, (IntPtr)options);
     }
 
     /// <summary>
@@ -462,7 +461,9 @@ namespace MediaInfo
     /// <returns></returns>
     public string Inform(int filePos)
     {
-      return Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, (IntPtr)0));
+      return _useAnsiStrings ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Inform(_handle, (IntPtr)filePos, IntPtr.Zero)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, IntPtr.Zero));
     }
 
     /// <summary>
@@ -477,7 +478,9 @@ namespace MediaInfo
     /// <returns></returns>
     public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch)
     {
-      return Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch));
+      return _useAnsiStrings ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch));
     }
 
     /// <summary>
@@ -491,7 +494,9 @@ namespace MediaInfo
     /// <returns></returns>
     public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo)
     {
-      return Marshal.PtrToStringUni(NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
+      return _useAnsiStrings ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
     }
 
     /// <summary>
@@ -502,7 +507,9 @@ namespace MediaInfo
     /// <returns></returns>
     public string Option(string option, string value)
     {
-      return Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Option(_handle, option, value));
+      return _useAnsiStrings ?
+               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Option(_handle, option, value)) :
+               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Option(_handle, option, value));
     }
 
     /// <summary>

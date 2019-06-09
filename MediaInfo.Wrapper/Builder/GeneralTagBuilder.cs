@@ -220,6 +220,15 @@ namespace MediaInfo.Builder
         }
       }
 
+      if (!result.GeneralTags.ContainsKey(NativeMethods.General.General_Title))
+      {
+        var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, "Title");
+        if (!string.IsNullOrEmpty(value))
+        {
+          result.GeneralTags.Add(NativeMethods.General.General_Title, value);
+        }
+      }
+
       if (!result.GeneralTags.ContainsKey(NativeMethods.General.General_Tagged_Date))
       {
         var value = TagBuilderHelper.TryGetDate(MediaInfo.Get(StreamKind.Audio, StreamPosition, "DATE_TAGGED"), out DateTime res) ? (DateTime?)res : null;

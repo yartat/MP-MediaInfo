@@ -37,26 +37,44 @@ namespace MediaInfo.Builder
     /// <summary>
     /// Tries the parse.
     /// </summary>
-    /// <param name="source">The source.</param>
+    /// <param name="source">The source string.</param>
     /// <param name="result">if set to <c>true</c> [result].</param>
-    /// <returns></returns>
+    /// <returns><c>true</c> if source string is boolean value, <c>false</c> otherwise.</returns>
     public static bool TryGetBool(this string source, out bool result)
     {
         return BooleanValues.TryGetValue(source, out result);
     }
 
+    /// <summary>
+    /// Tries the get string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result value.</param>
+    /// <returns><c>true</c> if source string is not empty, <c>false</c> otherwise.</returns>
     public static bool TryGetString(this string source, out object value)
     {
       value = source;
       return !string.IsNullOrEmpty(source);
     }
 
+    /// <summary>
+    /// Tries the get string.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result value.</param>
+    /// <returns><c>true</c> if source string is not empty, <c>false</c> otherwise.</returns>
     public static bool TryGetString(this string source, out string value)
     {
       value = source;
       return !string.IsNullOrEmpty(source);
     }
 
+    /// <summary>
+    /// Tries the get string in BASE64.
+    /// </summary>
+    /// <param name="source">The source BASE64 string.</param>
+    /// <param name="value">The result value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid BASE64 string, <c>false</c> otherwise.</returns>
     public static bool TryGetBase64(this string source, out object value)
     {
       if (!string.IsNullOrEmpty(source))
@@ -69,6 +87,12 @@ namespace MediaInfo.Builder
       return false;
     }
 
+    /// <summary>
+    /// Tries the get string in BASE64.
+    /// </summary>
+    /// <param name="source">The source BASE64 string.</param>
+    /// <param name="value">The result value as byte array.</param>
+    /// <returns><c>true</c> if source string is not empty and valid BASE64 string, <c>false</c> otherwise.</returns>
     public static bool TryGetBase64(this string source, out byte[] value)
     {
       if (!string.IsNullOrEmpty(source))
@@ -81,6 +105,12 @@ namespace MediaInfo.Builder
       return false;
     }
 
+    /// <summary>
+    /// Tries the get int value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result int value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetInt(this string source, out object value)
     {
       var result = int.TryParse(source, out var resultValue);
@@ -88,12 +118,24 @@ namespace MediaInfo.Builder
       return result;
     }
 
+    /// <summary>
+    /// Tries the get int value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result int value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetInt(this string source, out int value)
     {
       var result = int.TryParse(source, out value);
       return result;
     }
 
+    /// <summary>
+    /// Tries the get double value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result double value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out object value)
     {
       var result = double.TryParse(source, out var resultValue);
@@ -106,6 +148,12 @@ namespace MediaInfo.Builder
       return result;
     }
 
+    /// <summary>
+    /// Tries the get double value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result double value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out double value)
     {
       var result = double.TryParse(source, out value);
@@ -126,6 +174,12 @@ namespace MediaInfo.Builder
       return StereoModes.TryGetValue(source, out mode);
     }
 
+    /// <summary>
+    /// Tries the get date value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result date value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid date value, <c>false</c> otherwise.</returns>
     public static bool TryGetDate(this string source, out object value)
     {
       var result = DateTime.TryParseExact(
@@ -142,6 +196,12 @@ namespace MediaInfo.Builder
       return result;
     }
 
+    /// <summary>
+    /// Tries the get date value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result date value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid date value, <c>false</c> otherwise.</returns>
     public static bool TryGetDate(this string source, out DateTime value)
     {
       var result = DateTime.TryParseExact(

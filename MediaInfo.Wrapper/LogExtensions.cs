@@ -88,6 +88,7 @@ namespace MediaInfo
 
     /// <summary>Logs a error message.</summary>
     /// <param name="logger">The logger instance.</param>
+    /// <param name="exception">The source exception object.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
     public static void LogError(this ILogger logger, Exception exception, string message, params object[] parameters)
@@ -126,6 +127,7 @@ namespace MediaInfo
 
     /// <summary>Logs a critical message.</summary>
     /// <param name="logger">The logger instance.</param>
+    /// <param name="exception">The source exception object.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
     public static void LogCritical(this ILogger logger, Exception exception, string message, params object[] parameters)

@@ -89,6 +89,15 @@ namespace MediaInfo.Model
         result = GeneralTags.TryGetValue(NativeMethods.General.General_Label, out var title) ? (string) title : null;
         if (string.IsNullOrEmpty(result))
         {
+          result = GeneralTags.TryGetValue(NativeMethods.General.General_Title, out var trackTitle) ? (string)trackTitle : null;
+          if (!string.IsNullOrEmpty(result))
+          { 
+            return result.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+          }
+        }
+
+        if (string.IsNullOrEmpty(result))
+        {
           result = AudioDataTags.TryGetValue(NativeMethods.Audio.Audio_Title, out var trackTitle) ? (string)trackTitle : null;
         }
 

@@ -10,8 +10,6 @@ namespace MediaInfo.Builder
   /// </summary>
   public static class TagBuilderHelper
   {
-    private static readonly CultureInfo _englishCulture = CultureInfo.GetCultureInfo("en");
-
     private static readonly Dictionary<string, bool> BooleanValues = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
     {
         { "1", true },
@@ -138,12 +136,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out object value)
     {
-      var result = double.TryParse(source, out var resultValue);
-      if (!result)
-      {
-        result = double.TryParse(source, NumberStyles.AllowDecimalPoint, _englishCulture, out resultValue);
-      }
-
+      var result = double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultValue);
       value = resultValue;
       return result;
     }
@@ -156,11 +149,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out double value)
     {
-      var result = double.TryParse(source, out value);
-      if (!result)
-      {
-        result = double.TryParse(source, NumberStyles.AllowDecimalPoint, _englishCulture, out value);
-      }
+      var result = double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value);      
 
       return result;
     }

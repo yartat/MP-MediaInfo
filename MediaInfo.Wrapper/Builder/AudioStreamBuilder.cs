@@ -322,8 +322,8 @@ namespace MediaInfo.Builder
       result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Audio.Audio_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, 0)));
       result.Bitrate = Get<double>((int)NativeMethods.Audio.Audio_BitRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.Channel = Get<int>((int)NativeMethods.Audio.Audio_Channel_s_, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
-      result.SamplingRate = Get<double>((int)NativeMethods.Audio.Audio_SamplingRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
-      result.BitDepth = Get<int>((int)NativeMethods.Audio.Audio_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+      result.SamplingRate = Get<double>("SamplingRate", TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
+      result.BitDepth = Get<int>("BitDepth", TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
       if (result.Codec == AudioCodec.Dsd)
       {
         result.BitDepth = 1;

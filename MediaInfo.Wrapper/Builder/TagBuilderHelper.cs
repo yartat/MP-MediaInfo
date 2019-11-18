@@ -10,8 +10,6 @@ namespace MediaInfo.Builder
   /// </summary>
   public static class TagBuilderHelper
   {
-    private static readonly CultureInfo _englishCulture = CultureInfo.GetCultureInfo("en");
-
     private static readonly Dictionary<string, bool> BooleanValues = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
     {
         { "1", true },
@@ -40,10 +38,8 @@ namespace MediaInfo.Builder
     /// <param name="source">The source string.</param>
     /// <param name="result">if set to <c>true</c> [result].</param>
     /// <returns><c>true</c> if source string is boolean value, <c>false</c> otherwise.</returns>
-    public static bool TryGetBool(this string source, out bool result)
-    {
-        return BooleanValues.TryGetValue(source, out result);
-    }
+    public static bool TryGetBool(this string source, out bool result) =>
+        BooleanValues.TryGetValue(source, out result);
 
     /// <summary>
     /// Tries the get string.
@@ -124,11 +120,8 @@ namespace MediaInfo.Builder
     /// <param name="source">The source string.</param>
     /// <param name="value">The result int value.</param>
     /// <returns><c>true</c> if source string is not empty and valid integer value, <c>false</c> otherwise.</returns>
-    public static bool TryGetInt(this string source, out int value)
-    {
-      var result = int.TryParse(source, out value);
-      return result;
-    }
+    public static bool TryGetInt(this string source, out int value) =>
+      int.TryParse(source, out value);
 
     /// <summary>
     /// Tries the get double value.
@@ -138,12 +131,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out object value)
     {
-      var result = double.TryParse(source, out var resultValue);
-      if (!result)
-      {
-        result = double.TryParse(source, NumberStyles.AllowDecimalPoint, _englishCulture, out resultValue);
-      }
-
+      var result = double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultValue);
       value = resultValue;
       return result;
     }
@@ -154,25 +142,15 @@ namespace MediaInfo.Builder
     /// <param name="source">The source string.</param>
     /// <param name="value">The result double value.</param>
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
-    public static bool TryGetDouble(this string source, out double value)
-    {
-      var result = double.TryParse(source, out value);
-      if (!result)
-      {
-        result = double.TryParse(source, NumberStyles.AllowDecimalPoint, _englishCulture, out value);
-      }
-
-      return result;
-    }
+    public static bool TryGetDouble(this string source, out double value) =>
+      double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value);
 
     /// <summary>A string extension method that attempts to get stereo mode a StereoMode from the given string.</summary>
     /// <param name="source">The source.</param>
     /// <param name="mode">The stereo mode.</param>
     /// <returns>True if it succeeds, false if it fails.</returns>
-    public static bool TryGetStereoMode(this string source, out StereoMode mode)
-    {
-      return StereoModes.TryGetValue(source, out mode);
-    }
+    public static bool TryGetStereoMode(this string source, out StereoMode mode) =>
+      StereoModes.TryGetValue(source, out mode);
 
     /// <summary>
     /// Tries the get date value.

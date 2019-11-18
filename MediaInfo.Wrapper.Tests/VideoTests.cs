@@ -180,7 +180,7 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../HDR/PE2_Leopard_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.DtsHdMa, 6)]
     [InlineData(@"../../../../HDR/LaLaLand_cafe_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.TruehdAtmos, 8)]
     [InlineData(@"../../../../HDR/The Redwoods.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
@@ -215,7 +215,7 @@ namespace MediaInfo.Wrapper.Tests
       video.SubSampling.Should().Be(subSampling);
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../UHD/4K HEVC 59.940 Broadcast Capture Sample.mkv", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../UHD/4K youtube.webm", VideoCodec.Vp9, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling332)]
@@ -261,7 +261,7 @@ namespace MediaInfo.Wrapper.Tests
       video.SubSampling.Should().Be(subSampling);
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 720p.avi", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 1080p.avi", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../HD/1080i-25-H264.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]

@@ -57,7 +57,7 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().BeEmpty();
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../HD Audio/2L-125_04_stereo.mqa.flac", 2, 24, 44100.0, AudioCodec.Flac)]
     [InlineData(@"../../../../HD Audio/2L-125_mch-96k-24b_04.flac", 6, 24, 96000.0, AudioCodec.Flac)]
     [InlineData(@"../../../../HD Audio/2L-125_stereo-44k-16b_04.flac", 2, 16, 44100.0, AudioCodec.Flac)]
@@ -128,7 +128,7 @@ namespace MediaInfo.Wrapper.Tests
       audio.SamplingRate.Should().Be(samplingRate);
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../Audio/8_Channel_ID.wav", 8, 24, 48000.0, AudioCodec.PcmIntLit)]
     [InlineData(@"../../../../Audio/8_Channel_ID.wma", 8, 24, 48000.0, AudioCodec.WmaPro)]
     [InlineData(@"../../../../Audio/16bit.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
@@ -232,7 +232,7 @@ namespace MediaInfo.Wrapper.Tests
       audio.SamplingRate.Should().Be(samplingRate);
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"../../../../HD Audio/7.1auditionOutLeader_v2_rtb.mp4", 8, 0, 48000.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/7_pt_1_sample.evo", 8, 0, 48000.0, AudioCodec.Eac3, 0, 1)]
     [InlineData(@"../../../../HD Audio/12-10_19-18-52_BBC HD_Wild China.ts", 6, 0, 48000.0, AudioCodec.AacMpeg4Lc, 0, 2)]
@@ -314,7 +314,7 @@ namespace MediaInfo.Wrapper.Tests
       audio.Tags.GeneralTags.Should().NotBeEmpty();
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"E:/Music/Anugama/Healing/01 - Healing Earth.flac")]
     public void LoadFlacWithCover(string fileName)
     {
@@ -346,7 +346,7 @@ namespace MediaInfo.Wrapper.Tests
       audio.Tags.GeneralTags.Should().NotBeEmpty();
     }
 
-    [Theory]
+    [TheoryInDebugOnly]
     [InlineData(@"E:/Music/01. HARLEYS&INDIANS [RIDERS IN THE SKY].mp3")]
     public void LoadFlacWithoutCovers(string fileName)
     {

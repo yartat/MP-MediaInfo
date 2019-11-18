@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>19.4</Version>
-    <AssemblyVersion>19.04.0.0</AssemblyVersion>
-    <FileVersion>19.04.0.0</FileVersion>
+    <Version>19.4.1</Version>
+    <AssemblyVersion>19.04.01.0</AssemblyVersion>
+    <FileVersion>19.04.01.0</FileVersion>
     <Company>Team MediaPortal</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>

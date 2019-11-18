@@ -324,6 +324,7 @@ namespace MediaInfo.Builder
       result.Channel = Get<int>((int)NativeMethods.Audio.Audio_Channel_s_, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
       result.SamplingRate = Get<double>("SamplingRate", TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.BitDepth = Get<int>("BitDepth", TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+      result.BitrateMode = Get<BitrateMode>((int)NativeMethods.Audio.Audio_BitRate_Mode, InfoKind.Text, TagBuilderHelper.TryGetBitrateMode, x => ExtractInfo(x, baseIndex));
       if (result.Codec == AudioCodec.Dsd)
       {
         result.BitDepth = 1;

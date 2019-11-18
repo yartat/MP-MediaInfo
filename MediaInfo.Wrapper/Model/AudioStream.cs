@@ -178,6 +178,14 @@ namespace MediaInfo.Model
     public int BitDepth { get; set; }
 
     /// <summary>
+    /// Gets the bitrate mode of stream.
+    /// </summary>
+    /// <value>
+    /// The bitrate mode of stream.
+    /// </value>
+    public BitrateMode BitrateMode { get; set; }
+
+    /// <summary>
     /// Gets the audio format.
     /// </summary>
     /// <value>

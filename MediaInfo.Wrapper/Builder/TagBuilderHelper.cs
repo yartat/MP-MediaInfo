@@ -32,6 +32,13 @@ namespace MediaInfo.Builder
       { "TopBottomRF", StereoMode.TopBottomRight },
     };
 
+    private static readonly Dictionary<string, BitrateMode> BitrateModes = new Dictionary<string, BitrateMode>(StringComparer.OrdinalIgnoreCase)
+    {
+      { "CBR", BitrateMode.Cbr },
+      { "CQ", BitrateMode.Cq },
+      { "VBR", BitrateMode.Vbr }
+    };
+
     /// <summary>
     /// Tries the parse.
     /// </summary>
@@ -135,6 +142,15 @@ namespace MediaInfo.Builder
       value = resultValue;
       return result;
     }
+
+    /// <summary>
+    /// Tries the get <see cref="BitrateMode"/> value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result <see cref="BitrateMode"/> value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid <see cref="BitrateMode"/> value, <c>false</c> otherwise.</returns>
+    public static bool TryGetBitrateMode(this string source, out BitrateMode value) =>
+      BitrateModes.TryGetValue(source, out value);
 
     /// <summary>
     /// Tries the get double value.

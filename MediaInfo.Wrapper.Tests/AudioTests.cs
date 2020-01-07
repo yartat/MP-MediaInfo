@@ -57,7 +57,11 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().BeEmpty();
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../HD Audio/2L-125_04_stereo.mqa.flac", 2, 24, 44100.0, AudioCodec.Flac)]
     [InlineData(@"../../../../HD Audio/2L-125_mch-96k-24b_04.flac", 6, 24, 96000.0, AudioCodec.Flac)]
     [InlineData(@"../../../../HD Audio/2L-125_stereo-44k-16b_04.flac", 2, 16, 44100.0, AudioCodec.Flac)]
@@ -85,7 +89,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"../../../../HD Audio/96-24.dts", 6, 24, 96000.0, AudioCodec.DtsHd)]
     [InlineData(@"../../../../HD Audio/Berlioz - Hungarian March.aac", 6, 0, 48000.0, AudioCodec.AacMpeg4LcSbr)]
     [InlineData(@"../../../../HD Audio/Berlioz - Hungarian March.wma", 6, 24, 96000.0, AudioCodec.WmaPro)]
-    [InlineData(@"../../../../HD Audio/Broadway-5.1-48khz-448kbit.ac3", 6, 16, 48000.0, AudioCodec.Ac3)]
+    [InlineData(@"../../../../HD Audio/Broadway-5.1-48khz-448kbit.ac3", 6, 0, 48000.0, AudioCodec.Ac3)]
     [InlineData(@"../../../../HD Audio/csi_miami_5.1_256_spx.eac3", 6, 0, 48000.0, AudioCodec.Eac3)]
     [InlineData(@"../../../../HD Audio/csi_miami_5.1_256_spx_nero.flac", 6, 24, 48000.0, AudioCodec.Flac)]
     [InlineData(@"../../../../HD Audio/ct_faac-adts.aac", 2, 0, 44100.0, AudioCodec.AacMpeg4Lc)]
@@ -106,10 +110,10 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"../../../../HD Audio/Master Audio 5.1 24bit.dts", 6, 24, 48000.0, AudioCodec.DtsHdMa)]
     [InlineData(@"../../../../HD Audio/Master Audio 7.1.dts", 8, 24, 48000.0, AudioCodec.DtsHdMa)]
     [InlineData(@"../../../../HD Audio/Master Audio 7.1 24bit.dts", 8, 24, 48000.0, AudioCodec.DtsHdMa)]
-    [InlineData(@"../../../../HD Audio/monsters_inc_5.1_448.ac3", 6, 16, 48000.0, AudioCodec.Ac3)]
+    [InlineData(@"../../../../HD Audio/monsters_inc_5.1_448.ac3", 6, 0, 48000.0, AudioCodec.Ac3)]
     [InlineData(@"../../../../HD Audio/SBR_LFETest5_1-441-16b.wav", 6, 16, 44100.0, AudioCodec.PcmIntLit)]
     [InlineData(@"../../../../HD Audio/stuttering_dts_truhd.dts", 6, 24, 48000.0, AudioCodec.Dts)]
-    [InlineData(@"../../../../HD Audio/thx_2_0.ac3", 2, 16, 48000.0, AudioCodec.Ac3)]
+    [InlineData(@"../../../../HD Audio/thx_2_0.ac3", 2, 0, 48000.0, AudioCodec.Ac3)]
     [InlineData(@"../../../../HD Audio/working_dts_with_dtscore.dts", 6, 16, 48000.0, AudioCodec.Dts)]
     public void LoadHdAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
     {
@@ -128,7 +132,11 @@ namespace MediaInfo.Wrapper.Tests
       audio.SamplingRate.Should().Be(samplingRate);
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../Audio/8_Channel_ID.wav", 8, 24, 48000.0, AudioCodec.PcmIntLit)]
     [InlineData(@"../../../../Audio/8_Channel_ID.wma", 8, 24, 48000.0, AudioCodec.WmaPro)]
     [InlineData(@"../../../../Audio/16bit.wv", 2, 16, 44100.0, AudioCodec.WavPack)]
@@ -215,7 +223,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"../../../../Audio/traciespencer-allaboutyou.asf", 2, 16, 22050.0, AudioCodec.Wma2)]
     [InlineData(@"../../../../Audio/TrueHD.raw", 6, 0, 48000.0, AudioCodec.Truehd)]
     [InlineData(@"../../../../Audio/truespeech_a5.wav", 1, 1, 8000.0, AudioCodec.Truespeech)]
-    [InlineData(@"../../../../Audio/vc1-with-truehd.m2ts", 6, 16, 48000.0, AudioCodec.Ac3)]
+    [InlineData(@"../../../../Audio/vc1-with-truehd.m2ts", 6, 0, 48000.0, AudioCodec.Ac3)]
     [InlineData(@"../../../../Audio/vorbis3plus_sample.avi", 2, 0, 48000.0, AudioCodec.Vorbis)]
     [InlineData(@"../../../../Audio/WMA_protected_napster.wma", 2, 16, 44100.0, AudioCodec.Wma2)]
     [InlineData(@"../../../../Audio/wmav_8.wma", 1, 16, 8000.0, AudioCodec.WmaVoice)]
@@ -232,20 +240,24 @@ namespace MediaInfo.Wrapper.Tests
       audio.SamplingRate.Should().Be(samplingRate);
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../HD Audio/7.1auditionOutLeader_v2_rtb.mp4", 8, 0, 48000.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/7_pt_1_sample.evo", 8, 0, 48000.0, AudioCodec.Eac3, 0, 1)]
     [InlineData(@"../../../../HD Audio/12-10_19-18-52_BBC HD_Wild China.ts", 6, 0, 48000.0, AudioCodec.AacMpeg4Lc, 0, 2)]
-    [InlineData(@"../../../../HD Audio/ac3-sound-sample.vob", 6, 16, 48000.0, AudioCodec.Ac3, 0, 1)]
+    [InlineData(@"../../../../HD Audio/ac3-sound-sample.vob", 6, 0, 48000.0, AudioCodec.Ac3, 0, 1)]
     [InlineData(@"../../../../HD Audio/bond_sample_dtshdma.m2ts", 6, 24, 48000.0, AudioCodec.DtsHdMa, 0, 7)]
     [InlineData(@"../../../../HD Audio/ChID-BLITS-EBU.mp4", 6, 0, 44100.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/ChID-BLITS-EBU-Narration.mp4", 6, 0, 44100.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/danish-1.m2t", 2, 0, 48000.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/DNCE 29.97 h264 1080i 26mbps DTS-HD MA 2.0 sample.mkv", 2, 24, 48000.0, AudioCodec.DtsHdMa, 0, 1)]
-    [InlineData(@"../../../../HD Audio/dolby-audiosphere-lossless-(www.demolandia.net).m2ts", 8, 16, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
-    [InlineData(@"../../../../HD Audio/dolby-silent-lossless-(www.demolandia.net).m2ts", 8, 16, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
-    [InlineData(@"../../../../HD Audio/Dolby ATMOS Helicopter.m2ts", 8, 16, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
-    [InlineData(@"../../../../HD Audio/dolby_amaze_lossless-DWEU.m2ts", 8, 16, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
+    [InlineData(@"../../../../HD Audio/dolby-audiosphere-lossless-(www.demolandia.net).m2ts", 8, 0, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
+    [InlineData(@"../../../../HD Audio/dolby-silent-lossless-(www.demolandia.net).m2ts", 8, 0, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
+    [InlineData(@"../../../../HD Audio/Dolby ATMOS Helicopter.m2ts", 8, 0, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
+    [InlineData(@"../../../../HD Audio/dolby_amaze_lossless-DWEU.m2ts", 8, 0, 48000.0, AudioCodec.TruehdAtmos, 0, 2)]
     [InlineData(@"../../../../HD Audio/dolby_digital_plus_channel_check_lossless-DWEU.mkv", 6, 0, 48000.0, AudioCodec.Eac3, 0, 1)]
     [InlineData(@"../../../../HD Audio/dolby_truehd_channel_check_lossless-DWEU.mkv", 8, 0, 48000.0, AudioCodec.Truehd, 0, 1)]
     [InlineData(@"../../../../HD Audio/Dredd – DTS Sound Check DTS-HD MA 7.1.m2ts", 8, 24, 48000.0, AudioCodec.DtsHdMa, 0, 1)]
@@ -267,7 +279,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData(@"../../../../HD Audio/Safari_ Dolby_Digital_Plus.m2ts", 8, 0, 48000.0, AudioCodec.Eac3, 0, 1)]
     [InlineData(@"../../../../HD Audio/SBR_LFEtest5_1.mp4", 6, 0, 44100.0, AudioCodec.AacMpeg4LcSbr, 0, 1)]
     [InlineData(@"../../../../HD Audio/small-sample-file.ts", 6, 20, 48000.0, AudioCodec.Dts, 0, 2)]
-    [InlineData(@"../../../../HD Audio/transf.m2ts", 6, 16, 48000.0, AudioCodec.Ac3, 0, 5)]
+    [InlineData(@"../../../../HD Audio/transf.m2ts", 6, 0, 48000.0, AudioCodec.Ac3, 0, 5)]
     [InlineData(@"../../../../HD Audio/VC1-1080p23.976-LPCM7.1.mkv", 8, 16, 48000.0, AudioCodec.PcmIntLit, 0, 1)]
     [InlineData(@"../../../../HD Audio/zodiac_audio.mov", 6, 0, 48000.0, AudioCodec.AacMpeg4Lc, 0, 1)]
     [InlineData(@"../../../../HD Audio/zx.eva.renewal.01.divx511.mkv", 6, 0, 44100.0, AudioCodec.AacMpeg4LcSbr, 0, 2)]
@@ -293,66 +305,6 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(size);
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      // MP3 file contains all tags in general stream
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
-      _mediaInfoWrapper.Tags.Album.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.Track.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.TrackPosition.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Artist.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.RecordedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Genre.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(AudioCodec.MpegLayer3);
-      audio.Tags.GeneralTags.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeEmpty();
-    }
-
-    [TheoryInDebugOnly]
-    [InlineData(@"E:/Music/Anugama/Healing/01 - Healing Earth.flac")]
-    public void LoadFlacWithCover(string fileName)
-    {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(141439565L);
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in FLAC!");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      // FLAC file contains all tags in general stream
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
-      _mediaInfoWrapper.Tags.Album.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.Track.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.TrackPosition.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Artist.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.RecordedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Genre.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.Covers.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.Covers.Count().Should().Be(1);
-      var cover = _mediaInfoWrapper.Tags.Covers.First();
-      cover.Mime.Should().Be("image/jpeg");
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(AudioCodec.Flac);
-      audio.Tags.GeneralTags.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeEmpty();
-    }
-
-    [TheoryInDebugOnly]
-    [InlineData(@"E:/Music/01. HARLEYS&INDIANS [RIDERS IN THE SKY].mp3")]
-    public void LoadFlacWithoutCovers(string fileName)
-    {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(4171517L);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");

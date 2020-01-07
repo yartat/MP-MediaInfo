@@ -153,7 +153,11 @@ namespace MediaInfo.Wrapper.Tests
       videoStream.Tags.GeneralTags.Should().BeEmpty();
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"//192.168.1.187/Video_O/2016 DOLBY ATMOS DEMO DISC/BDMV/index.bdmv")]
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
@@ -161,7 +165,7 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(24716230397L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(32173616);
+      _mediaInfoWrapper.VideoRate.Should().Be(32173617);
       _mediaInfoWrapper.IsBluRay.Should().BeTrue("Is BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
       _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
@@ -180,7 +184,11 @@ namespace MediaInfo.Wrapper.Tests
       _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../HDR/PE2_Leopard_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.DtsHdMa, 6)]
     [InlineData(@"../../../../HDR/LaLaLand_cafe_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.TruehdAtmos, 8)]
     [InlineData(@"../../../../HDR/The Redwoods.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
@@ -215,7 +223,11 @@ namespace MediaInfo.Wrapper.Tests
       video.SubSampling.Should().Be(subSampling);
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../UHD/4K HEVC 59.940 Broadcast Capture Sample.mkv", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../UHD/4K youtube.webm", VideoCodec.Vp9, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling332)]
@@ -241,7 +253,11 @@ namespace MediaInfo.Wrapper.Tests
       video.SubSampling.Should().Be(subSampling);
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../3D/3D-full-MVC.mkv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../3D/Guards 3D Half-OU.mk3d", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.TopBottomRight, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../3D/BD3D/BDMV/index.bdmv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
@@ -261,7 +277,11 @@ namespace MediaInfo.Wrapper.Tests
       video.SubSampling.Should().Be(subSampling);
     }
 
-    [TheoryInDebugOnly]
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 720p.avi", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 1080p.avi", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData(@"../../../../HD/1080i-25-H264.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]

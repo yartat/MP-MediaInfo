@@ -383,17 +383,17 @@ namespace MediaInfo
       return CountGet(streamKind, -1);
     }
 
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
+    /// </inheritdoc/>
     public void Dispose()
     {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
-    // ReSharper disable once UnusedParameter.Local
-    private void Dispose(bool disposing)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
     {
       Close();
 #if (NET40 || NET45)
@@ -611,17 +611,17 @@ namespace MediaInfo
       return CountGet(filePos, streamKind, -1);
     }
 
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
+    /// </inheritdoc/>
     public void Dispose()
     {
       Dispose(true);
       GC.SuppressFinalize(this);
     }
 
-    // ReSharper disable once UnusedParameter.Local
-    private void Dispose(bool disposing)
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    protected virtual void Dispose(bool disposing)
     {
       if (_handle != IntPtr.Zero)
       {

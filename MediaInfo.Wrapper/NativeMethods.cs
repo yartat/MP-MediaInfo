@@ -1824,7 +1824,7 @@ namespace MediaInfo
       Menu_Chapters_Pos_End,
     };
 
-    internal enum Status
+    public enum Status
     {
       None = 0x00,
       Accepted = 0x01,

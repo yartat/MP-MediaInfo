@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaInfo.Wrapper", "MediaI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaInfo.Wrapper.Tests", "MediaInfo.Wrapper.Tests\MediaInfo.Wrapper.Tests.csproj", "{6C30D376-9E62-4F44-BA3A-E5CFA018674B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0E8AF0C-4B5D-499C-886D-597542610AF5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

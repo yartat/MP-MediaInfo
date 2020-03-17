@@ -383,7 +383,7 @@ namespace MediaInfo
       return CountGet(streamKind, -1);
     }
 
-    /// </inheritdoc/>
+    /// <inheritdoc/>
     public void Dispose()
     {
       Dispose(true);
@@ -611,7 +611,7 @@ namespace MediaInfo
       return CountGet(filePos, streamKind, -1);
     }
 
-    /// </inheritdoc/>
+    /// <inheritdoc/>
     public void Dispose()
     {
       Dispose(true);

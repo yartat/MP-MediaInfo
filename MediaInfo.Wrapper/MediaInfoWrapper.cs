@@ -127,7 +127,7 @@ namespace MediaInfo
       if (isTv || isRadio || isRtsp)
       {
         MediaInfoNotloaded = true;
-        logger.LogError($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
+        logger.LogInformation($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
         return;
       }
 
@@ -140,6 +140,7 @@ namespace MediaInfo
         {
           if (filePath.EndsWith(".ifo", StringComparison.OrdinalIgnoreCase))
           {
+            _logger.LogDebug("Detects DVD. Processing DVD information");
 #if (NET40 || NET45)
             filePath = ProcessDvd(filePath, realPathToDll, providerNumber);
 #else
@@ -148,6 +149,7 @@ namespace MediaInfo
           }
           else if (filePath.EndsWith(".bdmv", StringComparison.OrdinalIgnoreCase))
           {
+            _logger.LogDebug("Detects BD.");
             IsBluRay = true;
             filePath = Path.GetDirectoryName(filePath);
             Size = GetDirectorySize(filePath);
@@ -158,6 +160,10 @@ namespace MediaInfo
           }
 
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
+          if (HasExternalSubtitles)
+          { 
+            _logger.LogDebug("Found external subtitles");
+          }
         }
 
 #if (NET40 || NET45)
@@ -355,6 +361,7 @@ namespace MediaInfo
         Tags = new AudioTagBuilder(mediaInfo, 0).Build();
 
         // Setup videos
+        _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Video)} video streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
         {
           VideoStreams.Add(new VideoStreamBuilder(mediaInfo, streamNumber++, i).Build());
@@ -385,6 +392,7 @@ namespace MediaInfo
         }
 
         // Setup audios
+        _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Audio)} audio streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
         {
           AudioStreams.Add(new AudioStreamBuilder(mediaInfo, streamNumber++, i).Build());
@@ -401,18 +409,21 @@ namespace MediaInfo
         }
 
         // Setup subtitles
+        _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Text)} subtitle streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
         {
           Subtitles.Add(new SubtitleStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         // Setup chapters
+        _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Other)} chapters.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
         {
           Chapters.Add(new ChapterStreamBuilder(mediaInfo, streamNumber++, i).Build());
         }
 
         // Setup menus
+        _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Menu)} menu items.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
         {
           MenuStreams.Add(new MenuStreamBuilder(mediaInfo, streamNumber++, i).Build());

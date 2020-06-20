@@ -161,7 +161,7 @@ namespace MediaInfo
 
           HasExternalSubtitles = !string.IsNullOrEmpty(filePath) && CheckHasExternalSubtitles(filePath);
           if (HasExternalSubtitles)
-          { 
+          {
             _logger.LogDebug("Found external subtitles");
           }
         }
@@ -356,6 +356,10 @@ namespace MediaInfo
           _logger.LogDebug($"MediaInfo library successfully opened {filePath}. Handle={filePricessingHandle}");
         }
 
+        Format = mediaInfo.Get(StreamKind.General, 0, "Format");
+        Profile = mediaInfo.Get(StreamKind.General, 0, "Format_Profile");
+        FormatVersion = mediaInfo.Get(StreamKind.General, 0, "Format_Version");
+        Codec = mediaInfo.Get(StreamKind.General, 0, "CodecID");
         var streamNumber = 0;
 
         Tags = new AudioTagBuilder(mediaInfo, 0).Build();
@@ -380,13 +384,13 @@ namespace MediaInfo
         // Fix 3D for some containers
         if (VideoStreams.Count == 1 && Tags.GeneralTags.TryGetValue((NativeMethods.General)1000, out var isStereo))
         {
-          var video = VideoStreams.First();
+          var video = VideoStreams[0];
           if (Tags.GeneralTags.TryGetValue((NativeMethods.General)1001, out var stereoMode))
-          { 
+          {
             video.Stereoscopic = (StereoMode) stereoMode;
           }
           else
-          { 
+          {
             video.Stereoscopic = (bool) isStereo ? StereoMode.Stereo : StereoMode.Mono;
           }
         }
@@ -770,6 +774,30 @@ namespace MediaInfo
     ///   <c>true</c> if media is DVD; otherwise, <c>false</c>.
     /// </value>
     public bool IsDvd { get; private set; }
+
+    /// <summary>
+    /// Gets the media (container) format.
+    /// </summary>
+    /// <value>The media (container) format.</value>
+    public string Format { get; private set; }
+
+    /// <summary>
+    /// Gets the media (container) format version.
+    /// </summary>
+    /// <value>The media (container) format version.</value>
+    public string FormatVersion { get; private set; }
+
+    /// <summary>
+    /// Gets the media (container) format profile.
+    /// </summary>
+    /// <value>The media (container) format profile.</value>
+    public string Profile { get; private set; }
+
+    /// <summary>
+    /// Gets the media (container) codec.
+    /// </summary>
+    /// <value>The media (container) codec.</value>
+    public string Codec { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether media is BluRay.

@@ -36,7 +36,7 @@ namespace MediaInfo
   {
     #region private vars
 
-    private static readonly Dictionary<string, bool> SubTitleExtensions = new Dictionary<string, bool> 
+    private static readonly Dictionary<string, bool> SubTitleExtensions = new Dictionary<string, bool>
     {
       { ".AQT", true },
       { ".ASC", true },
@@ -95,7 +95,7 @@ namespace MediaInfo
     /// <param name="filePath">The file path.</param>
     /// <param name="pathToDll">The path to DLL.</param>
     /// <param name="logger">the logger instance.</param>
-    protected MediaInfoWrapper(string filePath, string pathToDll, ILogger logger)
+    public MediaInfoWrapper(string filePath, string pathToDll, ILogger logger)
 #endif
     {
       _filePath = filePath;
@@ -115,7 +115,24 @@ namespace MediaInfo
       }
 
 #if (NET40 || NET45)
-      var realPathToDll = IfExistsPath(logger, ".\\", () => IfExistsPath(logger, pathToDll, () => null));
+      var realPathToDll = ((string)null)
+        .IfExistsPath("./", logger)
+        .IfExistsPath(pathToDll, logger)
+        .IfExistsPath(
+          Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location),
+          logger)
+        .IfExistsPath(
+          Path.IsPathRooted(pathToDll) ?
+            null :
+            Path.Combine(Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location), pathToDll),
+          logger);
+
+      if (string.IsNullOrEmpty(realPathToDll))
+      {
+        logger.LogError("MediaInfo.dll was not found");
+        MediaInfoNotloaded = true;
+        return;
+      }
 #endif
 
       var isTv = filePath.IsLiveTv();
@@ -186,13 +203,13 @@ namespace MediaInfo
     {
       _logger.LogInformation($"Inspecting media    : {_filePath}");
       if (MediaInfoNotloaded)
-      { 
-        _logger.LogWarning($"MediaInfo.dll was not loaded!");
+      {
+        _logger.LogWarning("MediaInfo.dll was not loaded!");
       }
       else
       {
         _logger.LogDebug($"DLL version         : {Version}");
-        
+
         // General
         _logger.LogDebug($"Media duration      : {TimeSpan.FromMilliseconds(Duration)}");
         _logger.LogDebug($"Has audio           : {(AudioStreams?.Count ?? 0) > 0}");
@@ -230,7 +247,7 @@ namespace MediaInfo
 
         // Subtitles
         if (HasSubtitles)
-        { 
+        {
           _logger.LogDebug($"Subtitles count     : {Subtitles?.Count ?? 0}");
         }
 
@@ -241,27 +258,6 @@ namespace MediaInfo
         }
       }
     }
-
-#if (NET40 || NET45)
-    private string IfExistsPath(ILogger logger, string pathToDll, Func<string> anotherPath)
-    {
-      var result = anotherPath();
-      if (!string.IsNullOrEmpty(result))
-      { 
-        return result;
-      }
-
-      logger.LogDebug("Check MediaInfo.dll from {0}.", pathToDll);
-      if (!MediaInfoExist(pathToDll))
-      {
-        MediaInfoNotloaded = true;
-        logger.LogWarning($"Library MediaInfo.dll was not found at {pathToDll}");
-        return null;
-      }
-
-      return pathToDll;
-    }
-#endif
 
     private static long GetDirectorySize(string folderName)
     {
@@ -476,10 +472,10 @@ namespace MediaInfo
                       ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "DisplayAspectRatio")
                       : string.Empty;
       AspectRatio = BestVideoStream != null ?
-          AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen" : 
+          AspectRatio == "4:3" || AspectRatio == "1.333" ? "fullscreen" : "widescreen" :
           string.Empty;
 
-      BestAudioStream = AudioStreams.OrderByDescending(x => x.Channel * 10000000 + x.Bitrate).FirstOrDefault();
+      BestAudioStream = AudioStreams.OrderByDescending(x => (x.Channel * 10000000) + x.Bitrate).FirstOrDefault();
       AudioCodec = BestAudioStream?.CodecName ?? string.Empty;
       AudioRate = (int?)BestAudioStream?.Bitrate ?? 0;
       AudioSampleRate = (int?)BestAudioStream?.SamplingRate ?? 0;
@@ -489,17 +485,7 @@ namespace MediaInfo
 
 #endregion
 
-    /// <summary>
-    /// Checks if mediaInfo.dll file exist.
-    /// </summary>
-    /// <param name="pathToDll">The path to mediaInfo.dll</param>
-    /// <returns>Returns <b>true</b> if mediaInfo.dll is exists; elsewhere <b>false</b>.</returns>
-    public static bool MediaInfoExist(string pathToDll)
-    {
-      return File.Exists(Path.Combine(pathToDll, "MediaInfo.dll"));
-    }
-
-#region private methods
+    #region private methods
 
     private static bool CheckHasExternalSubtitles(string strFile)
     {
@@ -521,9 +507,9 @@ namespace MediaInfo
       }
     }
 
-#endregion
+    #endregion
 
-#region public video related properties
+    #region public video related properties
 
     /// <summary>
     /// Gets a value indicating whether this instance has video.
@@ -637,9 +623,9 @@ namespace MediaInfo
     /// </value>
     public int VideoRate { get; private set; }
 
-#endregion
+    #endregion
 
-#region public audio related properties
+    #region public audio related properties
 
     /// <summary>
     /// Gets the audio streams.
@@ -697,9 +683,9 @@ namespace MediaInfo
     /// </value>
     public string AudioChannelsFriendly { get; private set; }
 
-#endregion
+    #endregion
 
-#region public subtitles related properties
+    #region public subtitles related properties
 
     /// <summary>
     /// Gets the list of media subtitles.
@@ -725,9 +711,9 @@ namespace MediaInfo
     /// </value>
     public bool HasExternalSubtitles { get; }
 
-#endregion
+    #endregion
 
-#region public chapters related properties
+    #region public chapters related properties
 
     /// <summary>
     /// Gets the media chapters.
@@ -745,9 +731,9 @@ namespace MediaInfo
     /// </value>
     public bool HasChapters => Chapters.Count > 0;
 
-#endregion
+    #endregion
 
-#region public menu related properties
+    #region public menu related properties
 
     /// <summary>
     /// Gets the menu streams from media.
@@ -765,7 +751,9 @@ namespace MediaInfo
     /// </value>
     public bool HasMenu => MenuStreams.Count > 0;
 
-#endregion
+    #endregion
+
+    #region public common properties
 
     /// <summary>
     /// Gets a value indicating whether media is DVD.
@@ -846,5 +834,43 @@ namespace MediaInfo
     /// The tags.
     /// </value>
     public AudioTags Tags { get; private set; }
+
+    #endregion
   }
+
+#if (NET40 || NET45)
+  internal static class PathExtensions
+  {
+    public static string IfExistsPath(this string sourcePath, string anotherPath, ILogger logger)
+    {
+      if (!string.IsNullOrEmpty(sourcePath))
+      {
+        return sourcePath;
+      }
+
+      if (string.IsNullOrEmpty(anotherPath))
+      {
+        return null;
+      }
+
+      logger.LogDebug("Check MediaInfo.dll from {0}.", anotherPath);
+      if (!anotherPath.MediaInfoExist())
+      {
+        logger.LogWarning($"Library MediaInfo.dll was not found at {anotherPath}");
+        return null;
+      }
+
+      logger.LogInformation($"Library MediaInfo.dll was found at {anotherPath}");
+      return anotherPath;
+    }
+
+    /// <summary>
+    /// Checks if mediaInfo.dll file exist.
+    /// </summary>
+    /// <param name="pathToDll">The path to mediaInfo.dll</param>
+    /// <returns>Returns <b>true</b> if mediaInfo.dll is exists; elsewhere <b>false</b>.</returns>
+    public static bool MediaInfoExist(this string pathToDll) =>
+      File.Exists(Path.Combine(pathToDll, "MediaInfo.dll"));
+  }
+#endif
 }

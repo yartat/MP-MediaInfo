@@ -37,7 +37,7 @@ namespace MediaInfo.Wrapper.Tests
     }
 
     [Theory]
-    [InlineData(@"./Data/RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
+    [InlineData("./Data/RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
     public void LoadSimpleVideo(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -66,7 +66,7 @@ namespace MediaInfo.Wrapper.Tests
     }
 
     [Theory]
-    [InlineData(@"./Data/Test_H264_Atmos.m2ts")]
+    [InlineData("./Data/Test_H264_Atmos.m2ts")]
     public void LoadVideoWithDolbyAtmos(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -100,7 +100,7 @@ namespace MediaInfo.Wrapper.Tests
     }
 
     [Theory]
-    [InlineData(@"./Data/Test_H264_Ac3.m2ts")]
+    [InlineData("./Data/Test_H264_Ac3.m2ts")]
     public void LoadVideoWithDolbyDigital(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -128,7 +128,7 @@ namespace MediaInfo.Wrapper.Tests
     }
 
     [Theory]
-    [InlineData(@"./Data/Test_H264.m2ts")]
+    [InlineData("./Data/Test_H264.m2ts")]
     public void LoadVideoWithoutAudio(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -158,7 +158,7 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData(@"//192.168.1.187/Video_O/2016 DOLBY ATMOS DEMO DISC/BDMV/index.bdmv")]
+    [InlineData("//192.168.50.31/Video_O/2016 DOLBY ATMOS DEMO DISC/BDMV/index.bdmv")]
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -189,20 +189,20 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData(@"../../../../HDR/PE2_Leopard_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.DtsHdMa, 6)]
-    [InlineData(@"../../../../HDR/LaLaLand_cafe_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.TruehdAtmos, 8)]
-    [InlineData(@"../../../../HDR/The Redwoods.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
-    [InlineData(@"../../../../HDR/The World in HDR.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
-    [InlineData(@"../../../../HDR/LG Demo DolbyVision Comparison.mkv", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 6)]
-    [InlineData(@"../../../../HDR/LG Demo DolbyVision Trailer.mkv", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 6)]
-    [InlineData(@"../../../../HDR/LG Amaze Dolby Vision UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3Atmos, 6)]
-    [InlineData(@"../../../../HDR/LG Daylight 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
-    [InlineData(@"../../../../HDR/LG Earth Dolby Vision UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 2)]
-    [InlineData(@"../../../../HDR/LG New York HDR UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
-    [InlineData(@"../../../../HDR/Life Untouched 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
-    [InlineData(@"../../../../HDR/Sony Camp 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT709, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
-    [InlineData(@"../../../../HDR/Sony Whale in Tonga HDR UHD 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
-    [InlineData(@"../../../../HDR/TravelXP 4K HDR HLG Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HLG, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 1)]
+    [InlineData("../../../../HDR/PE2_Leopard_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.DtsHdMa, 6)]
+    [InlineData("../../../../HDR/LaLaLand_cafe_4K.mkv", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.TruehdAtmos, 8)]
+    [InlineData("../../../../HDR/The Redwoods.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
+    [InlineData("../../../../HDR/The World in HDR.mkv", VideoCodec.Vp9, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling332, AudioCodec.Vorbis, 2)]
+    [InlineData("../../../../HDR/LG Demo DolbyVision Comparison.mkv", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 6)]
+    [InlineData("../../../../HDR/LG Demo DolbyVision Trailer.mkv", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 6)]
+    [InlineData("../../../../HDR/LG Amaze Dolby Vision UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3Atmos, 6)]
+    [InlineData("../../../../HDR/LG Daylight 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
+    [InlineData("../../../../HDR/LG Earth Dolby Vision UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.DolbyVision, ColorSpace.Generic, ChromaSubSampling.Sampling420, AudioCodec.Eac3, 2)]
+    [InlineData("../../../../HDR/LG New York HDR UHD 4K Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
+    [InlineData("../../../../HDR/Life Untouched 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
+    [InlineData("../../../../HDR/Sony Camp 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT709, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
+    [InlineData("../../../../HDR/Sony Whale in Tonga HDR UHD 4K Demo.mp4", VideoCodec.MpeghIsoHevc, Hdr.HDR10, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 2)]
+    [InlineData("../../../../HDR/TravelXP 4K HDR HLG Demo.ts", VideoCodec.MpeghIsoHevc, Hdr.HLG, ColorSpace.BT2020, ChromaSubSampling.Sampling420, AudioCodec.AacMpeg4Lc, 1)]
     public void LoadHdrDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, ChromaSubSampling subSampling, AudioCodec audioCodec, int channels)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -228,15 +228,15 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData(@"../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/4K HEVC 59.940 Broadcast Capture Sample.mkv", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/4K youtube.webm", VideoCodec.Vp9, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling332)]
-    [InlineData(@"../../../../UHD/8K youtube.mp4", VideoCodec.Av1, 4320, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/iphone6s_4k.mov", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/lg-uhd-spain-and-patagonia-(www.demolandia.net).mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/samsung-uhd-dubai-(www.demolandia.net).mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/samsung_seven_wonders_of_the_world_china_uhd-DWEU.mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../UHD/4k_Rec709_ProResHQ.mov", VideoCodec.ProRes, 3072, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
+    [InlineData("../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/4K HEVC 59.940 Broadcast Capture Sample.mkv", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/4K youtube.webm", VideoCodec.Vp9, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling332)]
+    [InlineData("../../../../UHD/8K youtube.mp4", VideoCodec.Av1, 4320, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/iphone6s_4k.mov", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/lg-uhd-spain-and-patagonia-(www.demolandia.net).mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/samsung-uhd-dubai-(www.demolandia.net).mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/samsung_seven_wonders_of_the_world_china_uhd-DWEU.mkv", VideoCodec.Mpeg4IsoAvc, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../UHD/4k_Rec709_ProResHQ.mov", VideoCodec.ProRes, 3072, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
     public void LoadUhdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling subSampling)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -258,11 +258,11 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData(@"../../../../3D/3D-full-MVC.mkv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../3D/Guards 3D Half-OU.mk3d", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.TopBottomRight, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../3D/BD3D/BDMV/index.bdmv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../3D/Dracula 480p.wmv", VideoCodec.Vc1, Hdr.None, ColorSpace.Generic, StereoMode.SideBySideRight, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../3D/small-00000.ssif", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../3D/3D-full-MVC.mkv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../3D/Guards 3D Half-OU.mk3d", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.TopBottomRight, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../3D/BD3D/BDMV/index.bdmv", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../3D/Dracula 480p.wmv", VideoCodec.Vc1, Hdr.None, ColorSpace.Generic, StereoMode.SideBySideRight, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../3D/small-00000.ssif", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420)]
     public void Load3dDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, StereoMode stereoMode, ChromaSubSampling subSampling)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
@@ -282,34 +282,34 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 720p.avi", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/[Underwater] Another - sample H264 Hi10P 1080p.avi", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/1080i-25-H264.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/Bieber Grammys.ts", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
-    [InlineData(@"../../../../HD/Clannad After Story OPA - sample HEVC main10 1080p.mkv", VideoCodec.MpeghIsoHevc, 1088, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/DSCF1912_parrot.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
-    [InlineData(@"../../../../HD/DSCF1928_fish.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
-    [InlineData(@"../../../../HD/DSCF1929_fish.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
-    [InlineData(@"../../../../HD/FPS_test_1080p23.976_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/FPS_test_1080p24_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/FPS_test_1080p25_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/FPS_test_1080p50_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/FPS_test_1080p59.94_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/FPS_test_1080p60_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/Grace Potter 29.97 Mpeg-2 1080i 35mbps DTS-HD MA 5.1 Sample.ts", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/H.265 HVEC Test 1.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/H.265 HVEC Test 2.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling332)]
-    [InlineData(@"../../../../HD/Human Flight 3D - Andy carving_(FullHD).avi", VideoCodec.Mpeg4IsoAvc, 540, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/Imagine Dragons 59.94 720p 20mbps Mpeg-2 MPA2.0 Sample.ts", VideoCodec.Mpeg2, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/issue1930.h264", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/MPEG2_1080i_sample.mkv", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/PE2_Leopard_1080.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/San%20Francisco%20Time%20Lapse%20(Empty%20America).mp4", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/Sisvel3DTile.ts", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/Surfcup.mp4", VideoCodec.H263, 408, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/test 8.mp4", VideoCodec.Mpeg4IsoAvc, 288, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/VC-1_23.976_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
-    [InlineData(@"../../../../HD/VC-1_29.970_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/[Underwater] Another - sample H264 Hi10P 720p.avi", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/[Underwater] Another - sample H264 Hi10P 1080p.avi", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/1080i-25-H264.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/Bieber Grammys.ts", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
+    [InlineData("../../../../HD/Clannad After Story OPA - sample HEVC main10 1080p.mkv", VideoCodec.MpeghIsoHevc, 1088, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/DSCF1912_parrot.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
+    [InlineData("../../../../HD/DSCF1928_fish.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
+    [InlineData("../../../../HD/DSCF1929_fish.AVI", VideoCodec.Mjpg, 480, ColorSpace.Generic, ChromaSubSampling.Sampling422)]
+    [InlineData("../../../../HD/FPS_test_1080p23.976_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/FPS_test_1080p24_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/FPS_test_1080p25_L4.1.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/FPS_test_1080p50_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/FPS_test_1080p59.94_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/FPS_test_1080p60_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/Grace Potter 29.97 Mpeg-2 1080i 35mbps DTS-HD MA 5.1 Sample.ts", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/H.265 HVEC Test 1.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/H.265 HVEC Test 2.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling332)]
+    [InlineData("../../../../HD/Human Flight 3D - Andy carving_(FullHD).avi", VideoCodec.Mpeg4IsoAvc, 540, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/Imagine Dragons 59.94 720p 20mbps Mpeg-2 MPA2.0 Sample.ts", VideoCodec.Mpeg2, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/issue1930.h264", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/MPEG2_1080i_sample.mkv", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/PE2_Leopard_1080.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/San%20Francisco%20Time%20Lapse%20(Empty%20America).mp4", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/Sisvel3DTile.ts", VideoCodec.Mpeg4IsoAvc, 720, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/Surfcup.mp4", VideoCodec.H263, 408, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/test 8.mp4", VideoCodec.Mpeg4IsoAvc, 288, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/VC-1_23.976_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
+    [InlineData("../../../../HD/VC-1_29.970_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     public void LoadHdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling chromaSubSampling)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);

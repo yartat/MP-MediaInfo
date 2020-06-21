@@ -305,7 +305,7 @@ namespace MediaInfo.Builder
             result.Codec = formatProfile;
             baseIndex = 1;
           }
-          else 
+          else
           {
             formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_AdditionalFeatures, InfoKind.Text).Trim());
             if (formatProfile != AudioCodec.Undefined)
@@ -338,28 +338,18 @@ namespace MediaInfo.Builder
       return result;
     }
 
-    private static string ExtractInfo(string source, int index)
-    {
-      return source.IndexOf("/", StringComparison.Ordinal) >= 0 ?
-               source.Split('/').Skip(index).FirstOrDefault()?.Trim() :
-               source;
-    }
+    private static string ExtractInfo(string source, int index) =>
+      source.IndexOf("/", StringComparison.Ordinal) >= 0 ?
+        source.Split('/').Skip(index).FirstOrDefault()?.Trim() :
+        source;
 
-    private static bool TryGetCodecByCodecId(string source, out AudioCodec result)
-    {
-      return CodecIds.TryGetValue(source, out result);
-    }
+    private static bool TryGetCodecByCodecId(string source, out AudioCodec result) =>
+      CodecIds.TryGetValue(source, out result);
 
-    private static AudioCodec GetCodecIdByCodecName(string source)
-    {
-      AudioCodec result;
-      return Codecs.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
-    }
+    private static AudioCodec GetCodecIdByCodecName(string source) =>
+      Codecs.TryGetValue(source, out var result) ? result : AudioCodec.Undefined;
 
-    private static AudioCodec GetMlpCodecIdByAdditionalFeatures(string source)
-    {
-      AudioCodec result;
-      return MlpCodecsAdditionalFeatures.TryGetValue(source, out result) ? result : AudioCodec.Undefined;
-    }
+    private static AudioCodec GetMlpCodecIdByAdditionalFeatures(string source) =>
+      MlpCodecsAdditionalFeatures.TryGetValue(source, out var result) ? result : AudioCodec.Undefined;
   }
 }

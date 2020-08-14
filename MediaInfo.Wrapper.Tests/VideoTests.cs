@@ -298,7 +298,7 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../HD/FPS_test_1080p60_L4.2.mkv", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
     [InlineData("../../../../HD/Grace Potter 29.97 Mpeg-2 1080i 35mbps DTS-HD MA 5.1 Sample.ts", VideoCodec.Mpeg2, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData("../../../../HD/H.265 HVEC Test 1.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
-    [InlineData("../../../../HD/H.265 HVEC Test 2.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling332)]
+    [InlineData("../../../../HD/H.265 HVEC Test 2.mkv", VideoCodec.MpeghIsoHevc, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData("../../../../HD/Human Flight 3D - Andy carving_(FullHD).avi", VideoCodec.Mpeg4IsoAvc, 540, ColorSpace.Generic, ChromaSubSampling.Sampling420)]
     [InlineData("../../../../HD/Imagine Dragons 59.94 720p 20mbps Mpeg-2 MPA2.0 Sample.ts", VideoCodec.Mpeg2, 720, ColorSpace.BT709, ChromaSubSampling.Sampling420)]
     [InlineData("../../../../HD/issue1930.h264", VideoCodec.Mpeg4IsoAvc, 1080, ColorSpace.BT709, ChromaSubSampling.Sampling420)]

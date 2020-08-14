@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>19.09.4</Version>
-    <AssemblyVersion>19.09.04.0</AssemblyVersion>
-    <FileVersion>19.09.04.0</FileVersion>
+    <Version>20.08.0</Version>
+    <AssemblyVersion>20.08.0.0</AssemblyVersion>
+    <FileVersion>20.08.0.0</FileVersion>
     <Company>Team MediaPortal</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>
@@ -46,7 +46,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="MediaInfo.Native" Version="19.9.0" />
+    <PackageReference Include="MediaInfo.Native" Version="20.8.1" />
     <None Include="images/MediaInfo_90x90.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 

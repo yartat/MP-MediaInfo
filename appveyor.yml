@@ -1,4 +1,4 @@
-version: 19.09.04
+version: 20.08.0
 
 branches:
   only:
@@ -38,3 +38,5 @@ test_script:
 artifacts:
 - path: .\MediaInfo.Wrapper\bin\Release\*.nupkg
   name: package
+- path: .\MediaInfo.Wrapper\bin\Release\*.snupkg
+  name: 'debug package'

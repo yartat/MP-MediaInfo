@@ -1,8 +1,4 @@
-version: 20.08.0
-
-branches:
-  only:
-  - master
+version: '20.08.{build}'
 
 image: Visual Studio 2019
 configuration: Release

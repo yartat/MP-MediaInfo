@@ -1,20 +1,9 @@
-#region Copyright (c) MediaArea.net SARL.
+#region Copyright (C) 2017-2020 Yaroslav Tatarenko
 
-/*  Copyright (c) MediaArea.net SARL. All Rights Reserved.
-*
-*  Use of this source code is governed by a BSD-style license that can
-*  be found in the License.html file in the root of the source tree.
-*/
+// Copyright (C) 2017-2020 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// https://mediaarea.net
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//
-// Microsoft Visual C# wrapper for MediaInfo Library
-// See MediaInfo.h for help
-//
-// To make it working, you must put MediaInfo.Dll
-// in the executable folder
-//
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
 using System;

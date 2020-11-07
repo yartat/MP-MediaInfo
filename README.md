@@ -36,7 +36,7 @@ Make sure that the following dependencies are installed in the operating system 
 | OpenSUSE | 15.2 and Tumbleweed |
 | RedHat | 6 and above |
 | Debian | 8 and above |
-| Windows | 7 and above |
+| [Windows](#Windows) | 7 and above |
 ### MacOS
 Some dependencies are available with MacPorts. To install MacPorts:
 https://guide.macports.org/#installing

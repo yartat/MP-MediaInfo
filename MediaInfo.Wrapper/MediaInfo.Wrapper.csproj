@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>20.08.0</Version>
-    <AssemblyVersion>20.08.0.0</AssemblyVersion>
-    <FileVersion>20.08.0.0</FileVersion>
+    <Version>20.09.0</Version>
+    <AssemblyVersion>20.09.0.0</AssemblyVersion>
+    <FileVersion>20.09.0.0</FileVersion>
     <Company>Yaroslav Tatarenko</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>
@@ -42,7 +42,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="MediaInfo.Native" Version="20.8.1" />
+    <PackageReference Include="MediaInfo.Native" Version="20.9.0" />
   </ItemGroup>
 
   <ItemGroup>

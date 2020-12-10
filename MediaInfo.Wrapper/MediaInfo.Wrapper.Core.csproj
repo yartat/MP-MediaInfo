@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>20.08.0</Version>
-    <AssemblyVersion>20.08.0.0</AssemblyVersion>
-    <FileVersion>20.08.0.0</FileVersion>
+    <Version>20.09.0</Version>
+    <AssemblyVersion>20.09.0.0</AssemblyVersion>
+    <FileVersion>20.09.0.0</FileVersion>
     <Company>Yaroslav Tatarenko</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>
@@ -39,11 +39,19 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
     </ItemGroup>
   </Target>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="MediaInfo.Core.Native" Version="20.8.1" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="MediaInfo.Core.Native" Version="20.9.0" />
   </ItemGroup>
 
   <ItemGroup>

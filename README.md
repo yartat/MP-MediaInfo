@@ -9,6 +9,8 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 | .NET Framework 4.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper)](https://www.nuget.org/packages/MediaInfo.Wrapper) |
 | .NET Framework 4.5 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper)](https://www.nuget.org/packages/MediaInfo.Wrapper) |
 | .NET Standard 2.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
+| .NET Standard 2.1 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
+| .NET 5.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 
 ## Installation
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
@@ -30,7 +32,7 @@ Make sure that the following dependencies are installed in the operating system 
 | Operation system | Version |
 |-----------|---------|
 | [MacOS](#MacOS) | 10.5 (Leopard) and above |
-| [Ubuntu](#Ubuntu) | 16.04, 18.04, 18.10, 19.04, 19.10 and 20.04 |
+| [Ubuntu](#Ubuntu) | 16.04, 18.04, 19.10 and 20.04 |
 | CenOS | 6 and above |
 | Fedora | 30 and above |
 | OpenSUSE | 15.2 and Tumbleweed |

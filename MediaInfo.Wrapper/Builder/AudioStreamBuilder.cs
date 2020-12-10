@@ -155,9 +155,13 @@ namespace MediaInfo.Builder
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
     {
       { "MLP FBA 16-ch", AudioCodec.TruehdAtmos },
+      { "MLP FBA AC-3 16-ch", AudioCodec.TruehdAtmos },
       { "FBA 16-ch", AudioCodec.TruehdAtmos },
+      { "FBA AC-3 16-ch", AudioCodec.TruehdAtmos },
       { "16-ch", AudioCodec.TruehdAtmos },
+      { "AC-3 16-ch", AudioCodec.TruehdAtmos },
       { "MLP 16-ch", AudioCodec.TruehdAtmos },
+      { "MLP AC-3 16-ch", AudioCodec.TruehdAtmos },
       { "Dep JOC", AudioCodec.Eac3Atmos },
       { "JOC", AudioCodec.Eac3Atmos },
       { "Dep", AudioCodec.Eac3 },
@@ -253,6 +257,15 @@ namespace MediaInfo.Builder
               result.Codec = formatProfile;
               baseIndex = 1;
             }
+            else
+            {
+              formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_String, InfoKind.Text).Trim());
+              if (formatProfile != AudioCodec.Undefined)
+              {
+                result.Codec = formatProfile;
+                baseIndex = 1;
+              }
+            }
           }
 
           break;
@@ -272,6 +285,15 @@ namespace MediaInfo.Builder
             {
               result.Codec = formatProfile;
               baseIndex = 1;
+            }
+            else
+            {
+              formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_String, InfoKind.Text).Trim());
+              if (formatProfile != AudioCodec.Undefined)
+              {
+                result.Codec = formatProfile;
+                baseIndex = 1;
+              }
             }
           }
 
@@ -300,6 +322,15 @@ namespace MediaInfo.Builder
             {
               result.Codec = formatProfile;
               baseIndex = 1;
+            }
+            else
+            {
+              formatProfile = GetMlpCodecIdByAdditionalFeatures(Get((int)NativeMethods.Audio.Audio_Format_String, InfoKind.Text).Trim());
+              if (formatProfile != AudioCodec.Undefined)
+              {
+                result.Codec = formatProfile;
+                baseIndex = 1;
+              }
             }
           }
 

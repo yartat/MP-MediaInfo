@@ -3,16 +3,17 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>20.09.0</Version>
-    <AssemblyVersion>20.09.0.0</AssemblyVersion>
-    <FileVersion>20.09.0.0</FileVersion>
+    <Version>20.09.1</Version>
+    <AssemblyVersion>20.09.1.0</AssemblyVersion>
+    <FileVersion>20.09.1.0</FileVersion>
     <Company>Yaroslav Tatarenko</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>
+    <PackageTags>mediainfo;wrapper;dotnet;.net;core</PackageTags>
     <Copyright>Copyright © 2017-2020 Yaroslav Tatarenko</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/yartat/MP-MediaInfo</PackageProjectUrl>
-    <PackageLicense>https://github.com/yartat/MP-MediaInfo/blob/master/LICENSE</PackageLicense>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/yartat/MP-MediaInfo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>MediaInfo_90x90.png</PackageIcon>
@@ -39,11 +40,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
     </ItemGroup>
   </Target>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
-    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
@@ -56,6 +52,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
   <ItemGroup>
     <None Include="images/MediaInfo_90x90.png" Pack="true" PackagePath="" />
+    <None Include="..\LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

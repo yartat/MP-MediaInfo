@@ -129,11 +129,26 @@ namespace MediaInfo
       var isAvStream = filePath.IsAvStream(); //other AV streams
 
       //currently disabled for all tv/radio
-      if (isTv || isRadio || isRtsp)
+      if (isRtsp)
       {
         MediaInfoNotloaded = true;
-        logger.LogInformation($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
+        logger.LogInformation($"Media file is RTSP");
         return;
+      }
+
+      if (isRadio || isTv)
+      {
+        string path = Path.GetDirectoryName(filePath);
+        string fileName = Path.GetFileName(filePath);
+        string[] files = Directory.GetFiles(path,fileName + "*.ts");
+        if (files.Length > 0)
+          filePath = files[0];
+        else
+        {
+          MediaInfoNotloaded = true;
+          logger.LogInformation($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
+          return;
+        }
       }
 
       NumberFormatInfo providerNumber = new NumberFormatInfo { NumberDecimalSeparator = "." };

@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 20.9.2
+dotnet add package MediaInfo.Wrapper.Core --version 21.3.0
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 20.9.2
+Install-Package MediaInfo.Wrapper -Version 21.3.0
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
@@ -31,14 +31,14 @@ Make sure that the following dependencies are installed in the operating system 
 
 | Operation system | Version |
 |-----------|---------|
-| [MacOS](#MacOS) | 10.5 (Leopard) and above |
-| [Ubuntu](#Ubuntu) | 16.04, 18.04, 19.10 and 20.04 |
-| CenOS | 6 and above |
-| Fedora | 30 and above |
+| [MacOS](#macos) | 10.5 (Leopard) and above |
+| [Ubuntu](#ubuntu) | 16.04, 18.04, 19.10, 20.04 and 20.10 |
+| [CenOS](#centos) | 6 and above |
+| [Fedora](#fedora) | 30 and above |
 | OpenSUSE | 15.2 and Tumbleweed |
-| RedHat | 6 and above |
-| Debian | 8 and above |
-| [Windows](#Windows) | 7 and above |
+| [RedHat](#redhat) | 6 and above |
+| [Debian](#debian) | 8 and above |
+| [Windows](#windows) | 7 and above |
 ### MacOS
 Some dependencies are available with MacPorts. To install MacPorts:
 https://guide.macports.org/#installing
@@ -51,5 +51,44 @@ port install zlib curl zenlib
 sudo apt-get update
 sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl
 ```
+### CentOS
+```sh
+sudo yum -y update
+sudo yum -y install epel-release
+sudo yum -y update
+sudo yum -y install zlib curl libzen libssh
+```
+### Fedora
+```sh
+sudo yum update
+sudo yum -y install zlib curl libzen libssh
+```
+### OpenSUSE
+```sh
+sudo zipper refresh
+sudo zipper update
+sudo zipper install -y zlib curl libmms0 openssl libnghttp2-14
+```
+## RedHat
+### RedHat 7
+```sh
+sudo yum -y update
+sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum -y update
+sudo yum -y install zlib curl libzen libssh
+```
+### RedHat8
+```sh
+sudo dnf -y update
+sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo dnf -y update
+sudo dnf -y install zlib curl libzen libssh
+```
+### Debian
+```sh
+sudo apt-get update
+sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl
+```
 ### Windows
 Windows package contains all dependencies and does not required any actions.
+

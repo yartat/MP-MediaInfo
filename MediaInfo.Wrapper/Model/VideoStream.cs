@@ -123,12 +123,20 @@ namespace MediaInfo.Model
     public ColorSpace ColorSpace { get; set; }
 
     /// <summary>
+    /// Gets or sets the video transfer characteristics.
+    /// </summary>
+    /// <value>
+    /// The video transfer characteristics.
+    /// </value>
+    public TransferCharacteristic TransferCharacteristics { get; set; }
+
+    /// <summary>
     /// Gets or sets the video chroma subsampling.
     /// </summary>
     /// <value>
     /// The video chroma subsampling.
     /// </value>
-    public ChromaSubSampling SubSampling { get; set; }
+        public ChromaSubSampling SubSampling { get; set; }
 
     /// <summary>
     /// Gets or sets the stream duration.

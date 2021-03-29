@@ -59,7 +59,20 @@ namespace MediaInfo.Builder
       { "BT.470 System M", ColorSpace.BT470M },
       { "SMPTE 240M", ColorSpace.SMPTE240M },
       { "Generic film", ColorSpace.Generic },
-      { "EBU Tech 3213", ColorSpace.EBUTech3213 },
+      { "EBU Tech 3213", ColorSpace.EBUTech3213 }
+    };
+
+    private static readonly Dictionary<string, TransferCharacteristic> TransferCharacteristics = new Dictionary<string, TransferCharacteristic>(StringComparer.OrdinalIgnoreCase)
+    {
+      { "Printing density", TransferCharacteristic.PrintingDensity },
+      { "SMPTE 274M", TransferCharacteristic.SMPTE274M },
+      { "BT.709", TransferCharacteristic.BT709 },
+      { "BT.601 PAL", TransferCharacteristic.BT601PAL },
+      { "BT.601 NTSC", TransferCharacteristic.BT601NTSC },
+      { "Composite PAL", TransferCharacteristic.CompositePAL },
+      { "Composite NTSC", TransferCharacteristic.CompositeNTSC },
+      { "Z (depth) - homogeneous", TransferCharacteristic.ZHomogeneous },
+      { "Z (depth) - linear", TransferCharacteristic.ZLinear }
     };
 
     private static readonly Dictionary<string, AspectRatio> Ratios = new Dictionary<string, AspectRatio>
@@ -359,6 +372,7 @@ namespace MediaInfo.Builder
       result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Video.Video_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
       result.BitDepth = Get<int>((int)NativeMethods.Video.Video_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.ColorSpace = Get<ColorSpace>((int)NativeMethods.Video.Video_colour_primaries, InfoKind.Text, TryGetColorSpace);
+      result.TransferCharacteristics = Get<TransferCharacteristic>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetTransferCharacteristics);
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
       result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
@@ -402,6 +416,12 @@ namespace MediaInfo.Builder
     {
       return ColorSpaces.TryGetValue(source, out result);
     }
+
+    private static bool TryGetTransferCharacteristics(string source, out TransferCharacteristic result)
+    {
+      return TransferCharacteristics.TryGetValue(source, out result);
+    }
+
     private static bool TryGetStandard(string source, out VideoStandard result)
     {
       return VideoStandards.TryGetValue(source, out result);

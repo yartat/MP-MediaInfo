@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>20.09.1</Version>
-    <AssemblyVersion>20.09.1.0</AssemblyVersion>
-    <FileVersion>20.09.1.0</FileVersion>
+    <Version>21.3</Version>
+    <AssemblyVersion>21.3.0.0</AssemblyVersion>
+    <FileVersion>21.3.0.0</FileVersion>
     <Company>Yaroslav Tatarenko</Company>
     <Authors>yartat</Authors>
     <Product>MP-MediaInfo</Product>
     <PackageTags>mediainfo;wrapper;dotnet;.net;core</PackageTags>
-    <Copyright>Copyright © 2017-2020 Yaroslav Tatarenko</Copyright>
+    <Copyright>Copyright © 2017-2021 Yaroslav Tatarenko</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/yartat/MP-MediaInfo</PackageProjectUrl>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
@@ -19,7 +19,7 @@
     <PackageIcon>MediaInfo_90x90.png</PackageIcon>
     <Description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
 MediaInfo .NET wrapper with support network AV streams</Description>
-    <PackageReleaseNotes>Copyright © 2017-2020 Yaroslav Tatarenko
+    <PackageReleaseNotes>Copyright © 2017-2021 Yaroslav Tatarenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageReleaseNotes>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.Core.xml</DocumentationFile>
@@ -47,12 +47,12 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="MediaInfo.Core.Native" Version="20.9.0" />
+    <PackageReference Include="MediaInfo.Core.Native" Version="21.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="images/MediaInfo_90x90.png" Pack="true" PackagePath="" />
-    <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

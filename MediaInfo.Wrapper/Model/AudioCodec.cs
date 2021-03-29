@@ -374,5 +374,45 @@ namespace MediaInfo.Model
     /// Ligos IAC2
     /// </summary>
     Iac2,
+
+    /// <summary>
+    /// MPEG-H 3D Audio
+    /// </summary>
+    Mpeg3DAudio,
+
+    /// <summary>
+    /// Nellymoser codec
+    /// </summary>
+    Nellymoser,
+
+    /// <summary>
+    /// The Qualcomm Pure Voice
+    /// </summary>
+    QualcommPureVoice,
+
+    /// <summary>
+    /// QDesign Music 1
+    /// </summary>
+    QDesignMusic1,
+
+    /// <summary>
+    /// QDesign Music 2
+    /// </summary>
+    QDesignMusic2,
+
+    /// <summary>
+    /// Dolby AC-4
+    /// </summary>
+    Ac4,
+
+    /// <summary>
+    /// Dolby E codec
+    /// </summary>
+    DolbyE,
+
+    /// <summary>
+    /// Dolby ED2
+    /// </summary>
+    DolbyEd2
   }
 }

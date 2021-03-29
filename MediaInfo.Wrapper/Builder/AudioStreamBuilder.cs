@@ -150,6 +150,15 @@ namespace MediaInfo.Builder
       { "ALS", AudioCodec.Als },
       { "IAC2", AudioCodec.Iac2 },
       { "MLP FBA", AudioCodec.Truehd },
+      { "MPEG-H 3D Audio", AudioCodec.Mpeg3DAudio },
+      { "QDesign 1", AudioCodec.QDesignMusic1 },
+      { "QDesign 2", AudioCodec.QDesignMusic2 },
+      { "QCELP", AudioCodec.QualcommPureVoice },
+      { "Ac4", AudioCodec.Ac4 },
+      { "Ac-4", AudioCodec.Ac4 },
+      { "Dolby ED2", AudioCodec.DolbyEd2 },
+      { "Dolby E", AudioCodec.DolbyE },
+      { "Dolby E-8", AudioCodec.DolbyE },
     };
 
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new Dictionary<string, AudioCodec>(StringComparer.OrdinalIgnoreCase)
@@ -344,9 +353,17 @@ namespace MediaInfo.Builder
       result.SamplingRate = Get<double>("SamplingRate", TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.BitDepth = Get<int>("BitDepth", TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
       result.BitrateMode = Get<BitrateMode>((int)NativeMethods.Audio.Audio_BitRate_Mode, InfoKind.Text, TagBuilderHelper.TryGetBitrateMode, x => ExtractInfo(x, baseIndex));
-      if (result.Codec == AudioCodec.Dsd)
+      switch (result.Codec)
       {
-        result.BitDepth = 1;
+        case AudioCodec.Dsd:
+          result.BitDepth = 1;
+          break;
+        case AudioCodec.Ac4:
+          if (result.Channel == 0)
+          {
+            result.Channel = 2;
+          }
+          break;
       }
 
       result.Format = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text, x => ExtractInfo(x, 0));

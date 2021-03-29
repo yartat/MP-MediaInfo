@@ -125,6 +125,30 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
+    [InlineData("../../../../Audio/Sample_Dolby_E.ts", 6, 20, 48000.0, AudioCodec.DolbyE, 2)]
+    [InlineData("../../../../Audio/Samble_Dolby_E_2.ts", 6, 20, 48000.0, AudioCodec.DolbyE, 2)]
+    [InlineData("../../../../HD/Living_Room_1080p_20_96k_25fps.mpd", 2, 0, 0, AudioCodec.Ac4, 0)]
+    [InlineData("../../../../HD/Living_Room_1080p_51_192k_320k_2997fps.mpd", 2, 0, 0, AudioCodec.Ac4, 0)]
+    [InlineData("../../../../HD/Living_Room_1080p_51_192k_2997fps.mpd", 2, 0, 0, AudioCodec.Ac4, 0)]
+    public void LoadDolbyCodecsFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, int index)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.AudioStreams.Count.Should().BeGreaterThan(index);
+      var audio = _mediaInfoWrapper.AudioStreams[index];
+      audio.Codec.Should().Be(codec);
+      audio.Channel.Should().Be(channels);
+      audio.BitDepth.Should().Be(bitDepth);
+      audio.SamplingRate.Should().Be(samplingRate);
+    }
+
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData("../../../../Audio/8_Channel_ID.wav", 8, 24, 48000.0, AudioCodec.PcmIntLit)]
     [InlineData("../../../../Audio/8_Channel_ID.wma", 8, 24, 48000.0, AudioCodec.WmaPro)]
     [InlineData("../../../../Audio/16bit.wv", 2, 16, 44100.0, AudioCodec.WavPack)]

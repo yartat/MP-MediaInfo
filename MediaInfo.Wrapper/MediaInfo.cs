@@ -1,7 +1,7 @@
-#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
@@ -167,7 +167,7 @@ namespace MediaInfo
     /// Gets the library handle.
     /// </summary>
     /// <value>The library handle.</value>
-    internal IntPtr Handle { get; private set; }
+    public IntPtr Handle { get; private set; }
 
     /// <summary>
     /// Opens the buffer initialize.
@@ -175,10 +175,8 @@ namespace MediaInfo
     /// <param name="fileSize">Size of the file.</param>
     /// <param name="fileOffset">The file offset.</param>
     /// <returns></returns>
-    public IntPtr OpenBufferInit(long fileSize, long fileOffset)
-    {
-      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Init(Handle, fileSize, fileOffset);
-    }
+    public IntPtr OpenBufferInit(long fileSize, long fileOffset) =>
+      Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Init(Handle, fileSize, fileOffset);
 
     /// <summary>
     /// Opens the buffer continue.
@@ -186,28 +184,22 @@ namespace MediaInfo
     /// <param name="buffer">The buffer.</param>
     /// <param name="bufferSize">Size of the buffer.</param>
     /// <returns></returns>
-    public IntPtr OpenBufferContinue(IntPtr buffer, IntPtr bufferSize)
-    {
-      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Continue(Handle, buffer, bufferSize);
-    }
+    public IntPtr OpenBufferContinue(IntPtr buffer, IntPtr bufferSize) =>
+      Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Continue(Handle, buffer, bufferSize);
 
     /// <summary>
     /// Opens the buffer continue go to get.
     /// </summary>
     /// <returns></returns>
-    public long OpenBufferContinueGoToGet()
-    {
-      return Handle == IntPtr.Zero ? 0 : NativeMethods.MediaInfo_Open_Buffer_Continue_GoTo_Get(Handle);
-    }
+    public long OpenBufferContinueGoToGet() =>
+      Handle == IntPtr.Zero ? 0 : NativeMethods.MediaInfo_Open_Buffer_Continue_GoTo_Get(Handle);
 
     /// <summary>
     /// Opens the buffer finalize.
     /// </summary>
     /// <returns></returns>
-    public IntPtr OpenBufferFinalize()
-    {
-      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Finalize(Handle);
-    }
+    public IntPtr OpenBufferFinalize() =>
+      Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Finalize(Handle);
 
     /// <summary>
     /// Closes this instance.
@@ -224,7 +216,7 @@ namespace MediaInfo
     /// <summary>
     /// Informs media stream data.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Returns media informs in case library loaded successfully; elsewhere will return Unable to load MediaInfo library.</returns>
     public string Inform()
     {
       if (Handle == IntPtr.Zero)
@@ -306,10 +298,8 @@ namespace MediaInfo
     /// Gets the state.
     /// </summary>
     /// <returns></returns>
-    public IntPtr StateGet()
-    {
-      return Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_State_Get(Handle);
-    }
+    public IntPtr StateGet() =>
+      Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_State_Get(Handle);
 
     /// <summary>
     /// Gets count items of the specified stream.
@@ -317,16 +307,12 @@ namespace MediaInfo
     /// <param name="streamKind">Kind of the stream.</param>
     /// <param name="streamNumber">The stream number.</param>
     /// <returns></returns>
-    public int CountGet(StreamKind streamKind, int streamNumber)
-    {
-      return Handle == IntPtr.Zero ? 0 : (int)NativeMethods.MediaInfo_Count_Get(Handle, (IntPtr)streamKind, (IntPtr)streamNumber);
-    }
+    public int CountGet(StreamKind streamKind, int streamNumber) =>
+      Handle == IntPtr.Zero ? 0 : (int)NativeMethods.MediaInfo_Count_Get(Handle, (IntPtr)streamKind, (IntPtr)streamNumber);
 
     //Default values, if you know how to set default values in C#, say me
-    public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo)
-    {
-      return Get(streamKind, streamNumber, parameter, kindOfInfo, InfoKind.Name);
-    }
+    public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo) =>
+      Get(streamKind, streamNumber, parameter, kindOfInfo, InfoKind.Name);
 
     /// <summary>
     /// Gets the specified parameter value in the stream by parameter name.
@@ -335,10 +321,8 @@ namespace MediaInfo
     /// <param name="streamNumber">The stream number.</param>
     /// <param name="parameter">The parameter.</param>
     /// <returns></returns>
-    public string Get(StreamKind streamKind, int streamNumber, string parameter)
-    {
-      return Get(streamKind, streamNumber, parameter, InfoKind.Text, InfoKind.Name);
-    }
+    public string Get(StreamKind streamKind, int streamNumber, string parameter) =>
+      Get(streamKind, streamNumber, parameter, InfoKind.Text, InfoKind.Name);
 
     /// <summary>
     /// Gets the specified parameter value in the stream by parameter index.
@@ -347,30 +331,24 @@ namespace MediaInfo
     /// <param name="streamNumber">The stream number.</param>
     /// <param name="parameter">The parameter.</param>
     /// <returns></returns>
-    public string Get(StreamKind streamKind, int streamNumber, int parameter)
-    {
-      return Get(streamKind, streamNumber, parameter, InfoKind.Text);
-    }
+    public string Get(StreamKind streamKind, int streamNumber, int parameter) =>
+      Get(streamKind, streamNumber, parameter, InfoKind.Text);
 
     /// <summary>
     /// Gets options value by the specified option name.
     /// </summary>
     /// <param name="option">The option.</param>
     /// <returns></returns>
-    public string Option(string option)
-    {
-      return Option(option, string.Empty);
-    }
+    public string Option(string option) =>
+      Option(option, string.Empty);
 
     /// <summary>
     /// Gets count of specified kind of streams.
     /// </summary>
     /// <param name="streamKind">Kind of the streams.</param>
     /// <returns></returns>
-    public int CountGet(StreamKind streamKind)
-    {
-      return CountGet(streamKind, -1);
-    }
+    public int CountGet(StreamKind streamKind) =>
+      CountGet(streamKind, -1);
 
     /// <inheritdoc/>
     public void Dispose()
@@ -427,33 +405,27 @@ namespace MediaInfo
     /// <param name="fileName">Name of the file.</param>
     /// <param name="options">The options.</param>
     /// <returns></returns>
-    public int Open(string fileName, InfoFileOptions options)
-    {
-      return _useAnsiStrings ?
+    public int Open(string fileName, InfoFileOptions options) =>
+      _useAnsiStrings ?
         (int)NativeMethods.MediaInfoListA_Open(_handle, fileName, (IntPtr)options) :
         (int)NativeMethods.MediaInfoList_Open(_handle, fileName, (IntPtr)options);
-    }
 
     /// <summary>
     /// Closes the specified file position.
     /// </summary>
     /// <param name="filePos">The file position.</param>
-    public void Close(int filePos)
-    {
+    public void Close(int filePos) =>
       NativeMethods.MediaInfoList_Close(_handle, (IntPtr)filePos);
-    }
 
     /// <summary>
     /// Informs the specified file position.
     /// </summary>
     /// <param name="filePos">The file position.</param>
     /// <returns></returns>
-    public string Inform(int filePos)
-    {
-      return _useAnsiStrings ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Inform(_handle, (IntPtr)filePos, IntPtr.Zero)) :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, IntPtr.Zero));
-    }
+    public string Inform(int filePos) =>
+      _useAnsiStrings ?
+        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Inform(_handle, (IntPtr)filePos, IntPtr.Zero)) :
+        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, IntPtr.Zero));
 
     /// <summary>
     /// Gets the property value in specified file position by stream and property name.
@@ -465,12 +437,10 @@ namespace MediaInfo
     /// <param name="kindOfInfo">The kind of information.</param>
     /// <param name="kindOfSearch">The kind of search.</param>
     /// <returns></returns>
-    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch)
-    {
-      return _useAnsiStrings ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch)) :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch));
-    }
+    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch) =>
+      _useAnsiStrings ?
+        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch)) :
+        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch));
 
     /// <summary>
     /// Gets the property value in specified file position by stream and property index.
@@ -481,12 +451,10 @@ namespace MediaInfo
     /// <param name="parameter">The property index.</param>
     /// <param name="kindOfInfo">The kind of information.</param>
     /// <returns></returns>
-    public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo)
-    {
-      return _useAnsiStrings ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo)) :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
-    }
+    public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo) =>
+      _useAnsiStrings ?
+        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo)) :
+        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo));
 
     /// <summary>
     /// Sets options value by the specified option name.
@@ -494,21 +462,17 @@ namespace MediaInfo
     /// <param name="option">The option name.</param>
     /// <param name="value">The option value.</param>
     /// <returns></returns>
-    public string Option(string option, string value)
-    {
-      return _useAnsiStrings ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Option(_handle, option, value)) :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Option(_handle, option, value));
-    }
+    public string Option(string option, string value) =>
+      _useAnsiStrings ?
+        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Option(_handle, option, value)) :
+        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Option(_handle, option, value));
 
     /// <summary>
     /// Gets current state.
     /// </summary>
     /// <returns></returns>
-    public int StateGet()
-    {
-      return (int)NativeMethods.MediaInfoList_State_Get(_handle);
-    }
+    public int StateGet() =>
+      (int)NativeMethods.MediaInfoList_State_Get(_handle);
 
     /// <summary>
     /// Gets count of items in file position and stream.
@@ -517,27 +481,21 @@ namespace MediaInfo
     /// <param name="streamKind">Kind of the stream.</param>
     /// <param name="streamNumber">The stream number.</param>
     /// <returns></returns>
-    public int CountGet(int filePos, StreamKind streamKind, int streamNumber)
-    {
-      return (int)NativeMethods.MediaInfoList_Count_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber);
-    }
+    public int CountGet(int filePos, StreamKind streamKind, int streamNumber) =>
+      (int)NativeMethods.MediaInfoList_Count_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber);
 
     /// <summary>
     /// Opens the specified file name.
     /// </summary>
     /// <param name="fileName">Name of the file.</param>
-    public void Open(string fileName)
-    {
+    public void Open(string fileName) =>
       Open(fileName, 0);
-    }
 
     /// <summary>
     /// Closes this instance.
     /// </summary>
-    public void Close()
-    {
+    public void Close() =>
       Close(-1);
-    }
 
     /// <summary>
     /// Gets the specified file position.
@@ -548,10 +506,8 @@ namespace MediaInfo
     /// <param name="parameter">The parameter.</param>
     /// <param name="kindOfInfo">The kind of information.</param>
     /// <returns></returns>
-    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo)
-    {
-      return Get(filePos, streamKind, streamNumber, parameter, kindOfInfo, InfoKind.Name);
-    }
+    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo) =>
+      Get(filePos, streamKind, streamNumber, parameter, kindOfInfo, InfoKind.Name);
 
     /// <summary>
     /// Gets the specified file position.
@@ -561,10 +517,8 @@ namespace MediaInfo
     /// <param name="streamNumber">The stream number.</param>
     /// <param name="parameter">The parameter.</param>
     /// <returns></returns>
-    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter)
-    {
-      return Get(filePos, streamKind, streamNumber, parameter, InfoKind.Text, InfoKind.Name);
-    }
+    public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter) =>
+      Get(filePos, streamKind, streamNumber, parameter, InfoKind.Text, InfoKind.Name);
 
     /// <summary>
     /// Gets the specified file position.
@@ -574,20 +528,16 @@ namespace MediaInfo
     /// <param name="streamNumber">The stream number.</param>
     /// <param name="parameter">The parameter.</param>
     /// <returns></returns>
-    public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter)
-    {
-      return Get(filePos, streamKind, streamNumber, parameter, InfoKind.Text);
-    }
+    public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter) =>
+      Get(filePos, streamKind, streamNumber, parameter, InfoKind.Text);
 
     /// <summary>
     /// Gets options value by the specified option name.
     /// </summary>
     /// <param name="option">The option name.</param>
     /// <returns></returns>
-    public string Option(string option)
-    {
-      return Option(option, string.Empty);
-    }
+    public string Option(string option) =>
+      Option(option, string.Empty);
 
     /// <summary>
     /// Gets count of specified kind of stream in th file position.
@@ -595,10 +545,8 @@ namespace MediaInfo
     /// <param name="filePos">The file position.</param>
     /// <param name="streamKind">Kind of the streams.</param>
     /// <returns></returns>
-    public int CountGet(int filePos, StreamKind streamKind)
-    {
-      return CountGet(filePos, streamKind, -1);
-    }
+    public int CountGet(int filePos, StreamKind streamKind) =>
+      CountGet(filePos, streamKind, -1);
 
     /// <inheritdoc/>
     public void Dispose()

@@ -1,7 +1,7 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
@@ -16,6 +17,8 @@ namespace MediaInfo.Model
   /// Describes properties of the audio tags
   /// </summary>
   /// <seealso cref="BaseTags" />
+  [Serializable]
+  [DataContract]
   public class AudioTags : BaseTags
   {
     /// <summary>
@@ -79,7 +82,7 @@ namespace MediaInfo.Model
         {
           result = GeneralTags.TryGetValue(NativeMethods.General.General_Title, out var trackTitle) ? (string)trackTitle : null;
           if (!string.IsNullOrEmpty(result))
-          { 
+          {
             return result.Split(new[] { " / " }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
           }
         }
@@ -157,7 +160,7 @@ namespace MediaInfo.Model
     /// <value>
     /// A person or band/collective generally considered responsible for the work : Singer, Implementor.
     /// </value>
-    public string Artist => GeneralTags.TryGetValue(NativeMethods.General.General_Performer, out var performer) ? 
+    public string Artist => GeneralTags.TryGetValue(NativeMethods.General.General_Performer, out var performer) ?
       (string)performer :
       GeneralTags.TryGetValue(NativeMethods.General.General_Album_Performer, out var result) ? (string)result : null;
 

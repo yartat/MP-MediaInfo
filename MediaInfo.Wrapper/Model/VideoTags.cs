@@ -1,13 +1,14 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
@@ -15,6 +16,8 @@ namespace MediaInfo.Model
   /// Describes properties of the video tags
   /// </summary>
   /// <seealso cref="BaseTags" />
+  [Serializable]
+  [DataContract]
   public class VideoTags : BaseTags
   {
 #if DEBUG

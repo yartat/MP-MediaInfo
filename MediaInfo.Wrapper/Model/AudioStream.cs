@@ -1,22 +1,25 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Provides properties and overridden methods for the analyze audio stream 
-  /// and contains information about audio stream.
-  /// </summary>
-  /// <seealso cref="LanguageMediaStream" />
-  public class AudioStream : LanguageMediaStream
+    /// <summary>
+    /// Provides properties and overridden methods for the analyze audio stream 
+    /// and contains information about audio stream.
+    /// </summary>
+    /// <seealso cref="LanguageMediaStream" />
+    [Serializable]
+    [DataContract]
+    public class AudioStream : LanguageMediaStream
   {
     #region matching dictionaries
 
@@ -108,6 +111,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio codec.
     /// </value>
+    [DataMember(Name = "codec")]
     public AudioCodec Codec { get; set; }
 
     /// <summary>
@@ -118,11 +122,7 @@ namespace MediaInfo.Model
     /// </value>
     public string CodecFriendly
     {
-      get
-      {
-        string result;
-        return CodecFrendlyNames.TryGetValue(Codec, out result) ? result : string.Empty;
-      }
+      get => CodecFrendlyNames.TryGetValue(Codec, out var result) ? result : string.Empty;
     }
 
     /// <summary>
@@ -131,6 +131,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream duration.
     /// </value>
+    [DataMember(Name = "duration")]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -139,6 +140,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio bitrate.
     /// </value>
+    [DataMember(Name = "bitrate")]
     public double Bitrate { get; set; }
 
     /// <summary>
@@ -147,6 +149,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio channel amount.
     /// </value>
+    [DataMember(Name = "channel")]
     public int Channel { get; set; }
 
     /// <summary>
@@ -155,6 +158,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio sampling rate.
     /// </value>
+    [DataMember(Name = "samplingRate")]
     public double SamplingRate { get; set; }
 
     /// <summary>
@@ -163,6 +167,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The bit depth of stream.
     /// </value>
+    [DataMember(Name = "bitDepth")]
     public int BitDepth { get; set; }
 
     /// <summary>
@@ -171,6 +176,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The bitrate mode of stream.
     /// </value>
+    [DataMember(Name = "bitrateMode")]
     public BitrateMode BitrateMode { get; set; }
 
     /// <summary>
@@ -179,6 +185,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio format.
     /// </value>
+    [DataMember(Name = "format")]
     public string Format { get; set; }
 
     /// <summary>
@@ -187,15 +194,17 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio codec name.
     /// </value>
+    [DataMember(Name = "codecName")]
     public string CodecName { get; set; }
 
-      /// <summary>
-      /// Gets the audio codec description.
-      /// </summary>
-      /// <value>
-      /// The audio codec description.
-      /// </value>
-      public string CodecDescription { get; set; }
+    /// <summary>
+    /// Gets the audio codec description.
+    /// </summary>
+    /// <value>
+    /// The audio codec description.
+    /// </value>
+    [DataMember(Name = "codecDescription")]
+    public string CodecDescription { get; set; }
 
     /// <summary>
     /// Gets the audio channels friendly.
@@ -211,6 +220,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream tags.
     /// </value>
+    [DataMember(Name = "tags")]
     public AudioTags Tags { get; internal set; } = new AudioTags();
 
     private static string ConvertAudioChannels(int channels)

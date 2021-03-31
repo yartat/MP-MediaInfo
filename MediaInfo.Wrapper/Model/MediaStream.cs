@@ -1,12 +1,13 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
@@ -18,34 +19,41 @@ namespace MediaInfo.Model
     /// <summary>
     /// The video stream
     /// </summary>
+    [EnumMember(Value = "video")]
     Video,
 
     /// <summary>
     /// The audio stream
     /// </summary>
+    [EnumMember(Value = "audio")]
     Audio,
 
     /// <summary>
     /// The subtitle stream
     /// </summary>
+    [EnumMember(Value = "text")]
     Text,
 
     /// <summary>
     /// The image stream
     /// </summary>
+    [EnumMember(Value = "image")]
     Image,
 
     /// <summary>
     /// Menu
     /// </summary>
+    [EnumMember(Value = "menu")]
     Menu
   }
 
   /// <summary>
-  /// Provides basic properties and instance methods for the analyze stream 
+  /// Provides basic properties and instance methods for the analyze stream
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MarshalByRefObject" />
+  [Serializable]
+  [DataContract]
   public abstract class MediaStream : MarshalByRefObject
   {
     /// <summary>
@@ -54,6 +62,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The media steam id.
     /// </value>
+    [DataMember(Name = "id")]
     public int Id { get; set; }
 
     /// <summary>
@@ -62,6 +71,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The name of stream.
     /// </value>
+    [DataMember(Name = "name")]
     public string Name { get; set; }
 
     /// <summary>
@@ -86,6 +96,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream position.
     /// </value>
+    [DataMember(Name = "streamPosition")]
     public int StreamPosition { get; set; }
 
     /// <summary>
@@ -94,6 +105,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The logical stream number.
     /// </value>
+    [DataMember(Name = "streamNumber")]
     public int StreamNumber { get; set; }
   }
 }

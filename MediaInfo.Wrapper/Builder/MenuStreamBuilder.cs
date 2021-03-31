@@ -1,7 +1,7 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
@@ -35,12 +35,13 @@ namespace MediaInfo.Builder
       var chapterEndId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_End, InfoKind.Text, TagBuilderHelper.TryGetInt);
       for (var i = chapterStartId; i < chapterEndId; ++i)
       {
-        result.Chapters.Add(new MenuStream.Chapter
+        result.Chapters.Add(new Chapter
         {
-                         Name = Get(i, InfoKind.Text),
-                         Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse)
-                       });
+          Name = Get(i, InfoKind.Text),
+          Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse)
+        });
       }
+
       return result;
     }
   }

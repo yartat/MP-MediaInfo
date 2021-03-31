@@ -1,7 +1,7 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
@@ -9,12 +9,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
   /// <summary>
   /// Base class to read tags from stream
   /// </summary>
+  [Serializable]
+  [DataContract]
   public abstract class BaseTags
   {
     /// <summary>
@@ -143,52 +146,60 @@ namespace MediaInfo.Model
     /// <value>
     /// The cover media.
     /// </value>
+    [DataMember(Name = "covers")]
     public IEnumerable<CoverInfo> Covers { get; set; }
+  }
+
+  /// <summary>
+  /// Describes properties of the cover tags
+  /// </summary>
+  [Serializable]
+  [DataContract]
+  public class CoverInfo
+  {
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="CoverInfo"/> is exists.
+    /// </summary>
+    /// <value>
+    /// <c>true</c> if exists; otherwise, <c>false</c>.
+    /// </value>
+    [DataMember(Name = "exists")]
+    public bool Exists { get; internal set; }
 
     /// <summary>
-    /// Describes properties of the cover tags
+    /// Gets the description of the cover.
     /// </summary>
-    public class CoverInfo
-    {
-      /// <summary>
-      /// Gets a value indicating whether this <see cref="CoverInfo"/> is exists.
-      /// </summary>
-      /// <value>
-      /// <c>true</c> if exists; otherwise, <c>false</c>.
-      /// </value>
-      public bool Exists { get; internal set; }
+    /// <value>
+    /// The description of the cover.
+    /// </value>
+    [DataMember(Name = "description")]
+    public string Description { get; internal set; }
 
-      /// <summary>
-      /// Gets the description of the cover.
-      /// </summary>
-      /// <value>
-      /// The description of the cover.
-      /// </value>
-      public string Description { get; internal set; }
+    /// <summary>
+    /// Gets the type of the cover.
+    /// </summary>
+    /// <value>
+    /// The type of the cover.
+    /// </value>
+    [DataMember(Name = "type")]
+    public string Type { get; internal set; }
 
-      /// <summary>
-      /// Gets the type of the cover.
-      /// </summary>
-      /// <value>
-      /// The type of the cover.
-      /// </value>
-      public string Type { get; internal set; }
+    /// <summary>
+    /// Gets the MIME of the cover.
+    /// </summary>
+    /// <value>
+    /// The MIME of the cover.
+    /// </value>
+    [DataMember(Name = "mime")]
+    public string Mime { get; internal set; }
 
-      /// <summary>
-      /// Gets the MIME of the cover.
-      /// </summary>
-      /// <value>
-      /// The MIME of the cover.
-      /// </value>
-      public string Mime { get; internal set; }
-
-      /// <summary>
-      /// Gets the cover data.
-      /// </summary>
-      /// <value>
-      /// The cover data.
-      /// </value>
-      public byte[] Data { get; internal set; }
-    }
+    /// <summary>
+    /// Gets the cover data.
+    /// </summary>
+    /// <value>
+    /// The cover data.
+    /// </value>
+    [DataMember(Name = "data")]
+    public byte[] Data { get; internal set; }
   }
 }

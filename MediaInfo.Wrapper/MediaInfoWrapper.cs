@@ -1,26 +1,48 @@
-#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Globalization;
-using System.Linq;
-
 using MediaInfo.Builder;
 using MediaInfo.Model;
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace MediaInfo
 {
   /// <summary>
+  /// Describes media info event argument.
+  /// Implements the <see cref="EventArgs" />
+  /// </summary>
+  /// <seealso cref="EventArgs" />
+  public class MediaInfoEventArgs : EventArgs
+  {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaInfoEventArgs"/> class.
+    /// </summary>
+    /// <param name="mediaInfo">The media information.</param>
+    public MediaInfoEventArgs(MediaInfo mediaInfo)
+    {
+      MediaInfo = mediaInfo;
+    }
+
+    /// <summary>
+    /// Gets the media information.
+    /// </summary>
+    public MediaInfo MediaInfo { get; }
+  }
+
+  /// <summary>
   /// Describes method and properties to retrieve information from media source
   /// </summary>
-  public class MediaInfoWrapper
+    public class MediaInfoWrapper
   {
     #region private vars
 
@@ -132,7 +154,7 @@ namespace MediaInfo
       if (isRtsp)
       {
         MediaInfoNotloaded = true;
-        logger.LogInformation($"Media file is RTSP");
+        logger.LogWarning("Media file is RTSP");
         return;
       }
 
@@ -146,7 +168,7 @@ namespace MediaInfo
         else
         {
           MediaInfoNotloaded = true;
-          logger.LogInformation($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
+          logger.LogWarning($"Media file is {(isTv ? "TV" : isRadio ? "radio" : isRtsp ? "RTSP" : string.Empty)}");
           return;
         }
       }
@@ -281,11 +303,13 @@ namespace MediaInfo
     private string ProcessDvd(string filePath, NumberFormatInfo providerNumber)
 #endif
     {
+      _logger.LogDebug("Processing DVD");
       IsDvd = true;
       var path = Path.GetDirectoryName(filePath) ?? string.Empty;
       Size = GetDirectorySize(path);
       var bups = Directory.GetFiles(path, "*.BUP", SearchOption.TopDirectoryOnly);
       var programBlocks = new List<Tuple<string, int>>();
+      _logger.LogDebug($"DVD directory size is {Size}");
       foreach (var bupFile in bups)
       {
 #if (NET40 || NET45)
@@ -294,16 +318,18 @@ namespace MediaInfo
         using (var mi = new MediaInfo())
 #endif
         {
+          _logger.LogDebug($"Opening file {bupFile}");
           Version = mi.Option("Info_Version");
           mi.Open(bupFile);
           var profile = mi.Get(StreamKind.General, 0, "Format_Profile");
           if (profile == "Program")
           {
-              double.TryParse(
+            double.TryParse(
               mi.Get(StreamKind.Video, 0, "Duration"),
               NumberStyles.AllowDecimalPoint,
               providerNumber,
               out var duration);
+            _logger.LogDebug($"Profile is program with duration {duration} sec");
             programBlocks.Add(new Tuple<string, int>(bupFile, (int)duration));
           }
         }
@@ -359,15 +385,18 @@ namespace MediaInfo
         Profile = mediaInfo.Get(StreamKind.General, 0, "Format_Profile");
         FormatVersion = mediaInfo.Get(StreamKind.General, 0, "Format_Version");
         Codec = mediaInfo.Get(StreamKind.General, 0, "CodecID");
+        _logger.LogDebug($"Format is {Format}Profile is {Profile}\nFormat version is {FormatVersion}\nCodec is {Codec}");
         var streamNumber = 0;
-
+        _logger.LogDebug("Retrieving audio tags from stream position 0");
         Tags = new AudioTagBuilder(mediaInfo, 0).Build();
 
         // Setup videos
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Video)} video streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Video); ++i)
         {
-          VideoStreams.Add(new VideoStreamBuilder(mediaInfo, streamNumber++, i).Build());
+          var stream = new VideoStreamBuilder(mediaInfo, streamNumber++, i).Build();
+          _logger.LogDebug($"Add video stream #{i}: codec is {stream.CodecName} profile is {stream.CodecProfile}");
+          VideoStreams.Add(stream);
         }
 
         if (Duration == 0)
@@ -378,11 +407,13 @@ namespace MediaInfo
             providerNumber,
             out var duration);
           Duration = (int)duration;
+          _logger.LogDebug($"Set duration by video stream 0. Duration is {Duration}");
         }
 
         // Fix 3D for some containers
         if (VideoStreams.Count == 1 && Tags.GeneralTags.TryGetValue((NativeMethods.General)1000, out var isStereo))
         {
+          _logger.LogDebug("Check for stereoscopic mode");
           var video = VideoStreams[0];
           if (Tags.GeneralTags.TryGetValue((NativeMethods.General)1001, out var stereoMode))
           {
@@ -392,13 +423,17 @@ namespace MediaInfo
           {
             video.Stereoscopic = (bool) isStereo ? StereoMode.Stereo : StereoMode.Mono;
           }
+
+          _logger.LogDebug($"Stereoscopic mode is {video.Stereoscopic}");
         }
 
         // Setup audios
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Audio)} audio streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Audio); ++i)
         {
-          AudioStreams.Add(new AudioStreamBuilder(mediaInfo, streamNumber++, i).Build());
+          var stream = new AudioStreamBuilder(mediaInfo, streamNumber++, i).Build();
+          _logger.LogDebug($"Add audio stream #{i}: codec is {stream.CodecName} friendly name is {stream.CodecFriendly}");
+          AudioStreams.Add(stream);
         }
 
         if (Duration == 0)
@@ -409,27 +444,34 @@ namespace MediaInfo
                 providerNumber,
                 out var duration);
             Duration = (int)duration;
+          _logger.LogDebug($"Set duration by audio stream 0. Duration is {Duration}");
         }
 
         // Setup subtitles
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Text)} subtitle streams.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Text); ++i)
         {
-          Subtitles.Add(new SubtitleStreamBuilder(mediaInfo, streamNumber++, i).Build());
+          var stream = new SubtitleStreamBuilder(mediaInfo, streamNumber++, i).Build();
+          _logger.LogDebug($"Add subtitle stream #{i}: format is {stream.Format}");
+          Subtitles.Add(stream);
         }
 
         // Setup chapters
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Other)} chapters.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Other); ++i)
         {
-          Chapters.Add(new ChapterStreamBuilder(mediaInfo, streamNumber++, i).Build());
+          var chapter = new ChapterStreamBuilder(mediaInfo, streamNumber++, i).Build();
+          _logger.LogDebug($"Add chapter #{i}: name is {chapter.Name}");
+          Chapters.Add(chapter);
         }
 
         // Setup menus
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Menu)} menu items.");
         for (var i = 0; i < mediaInfo.CountGet(StreamKind.Menu); ++i)
         {
-          MenuStreams.Add(new MenuStreamBuilder(mediaInfo, streamNumber++, i).Build());
+          var menu = new MenuStreamBuilder(mediaInfo, streamNumber++, i).Build();
+          _logger.LogDebug($"Add menu #{i}: name is {menu.Name} duration is {menu.Duration}");
+          MenuStreams.Add(menu);
         }
 
         MediaInfoNotloaded = VideoStreams.Count == 0 && AudioStreams.Count == 0 && Subtitles.Count == 0;
@@ -437,7 +479,8 @@ namespace MediaInfo
         // Produce capability properties
         if (MediaInfoNotloaded)
         {
-          SetPropertiesDefault();
+          _logger.LogWarning("Can't find any video, audio or subtitles streams. Set MediaInfoNotloaded as not loaded");
+          SetupPropertiesDefault();
         }
         else
         {
@@ -446,18 +489,37 @@ namespace MediaInfo
       }
     }
 
-    private void SetPropertiesDefault()
+    /// <summary>
+    /// Sets the properties default values in case media was not loaded.
+    /// </summary>
+    private void SetupPropertiesDefault()
     {
+      _logger.LogDebug("Set default media properties");
       VideoCodec = string.Empty;
       VideoResolution = string.Empty;
       ScanType = string.Empty;
       AspectRatio = string.Empty;
       AudioCodec = string.Empty;
       AudioChannelsFriendly = string.Empty;
+
+      OnSetupProperties(null);
     }
 
+    /// <summary>
+    /// Rise event in case the properties values was set.
+    /// </summary>
+    protected virtual void OnSetupProperties(MediaInfo mediaInfo)
+    {
+      var @event = PropertiesInitialized;
+      @event?.Invoke(this, new MediaInfoEventArgs(mediaInfo));
+    }
+
+    /// <summary>
+    /// Sets the properties values in case media was loaded successfully.
+    /// </summary>
     private void SetupProperties(MediaInfo mediaInfo)
     {
+      _logger.LogDebug("Set media properties by detected streams");
       BestVideoStream = VideoStreams.OrderByDescending(
           x => (long)x.Width * x.Height * x.BitDepth * (x.Stereoscopic == StereoMode.Mono ? 1L : 2L) * x.FrameRate * (x.Bitrate <= 1e-7 ? 1 : x.Bitrate))
         .FirstOrDefault();
@@ -484,6 +546,8 @@ namespace MediaInfo
       AudioSampleRate = (int?)BestAudioStream?.SamplingRate ?? 0;
       AudioChannels = BestAudioStream?.Channel ?? 0;
       AudioChannelsFriendly = BestAudioStream?.AudioChannelsFriendly ?? string.Empty;
+
+      OnSetupProperties(mediaInfo);
     }
 
 #endregion
@@ -838,7 +902,12 @@ namespace MediaInfo
     /// </value>
     public AudioTags Tags { get; private set; }
 
-    #endregion
+        #endregion
+
+    /// <summary>
+    /// Occurs when properties initialized.
+    /// </summary>
+    public event EventHandler PropertiesInitialized;
   }
 
 #if (NET40 || NET45)

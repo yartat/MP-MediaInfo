@@ -1,7 +1,7 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
 #endregion
@@ -1012,32 +1012,23 @@ namespace MediaInfo
     /// </summary>
     /// <param name="lcid">The LCID.</param>
     /// <returns>Returns language name</returns>
-    public static string GetLanguageByLcid(int lcid)
-    {
-      string result;
-      return LanguageLcids.TryGetValue((lcid & 0x3FF) + 0x400, out result) ? result : UnknownLanguage;
-    }
+    public static string GetLanguageByLcid(int lcid) =>
+      LanguageLcids.TryGetValue((lcid & 0x3FF) + 0x400, out var result) ? result : UnknownLanguage;
 
     /// <summary>
     /// Gets language by the short language name.
     /// </summary>
     /// <param name="source">The short language name.</param>
     /// <returns>Returns language name.</returns>
-    public static string GetLanguageByShortName(string source)
-    {
-      string result;
-      return Languages.TryGetValue(source, out result) ? result : string.Empty;
-    }
+    public static string GetLanguageByShortName(string source) =>
+      Languages.TryGetValue(source, out var result) ? result : string.Empty;
 
     /// <summary>
     /// Gets LCID by short language name.
     /// </summary>
     /// <param name="source">The short language.</param>
     /// <returns>Returns LCID.</returns>
-    public static int GetLcidByShortName(string source)
-    {
-      int result;
-      return Lcids.TryGetValue(source, out result) ? result : 0;
-    }
+    public static int GetLcidByShortName(string source) =>
+      Lcids.TryGetValue(source, out var result) ? result : 0;
   }
 }

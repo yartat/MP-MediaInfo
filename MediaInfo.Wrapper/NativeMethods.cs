@@ -14,6 +14,7 @@ namespace MediaInfo
 {
   internal static class NativeMethods
   {
+#pragma warning disable CA1712 // Do not prefix enum values with type name
     #region enums and structs
 
     internal enum Generic
@@ -1822,7 +1823,6 @@ namespace MediaInfo
     }
 
     [Flags]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal enum LoadLibraryFlags : uint
     {
       DEFAULT = 0x00000000,
@@ -1840,6 +1840,7 @@ namespace MediaInfo
     }
 
     #endregion
+#pragma warning restore CA1712 // Do not prefix enum values with type name
 
 #if (NET40 || NET45)
 

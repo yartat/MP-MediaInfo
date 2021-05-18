@@ -53,6 +53,43 @@ namespace MediaInfo.Wrapper.Tests
       videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
     }
 
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
+    [InlineData("../../../../HD/[Kametsu] Princess Principal Picture Drama - 01 (BD 1080p Hi10 FLAC) [BBF1B4CE].mkv")]
+    public void LoadVideoWithAttachments(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Size.Should().Be(20105030);
+      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+      _mediaInfoWrapper.VideoRate.Should().Be(4180953);
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+      _mediaInfoWrapper.Tags.EncodedDate.Should().BeNull();
+      _mediaInfoWrapper.Tags.TaggedDate.Should().BeNull();
+      _mediaInfoWrapper.IsStreamable.Should().BeTrue();
+      _mediaInfoWrapper.WritingApplication.Should().Be("Lavf58.77.100");
+      _mediaInfoWrapper.WritingLibrary.Should().Be("Lavf58.77.100");
+      _mediaInfoWrapper.Attachments.Should().Be("Amaranth-Italic.otf / Amaranth-Regular.otf");
+      _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
+      _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
+      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
+      var videoStream = _mediaInfoWrapper.VideoStreams[0];
+      videoStream.Hdr.Should().Be(Hdr.None);
+      videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+      videoStream.Standard.Should().Be(VideoStandard.NTSC);
+      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+      videoStream.Tags.GeneralTags.Should().NotBeNull();
+      videoStream.Tags.GeneralTags.Should().NotBeEmpty();
+      videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
+    }
+
     [Theory]
     [InlineData("./Data/Test_H264_Atmos.m2ts")]
     public void LoadVideoWithDolbyAtmos(string fileName)

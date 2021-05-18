@@ -18,61 +18,36 @@ namespace MediaInfo
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogVerbose(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Verbose, message, parameters);
-      }
-    }
+    public static void LogVerbose(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Verbose, message, parameters);
 
     /// <summary>Logs a debug message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogDebug(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Debug, message, parameters);
-      }
-    }
+    public static void LogDebug(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Debug, message, parameters);
 
     /// <summary>Logs a information message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogInformation(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Information, message, parameters);
-      }
-    }
+    public static void LogInformation(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Information, message, parameters);
 
     /// <summary>Logs a warning message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogWarning(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Warning, message, parameters);
-      }
-    }
+    public static void LogWarning(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Warning, message, parameters);
 
     /// <summary>Logs a error message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogError(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Error, message, parameters);
-      }
-    }
+    public static void LogError(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Error, message, parameters);
 
     /// <summary>Logs a error message.</summary>
     /// <param name="logger">The logger instance.</param>
@@ -105,13 +80,8 @@ namespace MediaInfo
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogCritical(this ILogger logger, string message, params object[] parameters)
-    {
-      if (logger != null)
-      {
-        logger.Log(LogLevel.Critical, message, parameters);
-      }
-    }
+    public static void LogCritical(this ILogger logger, string message, params object[] parameters) =>
+      logger?.Log(LogLevel.Critical, message, parameters);
 
     /// <summary>Logs a critical message.</summary>
     /// <param name="logger">The logger instance.</param>

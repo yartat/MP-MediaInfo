@@ -85,25 +85,22 @@ namespace MediaInfo.Builder
     {
       // Check for video stereo stream
       var idString = Get("ID");
-      if (!TagBuilderHelper.TryGetInt(idString, out object id))
-      { 
+      if (!idString.TryGetInt(out object id))
+      {
         var idValues = idString.Split('/').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray();
-        if (idValues.Length >= 1)
+        if (idValues.Length >= 1 && !idValues.First().TryGetInt(out id))
         {
-          if (!TagBuilderHelper.TryGetInt(idValues.First(), out id))
-          { 
-            id = 0;
-          }
+          id = 0;
         }
       }
 
       return new TStream
-                     {
-                       Id = (int)id,
-                       Name = Get("Title"),
-                       StreamPosition = this.StreamPosition,
-                       StreamNumber = this.StreamNumber,
-                     };
+      {
+        Id = (int)id,
+        Name = Get("Title"),
+        StreamPosition = this.StreamPosition,
+        StreamNumber = this.StreamNumber,
+      };
     }
 
     /// <summary>
@@ -120,7 +117,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-        return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default(T);
+      return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default(T);
     }
 
     /// <summary>
@@ -138,7 +135,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-        return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default(T);
+      return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default(T);
     }
 
     /// <summary>

@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 21.3.0
+dotnet add package MediaInfo.Wrapper.Core --version 21.3.2
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 21.3.0
+Install-Package MediaInfo.Wrapper -Version 21.3.2
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
@@ -35,7 +35,7 @@ Make sure that the following dependencies are installed in the operating system 
 | [Ubuntu](#ubuntu) | 16.04, 18.04, 19.10, 20.04 and 20.10 |
 | [CenOS](#centos) | 6 and above |
 | [Fedora](#fedora) | 30 and above |
-| OpenSUSE | 15.2 and Tumbleweed |
+| [OpenSUSE](#opensuse) | 15.2 and Tumbleweed |
 | [RedHat](#redhat) | 6 and above |
 | [Debian](#debian) | 8 and above |
 | [Windows](#windows) | 7 and above |
@@ -77,7 +77,7 @@ sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch
 sudo yum -y update
 sudo yum -y install zlib curl libzen libssh
 ```
-### RedHat8
+### RedHat 8
 ```sh
 sudo dnf -y update
 sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm

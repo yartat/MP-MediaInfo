@@ -20,7 +20,7 @@ namespace MediaInfo.Builder
 #region Tag items
 
     private static readonly List<Tuple<NativeMethods.Audio, ParseDelegate<object>>> GeneralTagItems;
-      
+
 #endregion
 
     static AudioTagBuilder()

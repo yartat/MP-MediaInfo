@@ -164,7 +164,9 @@ namespace MediaInfo
         string fileName = Path.GetFileName(filePath);
         string[] files = Directory.GetFiles(path,fileName + "*.ts");
         if (files.Length > 0)
+        {
           filePath = files[0];
+        }
         else
         {
           MediaInfoNotloaded = true;
@@ -382,6 +384,10 @@ namespace MediaInfo
         }
 
         Format = mediaInfo.Get(StreamKind.General, 0, "Format");
+        IsStreamable = TagBuilderHelper.TryGetBool(mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_IsStreamable), out var streamable) && streamable;
+        WritingApplication = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Application);
+        WritingLibrary = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Library);
+        Attachments = mediaInfo.Get(StreamKind.General, 0, "Attachments");
         Profile = mediaInfo.Get(StreamKind.General, 0, "Format_Profile");
         FormatVersion = mediaInfo.Get(StreamKind.General, 0, "Format_Version");
         Codec = mediaInfo.Get(StreamKind.General, 0, "CodecID");
@@ -835,6 +841,30 @@ namespace MediaInfo
     /// </summary>
     /// <value>The media (container) format.</value>
     public string Format { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether media is streamable.
+    /// </summary>
+    /// <value><c>true</c> if media is streamable; otherwise, <c>false</c>.</value>
+    public bool IsStreamable { get; private set; }
+
+    /// <summary>
+    /// Gets the writing media application.
+    /// </summary>
+    /// <value>The writing media application.</value>
+    public string WritingApplication { get; private set; }
+
+    /// <summary>
+    /// Gets the writing media application.
+    /// </summary>
+    /// <value>The writing media application.</value>
+    public string WritingLibrary { get; private set; }
+
+    /// <summary>
+    /// Gets the media attachments.
+    /// </summary>
+    /// <value>The media attachments.</value>
+    public string Attachments { get; private set; }
 
     /// <summary>
     /// Gets the media (container) format version.

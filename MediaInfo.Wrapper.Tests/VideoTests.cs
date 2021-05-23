@@ -24,6 +24,66 @@ namespace MediaInfo.Wrapper.Tests
       _logger = new TestLogger(testOutputHelper);
     }
 
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
+    [InlineData("rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov")]
+    public void LoadSteamVideo(string fileName)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Size.Should().Be(1371743L);
+      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+      _mediaInfoWrapper.VideoRate.Should().Be(310275);
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+      _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
+      _mediaInfoWrapper.Tags.TaggedDate.Should().NotBeNull();
+      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+      _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
+      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
+      var videoStream = _mediaInfoWrapper.VideoStreams[0];
+      videoStream.Hdr.Should().Be(Hdr.None);
+      videoStream.Codec.Should().Be(VideoCodec.H263);
+      videoStream.Standard.Should().Be(VideoStandard.NTSC);
+      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+      videoStream.Tags.GeneralTags.Should().NotBeNull();
+      videoStream.Tags.GeneralTags.Should().NotBeEmpty();
+      videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
+    }
+
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
+    [InlineData("http://localhost/video/test_8.mp4", 2296357L, 117340, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420)]
+    [InlineData("http://localhost/video/Sisvel3DTile.ts", 50320644, 0, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420)]
+    [InlineData("http://localhost/video/iphone6s_4k.mov", 118742364L, 51105477, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420)]
+    public void LoadAVSteam(string fileName, long size, int rate, int audioStreams, VideoCodec codec, ChromaSubSampling sampling)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Size.Should().Be(size);
+      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+      _mediaInfoWrapper.VideoRate.Should().Be(rate);
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+      _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioStreams);
+      var videoStream = _mediaInfoWrapper.VideoStreams[0];
+      videoStream.Hdr.Should().Be(Hdr.None);
+      videoStream.Codec.Should().Be(codec);
+      videoStream.Standard.Should().Be(VideoStandard.NTSC);
+      videoStream.SubSampling.Should().Be(sampling);
+    }
+
     [Theory]
     [InlineData("./Data/RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
     public void LoadSimpleVideo(string fileName)

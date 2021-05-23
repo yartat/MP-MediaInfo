@@ -148,13 +148,15 @@ namespace MediaInfo
       var isTv = filePath.IsLiveTv();
       var isRadio = filePath.IsLiveTv();
       var isRtsp = filePath.IsRtsp(); // RTSP for live TV and recordings.
-      var isAvStream = filePath.IsAvStream(); //other AV streams
+      var isMms = filePath.IsMms(); // MMS streams
+      var isRtmp = filePath.IsRtmp(); // RTMP streams
+      var isAvStream = filePath.IsAvStream(); // other AV streams
 
       //currently disabled for all tv/radio
-      if (isRtsp)
+      if (isRtsp || isRtmp || isMms)
       {
         MediaInfoNotloaded = true;
-        logger.LogWarning("Media file is RTSP");
+        logger.LogWarning("Media file is live stream");
         return;
       }
 
@@ -384,7 +386,7 @@ namespace MediaInfo
         }
 
         Format = mediaInfo.Get(StreamKind.General, 0, "Format");
-        IsStreamable = TagBuilderHelper.TryGetBool(mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_IsStreamable), out var streamable) && streamable;
+        IsStreamable = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_IsStreamable).TryGetBool(out var streamable) && streamable;
         WritingApplication = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Application);
         WritingLibrary = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Library);
         Attachments = mediaInfo.Get(StreamKind.General, 0, "Attachments");
@@ -395,6 +397,10 @@ namespace MediaInfo
         var streamNumber = 0;
         _logger.LogDebug("Retrieving audio tags from stream position 0");
         Tags = new AudioTagBuilder(mediaInfo, 0).Build();
+        if (Size == 0)
+        {
+          Size = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_FileSize).TryGetLong(out long size) ? size : 0;
+        }
 
         // Setup videos
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Video)} video streams.");

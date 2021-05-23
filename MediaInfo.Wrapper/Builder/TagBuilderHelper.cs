@@ -139,6 +139,28 @@ namespace MediaInfo.Builder
       int.TryParse(source, out value);
 
     /// <summary>
+    /// Tries the get long value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result long value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid long integer value, <c>false</c> otherwise.</returns>
+    public static bool TryGetLong(this string source, out object value)
+    {
+      var result = long.TryParse(source, out var resultValue);
+      value = resultValue;
+      return result;
+    }
+
+    /// <summary>
+    /// Tries the get long value.
+    /// </summary>
+    /// <param name="source">The source string.</param>
+    /// <param name="value">The result long value.</param>
+    /// <returns><c>true</c> if source string is not empty and valid long integer value, <c>false</c> otherwise.</returns>
+    public static bool TryGetLong(this string source, out long value) =>
+      long.TryParse(source, out value);
+
+    /// <summary>
     /// Tries the get double value.
     /// </summary>
     /// <param name="source">The source string.</param>

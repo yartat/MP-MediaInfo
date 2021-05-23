@@ -91,6 +91,9 @@ namespace MediaInfo
   {
 #if (NET40 || NET45)
     private const string MediaInfoFileName = "MediaInfo.dll";
+    private const string LibCurlFileName = "libcurl.dll";
+    private const string LibCryptoFileName = "libcrypto-3.dll";
+    private const string LibSslFileName = "libssl-3.dll";
     private IntPtr _module;
 #endif
     private readonly bool _mustUseAnsi;
@@ -110,6 +113,9 @@ namespace MediaInfo
     /// <param name="pathToDll">The path to mediainfo.dll.</param>
     public MediaInfo(string pathToDll)
     {
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCurlFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
       _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
       try
       {

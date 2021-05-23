@@ -291,6 +291,28 @@ namespace MediaInfo
       !string.IsNullOrEmpty(strPath) && strPath.StartsWith(@"\\");
 
     /// <summary>
+    /// Determines whether the specified string path is RTMP stream.
+    /// </summary>
+    /// <param name="strPath">The string path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified string path is RTMP stream; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsRtmp(this string strPath) =>
+      !string.IsNullOrEmpty(strPath) &&
+        strPath.StartsWith("rtmp:", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Determines whether the specified string path is MMS stream.
+    /// </summary>
+    /// <param name="strPath">The string path.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified string path is MMS stream; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsMms(this string strPath) =>
+      !string.IsNullOrEmpty(strPath) &&
+        strPath.StartsWith("mms:", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Determines whether the specified string path is A/V stream.
     /// </summary>
     /// <param name="strPath">The string path.</param>

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <UserSecretsId>3ac0dbeb-4d8a-479e-b111-5efb8f1d0e6d</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+        <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.1.0" />
+
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MediaInfo.Wrapper\MediaInfo.Wrapper.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\Test_H264.m2ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+</Project>

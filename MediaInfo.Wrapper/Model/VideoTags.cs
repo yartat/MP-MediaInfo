@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
@@ -16,8 +15,6 @@ namespace MediaInfo.Model
   /// Describes properties of the video tags
   /// </summary>
   /// <seealso cref="BaseTags" />
-  [Serializable]
-  [DataContract]
   public class VideoTags : BaseTags
   {
 #if DEBUG

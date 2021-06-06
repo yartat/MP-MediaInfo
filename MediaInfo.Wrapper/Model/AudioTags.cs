@@ -9,17 +9,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Describes properties of the audio tags
-  /// </summary>
-  /// <seealso cref="BaseTags" />
-  [Serializable]
-  [DataContract]
-  public class AudioTags : BaseTags
+    /// <summary>
+    /// Describes properties of the audio tags
+    /// </summary>
+    /// <seealso cref="BaseTags" />
+    public class AudioTags : BaseTags
   {
     /// <summary>
     /// Gets or sets the audio tags.

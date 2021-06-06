@@ -6,18 +6,13 @@
 
 #endregion
 
-using System;
-using System.Runtime.Serialization;
-
 namespace MediaInfo.Model
 {
   /// <summary>
-  /// Provides properties and overridden methods for the analyze chapter in media 
+  /// Provides properties and overridden methods for the analyze chapter in media
   /// and contains information about chapter.
   /// </summary>
   /// <seealso cref="MediaStream" />
-  [Serializable]
-  [DataContract]
   public class ChapterStream : MediaStream
   {
     /// <summary>
@@ -50,7 +45,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The chapter offset.
     /// </value>
-    [DataMember(Name = "offset")]
     public double Offset { get; }
 
     /// <summary>
@@ -59,7 +53,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The chapter description.
     /// </value>
-    [DataMember(Name = "description")]
     public string Description { get; }
   }
 }

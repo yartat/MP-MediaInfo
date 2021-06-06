@@ -6,8 +6,6 @@
 
 #endregion
 
-using System.Runtime.Serialization;
-
 namespace MediaInfo.Model
 {
   /// <summary>
@@ -18,19 +16,16 @@ namespace MediaInfo.Model
     /// <summary>
     /// Constant quality mode
     /// </summary>
-    [EnumMember(Value = "constantQuality")]
     Cq,
 
     /// <summary>
     /// Constant bitrate mode
     /// </summary>
-    [EnumMember(Value = "constantBitrate")]
     Cbr,
 
     /// <summary>
     /// Variable bitrate mode
     /// </summary>
-    [EnumMember(Value = "variableBitrate")]
     Vbr
   }
 }

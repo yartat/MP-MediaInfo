@@ -7,43 +7,37 @@
 #endregion
 
 using System;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Defines constants for media stream kinds.
-  /// </summary>
-  public enum MediaStreamKind
+    /// <summary>
+    /// Defines constants for media stream kinds.
+    /// </summary>
+    public enum MediaStreamKind
   {
     /// <summary>
     /// The video stream
     /// </summary>
-    [EnumMember(Value = "video")]
     Video,
 
     /// <summary>
     /// The audio stream
     /// </summary>
-    [EnumMember(Value = "audio")]
     Audio,
 
     /// <summary>
     /// The subtitle stream
     /// </summary>
-    [EnumMember(Value = "text")]
     Text,
 
     /// <summary>
     /// The image stream
     /// </summary>
-    [EnumMember(Value = "image")]
     Image,
 
     /// <summary>
     /// Menu
     /// </summary>
-    [EnumMember(Value = "menu")]
     Menu
   }
 
@@ -52,8 +46,6 @@ namespace MediaInfo.Model
   /// and contains information about media stream.
   /// </summary>
   /// <seealso cref="MarshalByRefObject" />
-  [Serializable]
-  [DataContract]
   public abstract class MediaStream : MarshalByRefObject
   {
     /// <summary>
@@ -62,7 +54,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The media steam id.
     /// </value>
-    [DataMember(Name = "id")]
     public int Id { get; set; }
 
     /// <summary>
@@ -71,7 +62,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The name of stream.
     /// </value>
-    [DataMember(Name = "name")]
     public string Name { get; set; }
 
     /// <summary>
@@ -96,7 +86,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream position.
     /// </value>
-    [DataMember(Name = "streamPosition")]
     public int StreamPosition { get; set; }
 
     /// <summary>
@@ -105,7 +94,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The logical stream number.
     /// </value>
-    [DataMember(Name = "streamNumber")]
     public int StreamNumber { get; set; }
   }
 }

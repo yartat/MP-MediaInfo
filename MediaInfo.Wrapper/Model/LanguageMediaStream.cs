@@ -6,19 +6,14 @@
 
 #endregion
 
-using System;
-using System.Runtime.Serialization;
-
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Provides properties and overridden methods for the analyze stream 
-  /// and contains information about media stream.
-  /// </summary>
-  /// <seealso cref="MediaStream" />
-  [Serializable]
-  [DataContract]
-  public abstract class LanguageMediaStream : MediaStream
+    /// <summary>
+    /// Provides properties and overridden methods for the analyze stream
+    /// and contains information about media stream.
+    /// </summary>
+    /// <seealso cref="MediaStream" />
+    public abstract class LanguageMediaStream : MediaStream
   {
     /// <summary>
     /// Gets the media stream language.
@@ -26,7 +21,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The media stream language.
     /// </value>
-    [DataMember(Name = "language")]
     public string Language { get; set; }
 
     /// <summary>
@@ -35,7 +29,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The media stream LCID.
     /// </value>
-    [DataMember(Name = "lcid")]
     public int Lcid { get; set; }
 
     /// <summary>
@@ -44,7 +37,6 @@ namespace MediaInfo.Model
     /// <value>
     ///   <c>true</c> if default; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "default")]
     public bool Default { get; set; }
 
     /// <summary>
@@ -53,7 +45,6 @@ namespace MediaInfo.Model
     /// <value>
     ///   <c>true</c> if forced; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "forced")]
     public bool Forced { get; set; }
   }
 }

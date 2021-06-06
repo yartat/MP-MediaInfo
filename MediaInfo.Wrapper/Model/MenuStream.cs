@@ -8,17 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Describes properties of the menu
-  /// </summary>
-  /// <seealso cref="MediaStream" />
-  [Serializable]
-  [DataContract]
-  public class MenuStream : MediaStream
+    /// <summary>
+    /// Describes properties of the menu
+    /// </summary>
+    /// <seealso cref="MediaStream" />
+    public class MenuStream : MediaStream
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuStream"/> class.
@@ -34,7 +31,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The menu duration.
     /// </value>
-    [DataMember(Name = "duration")]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -43,7 +39,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The chapters.
     /// </value>
-    [DataMember(Name = "chapters")]
     public ICollection<Chapter> Chapters { get; }
 
     /// <inheritdoc />
@@ -56,8 +51,6 @@ namespace MediaInfo.Model
   /// <summary>
   /// Describes properties of the menu chapter
   /// </summary>
-  [Serializable]
-  [DataContract]
   public sealed class Chapter
   {
     /// <summary>
@@ -66,7 +59,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The menu position.
     /// </value>
-    [DataMember(Name = "position")]
     public TimeSpan Position { get; set; }
 
     /// <summary>
@@ -75,7 +67,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The menu chapter name.
     /// </value>
-    [DataMember(Name = "name")]
     public string Name { get; set; }
   }
 }

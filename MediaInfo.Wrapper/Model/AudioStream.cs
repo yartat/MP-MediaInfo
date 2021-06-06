@@ -13,12 +13,10 @@ using System.Runtime.Serialization;
 namespace MediaInfo.Model
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze audio stream 
+    /// Provides properties and overridden methods for the analyze audio stream
     /// and contains information about audio stream.
     /// </summary>
     /// <seealso cref="LanguageMediaStream" />
-    [Serializable]
-    [DataContract]
     public class AudioStream : LanguageMediaStream
   {
     #region matching dictionaries
@@ -82,7 +80,6 @@ namespace MediaInfo.Model
       { AudioCodec.Atrac9, "ATRAC9" },
     };
 
-
     private static readonly Dictionary<int, string> Channels = new Dictionary<int, string>
     {
       { 1, "Mono" },
@@ -111,7 +108,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio codec.
     /// </value>
-    [DataMember(Name = "codec")]
     public AudioCodec Codec { get; set; }
 
     /// <summary>
@@ -131,7 +127,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream duration.
     /// </value>
-    [DataMember(Name = "duration")]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -140,7 +135,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio bitrate.
     /// </value>
-    [DataMember(Name = "bitrate")]
     public double Bitrate { get; set; }
 
     /// <summary>
@@ -149,7 +143,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio channel amount.
     /// </value>
-    [DataMember(Name = "channel")]
     public int Channel { get; set; }
 
     /// <summary>
@@ -158,7 +151,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio sampling rate.
     /// </value>
-    [DataMember(Name = "samplingRate")]
     public double SamplingRate { get; set; }
 
     /// <summary>
@@ -167,7 +159,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The bit depth of stream.
     /// </value>
-    [DataMember(Name = "bitDepth")]
     public int BitDepth { get; set; }
 
     /// <summary>
@@ -185,7 +176,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio format.
     /// </value>
-    [DataMember(Name = "format")]
     public string Format { get; set; }
 
     /// <summary>
@@ -194,7 +184,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio codec name.
     /// </value>
-    [DataMember(Name = "codecName")]
     public string CodecName { get; set; }
 
     /// <summary>
@@ -203,7 +192,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The audio codec description.
     /// </value>
-    [DataMember(Name = "codecDescription")]
     public string CodecDescription { get; set; }
 
     /// <summary>
@@ -223,10 +211,7 @@ namespace MediaInfo.Model
     [DataMember(Name = "tags")]
     public AudioTags Tags { get; internal set; } = new AudioTags();
 
-    private static string ConvertAudioChannels(int channels)
-    {
-      string result;
-      return Channels.TryGetValue(channels, out result) ? result : "Unknown";
-    }
+    private static string ConvertAudioChannels(int channels) =>
+      Channels.TryGetValue(channels, out var result) ? result : "Unknown";
   }
 }

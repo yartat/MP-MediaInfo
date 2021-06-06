@@ -9,16 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
-  /// <summary>
-  /// Base class to read tags from stream
-  /// </summary>
-  [Serializable]
-  [DataContract]
-  public abstract class BaseTags
+    /// <summary>
+    /// Base class to read tags from stream
+    /// </summary>
+    public abstract class BaseTags
   {
     /// <summary>
     /// Gets or sets the general tags.
@@ -146,15 +143,12 @@ namespace MediaInfo.Model
     /// <value>
     /// The cover media.
     /// </value>
-    [DataMember(Name = "covers")]
     public IEnumerable<CoverInfo> Covers { get; set; }
   }
 
   /// <summary>
   /// Describes properties of the cover tags
   /// </summary>
-  [Serializable]
-  [DataContract]
   public class CoverInfo
   {
     /// <summary>
@@ -163,7 +157,6 @@ namespace MediaInfo.Model
     /// <value>
     /// <c>true</c> if exists; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "exists")]
     public bool Exists { get; internal set; }
 
     /// <summary>
@@ -172,7 +165,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The description of the cover.
     /// </value>
-    [DataMember(Name = "description")]
     public string Description { get; internal set; }
 
     /// <summary>
@@ -181,7 +173,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The type of the cover.
     /// </value>
-    [DataMember(Name = "type")]
     public string Type { get; internal set; }
 
     /// <summary>
@@ -190,7 +181,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The MIME of the cover.
     /// </value>
-    [DataMember(Name = "mime")]
     public string Mime { get; internal set; }
 
     /// <summary>
@@ -199,7 +189,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The cover data.
     /// </value>
-    [DataMember(Name = "data")]
     public byte[] Data { get; internal set; }
   }
 }

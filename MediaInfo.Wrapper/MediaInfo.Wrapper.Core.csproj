@@ -47,7 +47,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="MediaInfo.Core.Native" Version="21.3.1" />
+    <PackageReference Include="MediaInfo.Core.Native" Version="21.3.2" />
   </ItemGroup>
 
   <ItemGroup>

@@ -39,6 +39,7 @@ Make sure that the following dependencies are installed in the operating system 
 | [RedHat](#redhat) | 6 and above |
 | [Debian](#debian) | 8 and above |
 | [Windows](#windows) | 7 and above |
+| [Docker](#docker) | buster |
 ### MacOS
 Some dependencies are available with MacPorts. To install MacPorts:
 https://guide.macports.org/#installing
@@ -49,7 +50,7 @@ port install zlib curl zenlib
 ### Ubuntu
 ```sh
 sudo apt-get update
-sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl
+sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0-dev
 ```
 ### CentOS
 ```sh
@@ -87,8 +88,13 @@ sudo dnf -y install zlib curl libzen libssh
 ### Debian
 ```sh
 sudo apt-get update
-sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl
+sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```
 ### Windows
 Windows package contains all dependencies and does not required any actions.
 
+### Docker
+```sh
+FROM mcr.microsoft.com/dotnet/aspnet:3.1
+RUN apt-get update && apt-get install -y libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+```

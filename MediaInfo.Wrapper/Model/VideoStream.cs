@@ -8,7 +8,6 @@
 
 using System;
 using System.Drawing;
-using System.Runtime.Serialization;
 
 namespace MediaInfo.Model
 {
@@ -16,8 +15,6 @@ namespace MediaInfo.Model
   /// Describes properties of the video stream and method to analyze stream
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
-  [Serializable]
-  [DataContract]
   public class VideoStream : LanguageMediaStream
   {
     /// <inheritdoc />
@@ -32,7 +29,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video frame rate.
     /// </value>
-    [DataMember(Name = "frameRate")]
     public double FrameRate { get; set; }
 
     /// <summary>
@@ -41,7 +37,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video width.
     /// </value>
-    [DataMember(Name = "width")]
     public int Width { get; set; }
 
     /// <summary>
@@ -50,7 +45,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video height.
     /// </value>
-    [DataMember(Name = "height")]
     public int Height { get; set; }
 
     /// <summary>
@@ -59,7 +53,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video bitrate.
     /// </value>
-    [DataMember(Name = "bitrate")]
     public double Bitrate { get; set; }
 
     /// <summary>
@@ -68,7 +61,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video aspect ratio.
     /// </value>
-    [DataMember(Name = "aspectRatio")]
     public AspectRatio AspectRatio { get; set; }
 
     /// <summary>
@@ -77,7 +69,6 @@ namespace MediaInfo.Model
     /// <value>
     ///   <c>true</c> if interlaced; otherwise, <c>false</c>.
     /// </value>
-    [DataMember(Name = "interlaced")]
     public bool Interlaced { get; set; }
 
     /// <summary>
@@ -86,7 +77,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video stereoscopic mode.
     /// </value>
-    [DataMember(Name = "stereoscopic")]
     public StereoMode Stereoscopic { get; set; }
 
     /// <summary>
@@ -95,7 +85,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video format.
     /// </value>
-    [DataMember(Name = "format")]
     public string Format { get; set; }
 
     /// <summary>
@@ -104,7 +93,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video codec.
     /// </value>
-    [DataMember(Name = "codec")]
     public VideoCodec Codec { get; set; }
 
     /// <summary>
@@ -113,7 +101,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video codec profile.
     /// </value>
-    [DataMember(Name = "codecProfile")]
     public string CodecProfile { get; set; }
 
     /// <summary>
@@ -124,7 +111,6 @@ namespace MediaInfo.Model
     /// PAL
     /// NTSC
     /// </value>
-    [DataMember(Name = "standard")]
     public VideoStandard Standard { get; set; }
 
     /// <summary>
@@ -133,7 +119,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video color space.
     /// </value>
-    [DataMember(Name = "colorSpace")]
     public ColorSpace ColorSpace { get; set; }
 
     /// <summary>
@@ -142,7 +127,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video transfer characteristics.
     /// </value>
-    [DataMember(Name = "transferCharacteristics")]
     public TransferCharacteristic TransferCharacteristics { get; set; }
 
     /// <summary>
@@ -151,7 +135,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video chroma subsampling.
     /// </value>
-    [DataMember(Name = "subSampling")]
     public ChromaSubSampling SubSampling { get; set; }
 
     /// <summary>
@@ -160,7 +143,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The stream duration.
     /// </value>
-    [DataMember(Name = "duration")]
     public TimeSpan Duration { get; set; }
 
     /// <summary>
@@ -169,7 +151,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video HDR type.
     /// </value>
-    [DataMember(Name = "hdr")]
     public Hdr Hdr { get;set; }
 
     /// <summary>
@@ -178,7 +159,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video bit depth.
     /// </value>
-    [DataMember(Name = "bitDepth")]
     public int BitDepth { get; set; }
 
     /// <summary>
@@ -187,7 +167,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The name of the video codec.
     /// </value>
-    [DataMember(Name = "codecName")]
     public string CodecName { get; set; }
 
     /// <summary>
@@ -212,7 +191,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The video stream tags.
     /// </value>
-    [DataMember(Name = "Tags")]
     public VideoTags Tags { get; internal set; } = new VideoTags();
 
     private string GetVideoResolution()

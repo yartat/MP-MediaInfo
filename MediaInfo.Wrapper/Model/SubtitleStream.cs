@@ -6,18 +6,13 @@
 
 #endregion
 
-using System;
-using System.Runtime.Serialization;
-
 namespace MediaInfo.Model
 {
   /// <summary>
-  /// Provides properties and overridden methods for the analyze subtitle stream 
+  /// Provides properties and overridden methods for the analyze subtitle stream
   /// and contains information about subtitle.
   /// </summary>
   /// <seealso cref="LanguageMediaStream" />
-  [Serializable]
-  [DataContract]
   public class SubtitleStream : LanguageMediaStream
   {
     /// <summary>
@@ -26,7 +21,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The subtitle format.
     /// </value>
-    [DataMember(Name = "format")]
     public string Format { get; set; }
 
     /// <summary>
@@ -35,7 +29,6 @@ namespace MediaInfo.Model
     /// <value>
     /// The subtitle codec.
     /// </value>
-    [DataMember(Name = "codec")]
     public SubtitleCodec Codec { get; set; }
 
     /// <inheritdoc />

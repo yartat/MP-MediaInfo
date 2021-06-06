@@ -78,8 +78,8 @@ namespace ApiSample.Models
         /// <summary>
         /// A composer name.
         /// </summary>
-        [DataMember(Name = "trackPosition")]
-        [JsonPropertyName("trackPosition")]
+        [DataMember(Name = "composer")]
+        [JsonPropertyName("composer")]
         public string Composer { get; set; }
 
         /// <summary>

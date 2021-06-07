@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 namespace ApiSample.Models
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze stream 
+    /// Provides properties and overridden methods for the analyze stream
     /// and contains information about media stream.
     /// </summary>
     /// <seealso cref="MediaStream" />

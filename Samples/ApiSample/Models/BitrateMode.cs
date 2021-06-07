@@ -7,6 +7,7 @@
 #endregion
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ApiSample.Models
 {
@@ -14,6 +15,7 @@ namespace ApiSample.Models
     /// Describes bitrate possible modes
     /// </summary>
     [DataContract]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum BitrateMode : byte
     {
         /// <summary>

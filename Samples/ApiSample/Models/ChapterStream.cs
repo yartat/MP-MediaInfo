@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 namespace ApiSample.Models
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze chapter in media 
+    /// Provides properties and overridden methods for the analyze chapter in media
     /// and contains information about chapter.
     /// </summary>
     /// <seealso cref="MediaStream" />

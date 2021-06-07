@@ -34,5 +34,13 @@ namespace ApiSample.Infrastructure
         public static IServiceCollection AddFilters(this IServiceCollection services) =>
             services
                 .AddScoped<ValidateModelStateAttribute>();
+
+        /// <summary>
+        /// Adds the MediaInfo logger to DI container.
+        /// </summary>
+        /// <param name="services">The services instance.</param>
+        public static IServiceCollection AddMediaInfoLogger(this IServiceCollection services) =>
+            services
+                .AddScoped<MediaInfo.ILogger, MediaInfoLogger>();
     }
 }

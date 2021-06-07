@@ -13,7 +13,7 @@ using System.Text.Json.Serialization;
 namespace ApiSample.Models
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze audio stream 
+    /// Provides properties and overridden methods for the analyze audio stream
     /// and contains information about audio stream.
     /// </summary>
     /// <seealso cref="LanguageMediaStream" />
@@ -26,7 +26,6 @@ namespace ApiSample.Models
         /// <example>DTS-HD</example>
         [DataMember(Name = "codec")]
         [JsonPropertyName("codec")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AudioCodec Codec { get; set; }
 
         /// <summary>
@@ -43,6 +42,7 @@ namespace ApiSample.Models
         /// <example>100.0</example>
         [DataMember(Name = "duration")]
         [JsonPropertyName("duration")]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Duration { get; set; }
 
         /// <summary>
@@ -83,7 +83,6 @@ namespace ApiSample.Models
         /// <example>2</example>
         [DataMember(Name = "bitrateMode")]
         [JsonPropertyName("bitrateMode")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public BitrateMode BitrateMode { get; set; }
 
         /// <summary>

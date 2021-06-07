@@ -193,6 +193,7 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "recordedDate")]
         [JsonPropertyName("recordedDate")]
+        [JsonConverter(typeof(JsonMicrosoftDateTimeConverter))]
         public DateTime? RecordedDate { get; set; }
 
         /// <summary>

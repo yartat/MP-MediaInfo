@@ -1,10 +1,15 @@
-﻿using AutoMapper;
+﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
+
+// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
+// https://mediaarea.net
+
+#endregion
+
+using AutoMapper;
 using MediaInfo;
 using MediaInfo.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ApiSample.Infrastructure
 {

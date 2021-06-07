@@ -26,6 +26,7 @@ namespace ApiSample.Models
         /// <example>10.1</example>
         [DataMember(Name = "duration")]
         [JsonPropertyName("duration")]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Duration { get; set; }
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace ApiSample.Models
         /// <example>10:13</example>
         [DataMember(Name = "position")]
         [JsonPropertyName("position")]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Position { get; set; }
 
         /// <summary>

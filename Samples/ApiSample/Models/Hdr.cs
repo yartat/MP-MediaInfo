@@ -7,16 +7,18 @@
 #endregion
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ApiSample.Models
 {
     /// <summary>
     /// Describes HDR modes
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum Hdr
     {
         /// <summary>
-        /// No HDR 
+        /// No HDR
         /// </summary>
         [EnumMember(Value = "none")]
         None,

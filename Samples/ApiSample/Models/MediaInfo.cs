@@ -248,6 +248,7 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "duration")]
         [JsonPropertyName("duration")]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Duration { get; set; }
 
         /// <summary>

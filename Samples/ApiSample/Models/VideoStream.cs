@@ -52,7 +52,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "aspectRatio")]
         [JsonPropertyName("aspectRatio")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AspectRatio AspectRatio { get; set; }
 
         /// <summary>
@@ -67,7 +66,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "stereoscopic")]
         [JsonPropertyName("stereoscopic")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public StereoMode Stereoscopic { get; set; }
 
         /// <summary>
@@ -82,7 +80,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "codec")]
         [JsonPropertyName("codec")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VideoCodec Codec { get; set; }
 
         /// <summary>
@@ -97,7 +94,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "standard")]
         [JsonPropertyName("standard")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public VideoStandard Standard { get; set; }
 
         /// <summary>
@@ -105,7 +101,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "colorSpace")]
         [JsonPropertyName("colorSpace")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ColorSpace ColorSpace { get; set; }
 
         /// <summary>
@@ -113,7 +108,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "transferCharacteristics")]
         [JsonPropertyName("transferCharacteristics")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TransferCharacteristic TransferCharacteristics { get; set; }
 
         /// <summary>
@@ -121,7 +115,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "subSampling")]
         [JsonPropertyName("subSampling")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChromaSubSampling SubSampling { get; set; }
 
         /// <summary>
@@ -129,6 +122,7 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "duration")]
         [JsonPropertyName("duration")]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Duration { get; set; }
 
         /// <summary>
@@ -136,7 +130,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "hdr")]
         [JsonPropertyName("hdr")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Hdr Hdr { get; set; }
 
         /// <summary>

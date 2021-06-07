@@ -6,14 +6,13 @@
 
 #endregion
 
-using System;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ApiSample.Models
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze subtitle stream 
+    /// Provides properties and overridden methods for the analyze subtitle stream
     /// and contains information about subtitle.
     /// </summary>
     /// <seealso cref="LanguageMediaStream" />
@@ -34,7 +33,6 @@ namespace ApiSample.Models
         /// <example>utf8</example>
         [DataMember(Name = "codec")]
         [JsonPropertyName("codec")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public SubtitleCodec Codec { get; set; }
     }
 }

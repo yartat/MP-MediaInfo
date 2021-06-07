@@ -12,8 +12,8 @@ using AutoMapper;
 using MediaInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace ApiSample.Controllers
     [ValidateModelState]
     public class MediaController : ControllerBase
     {
-        private readonly ILogger<MediaController> _logger;
+        private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace ApiSample.Controllers
         /// <param name="mapper">The mapper instance.</param>
         /// <exception cref="System.ArgumentNullException">logger</exception>
         /// <exception cref="System.ArgumentNullException">mapper</exception>
-        public MediaController(ILogger<MediaController> logger, IMapper mapper)
+        public MediaController(ILogger logger, IMapper mapper)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -54,13 +54,15 @@ namespace ApiSample.Controllers
         /// <param name="request">The location request.</param>
         /// <returns>Returns media info.</returns>
         /// <response code="200">Returns information about media.</response>
+        /// <response code="400">Input parameters is null, empty or incorrect.</response>
         /// <response code="404">The media was not found.</response>
         /// <response code="500">Internal service error.</response>
         [HttpPost]
         [ProducesResponseType(typeof(Models.MediaInfo), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Dictionary<string, string[]>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetMediaInfo([FromBody, Required(ErrorMessage = "REQUEST_REQUIRED")] MediaInfoRequest request)
         {
-            var media = new MediaInfoWrapper(request.Location.OriginalString);
+            var media = new MediaInfoWrapper(request.Location.OriginalString, _logger);
             if (media.MediaInfoNotloaded)
             {
                 return NotFound();

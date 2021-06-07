@@ -49,6 +49,7 @@ namespace ApiSample
 
             services
                 .AddFilters()
+                .AddMediaInfoLogger()
                 .AddAutoMapper(MapperExtensions.ConfigureMapper)
                 .AddSwaggerGen(options =>
                 {

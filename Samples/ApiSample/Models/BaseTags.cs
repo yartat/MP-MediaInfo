@@ -57,6 +57,7 @@ namespace ApiSample.Models
         /// <example>1968-04-12</example>
         [DataMember(Name = "releasedDate")]
         [JsonPropertyName("releasedDate")]
+        [JsonConverter(typeof(JsonMicrosoftDateTimeConverter))]
         public DateTime? ReleasedDate { get; set; }
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace ApiSample.Models
         /// <example>2021-05-11 11:22:33</example>
         [DataMember(Name = "encodedDate")]
         [JsonPropertyName("encodedDate")]
+        [JsonConverter(typeof(JsonMicrosoftDateTimeConverter))]
         public DateTime? EncodedDate { get; set; }
 
         /// <summary>
@@ -73,6 +75,7 @@ namespace ApiSample.Models
         /// <example>2021-05-11 11:22:33</example>
         [DataMember(Name = "taggedDate")]
         [JsonPropertyName("taggedDate")]
+        [JsonConverter(typeof(JsonMicrosoftDateTimeConverter))]
         public DateTime? TaggedDate { get; set; }
 
         /// <summary>

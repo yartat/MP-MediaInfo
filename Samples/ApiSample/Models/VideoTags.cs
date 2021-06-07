@@ -245,8 +245,8 @@ namespace ApiSample.Models
         /// A main genre of the audio or video; e.g. "classical", "ambient-house", "synthpop", "sci-fi", "drama", etc.
         /// </summary>
         /// <example>sci-fi</example>
-        [DataMember(Name = "Genre")]
-        [JsonPropertyName("Genre")]
+        [DataMember(Name = "genre")]
+        [JsonPropertyName("genre")]
         public string Genre { get; set; }
 
         /// <summary>

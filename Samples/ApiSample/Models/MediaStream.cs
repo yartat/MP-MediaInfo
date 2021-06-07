@@ -15,6 +15,7 @@ namespace ApiSample.Models
     /// Defines constants for media stream kinds.
     /// </summary>
     [DataContract]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum MediaStreamKind
     {
         /// <summary>
@@ -74,7 +75,6 @@ namespace ApiSample.Models
         /// </summary>
         [DataMember(Name = "kind")]
         [JsonPropertyName("kind")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public MediaStreamKind Kind { get; }
 
         /// <summary>

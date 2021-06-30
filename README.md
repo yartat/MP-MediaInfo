@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 21.3.3
+dotnet add package MediaInfo.Wrapper.Core --version 21.3.4
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 21.3.3
+Install-Package MediaInfo.Wrapper -Version 21.3.4
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project

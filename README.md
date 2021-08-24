@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 21.3.4
+dotnet add package MediaInfo.Wrapper.Core --version 21.3.5
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 21.3.4
+Install-Package MediaInfo.Wrapper -Version 21.3.5
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
@@ -62,7 +62,7 @@ sudo yum -y install zlib curl libzen libssh
 ### Fedora
 ```sh
 sudo yum update
-sudo yum -y install zlib curl libzen libssh
+sudo yum -y install zlib curl libzen libssh openssl tinyxm2 libmms
 ```
 ### OpenSUSE
 ```sh

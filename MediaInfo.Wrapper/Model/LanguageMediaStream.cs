@@ -46,5 +46,13 @@ namespace MediaInfo.Model
     ///   <c>true</c> if forced; otherwise, <c>false</c>.
     /// </value>
     public bool Forced { get; set; }
+
+    /// <summary>
+    /// Gets the stream size.
+    /// </summary>
+    /// <value>
+    /// The stream size (bytes).
+    /// </value>
+    public long StreamSize { get; set; }
   }
 }

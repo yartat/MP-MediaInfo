@@ -335,7 +335,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The software or hardware used to encode this item; e.g. "LAME" or "XviD".
     /// </value>
-    public string EncodedLibrary => GeneralTags.TryGetValue(NativeMethods.General.General_Encoded_Library, out var result) ? (string)result : null;
+    public string EncodedLibrary => VideoDataTags.TryGetValue(NativeMethods.Video.Video_Encoded_Library, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets a list of the settings used for encoding this item. No specific format.
@@ -343,7 +343,7 @@ namespace MediaInfo.Model
     /// <value>
     /// A list of the settings used for encoding this item. No specific format.
     /// </value>
-    public string EncodedLibrarySettings => GeneralTags.TryGetValue(NativeMethods.General.General_Encoded_Library_Settings, out var result) ? (string)result : null;
+    public string EncodedLibrarySettings => VideoDataTags.TryGetValue(NativeMethods.Video.Video_Encoded_Library_Settings, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets a plot outline or a summary of the story.

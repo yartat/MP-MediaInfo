@@ -401,6 +401,7 @@ namespace MediaInfo
         {
           Size = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_FileSize).TryGetLong(out long size) ? size : 0;
         }
+        Text = mediaInfo.Inform();
 
         // Setup videos
         _logger.LogDebug($"Found {mediaInfo.CountGet(StreamKind.Video)} video streams.");
@@ -944,6 +945,14 @@ namespace MediaInfo
     /// Occurs when properties initialized.
     /// </summary>
     public event EventHandler PropertiesInitialized;
+
+    /// <summary>
+    /// Gets the text representation of the media information.
+    /// </summary>
+    /// <value>
+    /// The media information text.
+    /// </value>
+    public string Text { get; private set; }
   }
 
 #if (NET40 || NET45)

@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 
 namespace MediaInfo
 {
+  [Flags]
   public enum InfoFileOptions
   {
     Nothing = 0x00,

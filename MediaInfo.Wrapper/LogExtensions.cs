@@ -61,13 +61,13 @@ namespace MediaInfo
         var errorMessage = string.Format(message, parameters);
         if (exception != null)
         {
-          var msg = new StringBuilder();
-          msg.AppendFormat(message, parameters);
-          msg.AppendLine();
-
-          msg.AppendLine($"Exception: {exception.Message}");
-          msg.AppendLine("Callstack:");
-          msg.Append(exception.StackTrace);
+          var msg = new StringBuilder()
+            .AppendFormat(message, parameters)
+            .AppendLine()
+            .Append("Exception: ")
+            .AppendLine(exception.Message)
+            .AppendLine("Callstack:")
+            .Append(exception.StackTrace);
 
           errorMessage = msg.ToString();
         }
@@ -95,13 +95,13 @@ namespace MediaInfo
         var errorMessage = string.Format(message, parameters);
         if (exception != null)
         {
-          var msg = new StringBuilder();
-          msg.AppendFormat(message, parameters);
-          msg.AppendLine();
-
-          msg.AppendLine($"Exception: {exception.Message}");
-          msg.AppendLine("Callstack:");
-          msg.Append(exception.StackTrace);
+          var msg = new StringBuilder()
+            .AppendFormat(message, parameters)
+            .AppendLine()
+            .Append("Exception: ")
+            .AppendLine(exception.Message)
+            .AppendLine("Callstack:")
+            .Append(exception.StackTrace);
 
           errorMessage = msg.ToString();
         }

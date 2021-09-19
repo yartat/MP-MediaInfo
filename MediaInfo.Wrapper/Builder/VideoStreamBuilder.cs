@@ -325,14 +325,14 @@ namespace MediaInfo.Builder
       {
         // Support Matroska stereo
         if (multiViewCount >= 2)
-        { 
+        {
           result.Stereoscopic = StereoMode.Stereo;
         }
         else
-        { 
+        {
           // Support BD3D
           var idValues = Get((int)NativeMethods.Video.Video_ID, InfoKind.Text);
-          if (idValues.Split('/').Where(x => !string.IsNullOrWhiteSpace(x)).Count() > 1)
+          if (idValues.Split('/').Count(x => !string.IsNullOrWhiteSpace(x)) > 1)
           {
             result.Stereoscopic = StereoMode.Stereo;
           }
@@ -351,7 +351,7 @@ namespace MediaInfo.Builder
       }
 
       switch (result.Codec)
-      { 
+      {
         case VideoCodec.Mpeg4:
           var additionalCodec = Get<VideoCodec>((int)NativeMethods.Video.Video_CodecID, InfoKind.Text, TryGetCodec);
           if (additionalCodec != VideoCodec.Undefined)
@@ -359,10 +359,10 @@ namespace MediaInfo.Builder
             result.Codec = additionalCodec;
             break;
           }
-          
+
           additionalCodec = Get<VideoCodec>((int)NativeMethods.Video.Video_Format_Settings_Matrix, InfoKind.Text, TryGetCodec);
           if (additionalCodec != VideoCodec.Undefined)
-          { 
+          {
             result.Codec = additionalCodec;
           }
           break;

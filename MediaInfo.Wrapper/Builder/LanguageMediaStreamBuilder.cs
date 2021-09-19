@@ -36,6 +36,7 @@ namespace MediaInfo.Builder
       result.Default = Get<bool>("Default", TagBuilderHelper.TryGetBool);
       result.Forced = Get<bool>("Forced", TagBuilderHelper.TryGetBool);
       result.Lcid = LanguageHelper.GetLcidByShortName(language);
+      result.StreamSize = Get<long>("StreamSize", TagBuilderHelper.TryGetLong);
       return result;
     }
   }

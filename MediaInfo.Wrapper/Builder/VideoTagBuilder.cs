@@ -6,17 +6,14 @@
 
 #endregion
 
-#if DEBUG
 using System;
 using System.Collections.Generic;
-#endif
 using MediaInfo.Model;
 
 namespace MediaInfo.Builder
 {
   internal class VideoTagBuilder: GeneralTagBuilder<VideoTags>
   {
-#if DEBUG
 #region Tag items
 
     private static readonly List<Tuple<NativeMethods.Video, ParseDelegate<object>>> GeneralTagItems;
@@ -32,7 +29,6 @@ namespace MediaInfo.Builder
         GeneralTagItems.Add(new Tuple<NativeMethods.Video, ParseDelegate<object>>(item, TagBuilderHelper.TryGetString));
       }
     }
-#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoTagBuilder"/> class.
@@ -44,7 +40,6 @@ namespace MediaInfo.Builder
     {
     }
 
-#if DEBUG
     public override VideoTags Build()
     {
       var result = base.Build();
@@ -59,6 +54,5 @@ namespace MediaInfo.Builder
 
       return result;
     }
-#endif
   }
 }

@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 21.3.7
+dotnet add package MediaInfo.Wrapper.Core --version 21.9.0
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 21.3.7
+Install-Package MediaInfo.Wrapper -Version 21.9.0
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
@@ -31,8 +31,8 @@ Make sure that the following dependencies are installed in the operating system 
 
 | Operation system | Version |
 |-----------|---------|
-| [MacOS](#macos) | 10.5 (Leopard) and above |
-| [Ubuntu](#ubuntu) | 16.04, 18.04, 19.10, 20.04 and 20.10 |
+| [MacOS](#macos) | 10.15 (Catalina), 11 (Big Sur) |
+| [Ubuntu](#ubuntu) | 16.04, 18.04, 20.04, 20.10 and 21.04 |
 | [CenOS](#centos) | 6 and above |
 | [Fedora](#fedora) | 30 and above |
 | [OpenSUSE](#opensuse) | 15.2 and Tumbleweed |
@@ -50,25 +50,25 @@ port install zlib curl zenlib
 ### Ubuntu
 ```sh
 sudo apt-get update
-sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0-dev
+sudo apt-get install libzen0v5 libmms0 zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0-dev
 ```
 ### CentOS
 ```sh
 sudo yum -y update
 sudo yum -y install epel-release
 sudo yum -y update
-sudo yum -y install zlib curl libzen libssh
+sudo yum -y install zlib curl libzen libmms
 ```
 ### Fedora
 ```sh
 sudo yum update
-sudo yum -y install zlib curl libzen libssh openssl tinyxm2 libmms
+sudo yum -y install zlib curl libzen openssl libmms
 ```
 ### OpenSUSE
 ```sh
-sudo zipper refresh
-sudo zipper update
-sudo zipper install -y zlib curl libmms0 openssl libnghttp2-14
+sudo zypper refresh
+sudo zypper update -y
+sudo zypper install -y zlib curl libmms0 openssl libnghttp2-14
 ```
 ### RedHat
 #### RedHat 7
@@ -76,19 +76,19 @@ sudo zipper install -y zlib curl libmms0 openssl libnghttp2-14
 sudo yum -y update
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y update
-sudo yum -y install zlib curl libzen libssh
+sudo yum -y install zlib curl libzen libmms
 ```
 #### RedHat 8
 ```sh
 sudo dnf -y update
 sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo dnf -y update
-sudo dnf -y install zlib curl libzen libssh
+sudo dnf -y install zlib curl libzen libmms
 ```
 ### Debian
 ```sh
 sudo apt-get update
-sudo apt-get install libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+sudo apt-get install libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```
 ### Windows
 Windows package contains all dependencies and does not required any actions.
@@ -96,5 +96,5 @@ Windows package contains all dependencies and does not required any actions.
 ### Docker
 ```sh
 FROM mcr.microsoft.com/dotnet/aspnet:3.1
-RUN apt-get update && apt-get install -y libzen0v5 libmms0 libssh-4 libssl1.1 openssl zlib1g zlibc libsqlite3-0 libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```

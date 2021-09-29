@@ -371,15 +371,15 @@ namespace MediaInfo.Builder
       result.CodecProfile = Get((int)NativeMethods.Video.Video_Format_Profile, InfoKind.Text);
       result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Video.Video_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
       result.BitDepth = Get<int>((int)NativeMethods.Video.Video_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt);
-      result.ColorSpace = Get<ColorSpace>((int)NativeMethods.Video.Video_colour_primaries, InfoKind.Text, TryGetColorSpace);
+      result.ColorSpace = Get<ColorSpace>("colour_primaries", TryGetColorSpace);
       result.TransferCharacteristics = Get<TransferCharacteristic>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetTransferCharacteristics);
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
-      result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
+      result.SubSampling = Get<ChromaSubSampling>("ChromaSubsampling", TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
       result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format, InfoKind.Text, TryGetHdr);
       if (result.Hdr == Hdr.None)
       {
-        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetHdr);
+        result.Hdr = Get<Hdr>("transfer_characteristics", TryGetHdr);
       }
 
       result.Tags = new VideoTagBuilder(Info, StreamPosition).Build();

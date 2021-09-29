@@ -62,7 +62,7 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData("http://localhost/video/test_8.mp4", 2296357L, 117340, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 845642L)]
+    [InlineData("http://localhost/video/test_8.mp4", 2296357L, 117206, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 845642L)]
     [InlineData("http://localhost/video/Sisvel3DTile.ts", 50320644, 0, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 0L)]
     [InlineData("http://localhost/video/iphone6s_4k.mov", 118742364L, 51105477, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 118512869L)]
     public void LoadAVSteam(string fileName, long size, int rate, int audioStreams, VideoCodec codec, ChromaSubSampling sampling, long streamSize)
@@ -336,7 +336,7 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData("../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420, 178218782280L)]
+    [InlineData("../../../../UHD/(HEVC 10-bit 25fps) Astra DVB Sample.ts", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420, 1070986515L)]
     [InlineData("../../../../UHD/4K HEVC 59.940 Broadcast Capture Sample.mkv", VideoCodec.MpeghIsoHevc, 2160, ColorSpace.Generic, ChromaSubSampling.Sampling420, 187427353L)]
     [InlineData("../../../../UHD/4K youtube.webm", VideoCodec.Vp9, 2160, ColorSpace.BT709, ChromaSubSampling.Sampling332, 503064736L)]
     [InlineData("../../../../UHD/8K youtube.mp4", VideoCodec.Av1, 4320, ColorSpace.BT709, ChromaSubSampling.Sampling420, 497122531L)]

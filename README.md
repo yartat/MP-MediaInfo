@@ -16,11 +16,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
-dotnet add package MediaInfo.Wrapper.Core --version 21.9.0
+dotnet add package MediaInfo.Wrapper.Core --version 21.9.1
 ```
 ### Full .NET
 ```ps
-Install-Package MediaInfo.Wrapper -Version 21.9.0
+Install-Package MediaInfo.Wrapper -Version 21.9.1
 ```
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
@@ -32,12 +32,12 @@ Make sure that the following dependencies are installed in the operating system 
 | Operation system | Version |
 |-----------|---------|
 | [MacOS](#macos) | 10.15 (Catalina), 11 (Big Sur) |
-| [Ubuntu](#ubuntu) | 16.04, 18.04, 20.04, 20.10 and 21.04 |
-| [CenOS](#centos) | 6 and above |
-| [Fedora](#fedora) | 30 and above |
+| [Ubuntu](#ubuntu) | 16.04, 18.04, 20.04 and 21.04 |
+| [CenOS](#centos) | 7 and above |
+| [Fedora](#fedora) | 32 and above |
 | [OpenSUSE](#opensuse) | 15.2 and Tumbleweed |
-| [RedHat](#redhat) | 6 and above |
-| [Debian](#debian) | 8 and above |
+| [RedHat](#redhat) | 7 and above |
+| [Debian](#debian) | 9 and above |
 | [Windows](#windows) | 7 and above |
 | [Docker](#docker) | buster |
 ### MacOS
@@ -53,16 +53,24 @@ sudo apt-get update
 sudo apt-get install libzen0v5 libmms0 zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0-dev
 ```
 ### CentOS
+#### CentOS 7
 ```sh
+sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y update
-sudo yum -y install epel-release
+sudo yum -y install zlib curl libzen bzip2 libcurl
+sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/7/x86_64/l/libmms-0.6.4-2.el7.x86_64.rpm
+```
+#### CentOS 8
+```sh
+sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo yum -y update
-sudo yum -y install zlib curl libzen libmms
+sudo yum -y install zlib curl libzen bzip2 libcurl
+sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/8/x86_64/l/libmms-0.6.4-8.el8.x86_64.rpm
 ```
 ### Fedora
 ```sh
-sudo yum update
-sudo yum -y install zlib curl libzen openssl libmms
+sudo dnf update
+sudo dnf -y install zlib curl libzen openssl libmms
 ```
 ### OpenSUSE
 ```sh
@@ -73,17 +81,17 @@ sudo zypper install -y zlib curl libmms0 openssl libnghttp2-14
 ### RedHat
 #### RedHat 7
 ```sh
-sudo yum -y update
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y update
-sudo yum -y install zlib curl libzen libmms
+sudo yum -y install zlib curl libzen bzip2 libcurl
+sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/7/x86_64/l/libmms-0.6.4-2.el7.x86_64.rpm
 ```
 #### RedHat 8
 ```sh
-sudo dnf -y update
-sudo dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-sudo dnf -y update
-sudo dnf -y install zlib curl libzen libmms
+sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo yum -y update
+sudo yum -y install zlib curl libzen bzip2 libcurl
+sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/8/x86_64/l/libmms-0.6.4-8.el8.x86_64.rpm
 ```
 ### Debian
 ```sh

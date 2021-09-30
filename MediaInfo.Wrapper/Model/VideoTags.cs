@@ -285,7 +285,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The name of the choreographer.
     /// </value>
-    public string Choreographer => GeneralTags.TryGetValue(NativeMethods.General.General_Choregrapher, out var result) ? (string)result : null;
+    public string Choreographer => GeneralTags.TryGetValue(NativeMethods.General.General_Choreographer, out var result) ? (string)result : null;
 
     /// <summary>
     /// Gets the name of production studio.

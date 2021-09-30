@@ -3,25 +3,22 @@
   <PropertyGroup>
     <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
-    <Version>21.9.0</Version>
-    <AssemblyVersion>21.9.0.0</AssemblyVersion>
-    <FileVersion>21.9.0.0</FileVersion>
-    <Company>Yaroslav Tatarenko</Company>
-    <Authors>yartat</Authors>
+    <Version>$(MediaInfoVersion)</Version>
+    <AssemblyVersion>$(MediaInfoFileVersion)</AssemblyVersion>
+    <FileVersion>$(MediaInfoFileVersion)</FileVersion>
+    <Company>$(PackageCompany)</Company>
+    <Authors>$(PackageAuthor)</Authors>
     <Product>MP-MediaInfo</Product>
     <PackageTags>mediainfo;wrapper;dotnet;.net</PackageTags>
-    <Copyright>Copyright © 2017-2021 Yaroslav Tatarenko</Copyright>
+    <Copyright>$(PackageCopyright)</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/yartat/MP-MediaInfo</PackageProjectUrl>
+    <PackageProjectUrl>$(PackageRepository)</PackageProjectUrl>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/yartat/MP-MediaInfo</RepositoryUrl>
+    <RepositoryUrl>$(PackageRepository)</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageIcon>MediaInfo_90x90.png</PackageIcon>
-    <Description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
-MediaInfo .NET wrapper with support network AV streams</Description>
-    <PackageReleaseNotes>Copyright © 2017-2021 Yaroslav Tatarenko
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageReleaseNotes>
+    <PackageIcon>$(PackageIconValue)</PackageIcon>
+    <Description>$(PackageDescription)</Description>
+    <PackageReleaseNotes>$(PackageNotes)</PackageReleaseNotes>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.xml</DocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -35,19 +32,13 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
     </AssemblyAttribute>
   </ItemGroup>
 
-  <Target Name="CopyDocumentationFile" AfterTargets="ComputeFilesToPublish">
-    <ItemGroup>
-      <ResolvedFileToPublish Include="@(FinalDocFile)" RelativePath="@(FinalDocFile->'%(Filename)%(Extension)')" />
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="MediaInfo.Native" Version="21.9.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(GitHub)" PrivateAssets="All" />
+    <PackageReference Include="MediaInfo.Native" Version="$(Native)" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="images/MediaInfo_90x90.png" Pack="true" PackagePath="" />
+    <None Include="images/$(PackageIconValue)" Pack="true" PackagePath="" />
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
 

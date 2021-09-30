@@ -31,7 +31,7 @@ namespace MediaInfo.Builder
     public override TStream Build()
     {
       var result = base.Build();
-      var language = Get("Language").ToLower();
+      var language = Get((int)NativeMethods.Generic.Generic_Language, InfoKind.Text).ToLower();
       result.Language = LanguageHelper.GetLanguageByShortName(language);
       result.Default = Get<bool>("Default", TagBuilderHelper.TryGetBool);
       result.Forced = Get<bool>("Forced", TagBuilderHelper.TryGetBool);

@@ -62,7 +62,7 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
-    [InlineData("http://localhost/video/test_8.mp4", 2296357L, 117206, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 845642L)]
+    [InlineData("http://localhost/video/test_8.mp4", 2296357L, 117340, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 845642L)]
     [InlineData("http://localhost/video/Sisvel3DTile.ts", 50320644, 0, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 0L)]
     [InlineData("http://localhost/video/iphone6s_4k.mov", 118742364L, 51105477, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 118512869L)]
     public void LoadAVSteam(string fileName, long size, int rate, int audioStreams, VideoCodec codec, ChromaSubSampling sampling, long streamSize)

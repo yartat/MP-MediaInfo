@@ -371,15 +371,15 @@ namespace MediaInfo.Builder
       result.CodecProfile = Get((int)NativeMethods.Video.Video_Format_Profile, InfoKind.Text);
       result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Video.Video_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
       result.BitDepth = Get<int>((int)NativeMethods.Video.Video_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt);
-      result.ColorSpace = Get<ColorSpace>("colour_primaries", TryGetColorSpace);
+      result.ColorSpace = Get<ColorSpace>((int)NativeMethods.Video.Video_colour_primaries, InfoKind.Text, TryGetColorSpace);
       result.TransferCharacteristics = Get<TransferCharacteristic>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetTransferCharacteristics);
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
-      result.SubSampling = Get<ChromaSubSampling>("ChromaSubsampling", TryGetSubSampling);
+      result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
       result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format, InfoKind.Text, TryGetHdr);
       if (result.Hdr == Hdr.None)
       {
-        result.Hdr = Get<Hdr>("transfer_characteristics", TryGetHdr);
+        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetHdr);
       }
 
       result.Tags = new VideoTagBuilder(Info, StreamPosition).Build();
@@ -387,72 +387,52 @@ namespace MediaInfo.Builder
       return result;
     }
 
-    private static bool TryGetCodecId(string codec, out VideoCodec result)
-    {
-      return VideoCodecs.TryGetValue(codec, out result);
-    }
+    private static bool TryGetCodecId(string codec, out VideoCodec result) =>
+      VideoCodecs.TryGetValue(codec, out result);
 
-    private static bool TryGetCodec(string codec, out VideoCodec result)
-    {
-      return VideoCodecs.TryGetValue(codec, out result);
-    }
+    private static bool TryGetCodec(string codec, out VideoCodec result) =>
+      VideoCodecs.TryGetValue(codec, out result);
 
-    private static bool TryGetStereoscopic(string layout, out StereoMode result)
-    {
-      return StereoModes.TryGetValue(layout, out result);
-    }
+    private static bool TryGetStereoscopic(string layout, out StereoMode result) =>
+      StereoModes.TryGetValue(layout, out result);
 
-    private static bool GetInterlaced(string source)
-    {
-      return source?.ToLower().Contains("interlaced") ?? false;
-    }
+    private static bool GetInterlaced(string source) =>
+      source?.ToLower().Contains("interlaced") ?? false;
 
-    private static bool TryGetAspectRatio(string source, out AspectRatio result)
-    {
-      return Ratios.TryGetValue(source, out result);
-    }
+    private static bool TryGetAspectRatio(string source, out AspectRatio result) =>
+      Ratios.TryGetValue(source, out result);
 
-    private static bool TryGetColorSpace(string source, out ColorSpace result)
-    {
-      return ColorSpaces.TryGetValue(source, out result);
-    }
+    private static bool TryGetColorSpace(string source, out ColorSpace result) =>
+      ColorSpaces.TryGetValue(source, out result);
 
-    private static bool TryGetTransferCharacteristics(string source, out TransferCharacteristic result)
-    {
-      return TransferCharacteristics.TryGetValue(source, out result);
-    }
+    private static bool TryGetTransferCharacteristics(string source, out TransferCharacteristic result) =>
+    TransferCharacteristics.TryGetValue(source, out result);
 
-    private static bool TryGetStandard(string source, out VideoStandard result)
-    {
-      return VideoStandards.TryGetValue(source, out result);
-    }
+    private static bool TryGetStandard(string source, out VideoStandard result) =>
+      VideoStandards.TryGetValue(source, out result);
 
-    private static bool TryGetSubSampling(string source, out ChromaSubSampling result)
-    {
-      return ChromaSubSamplings.TryGetValue(source, out result);
-    }
+    private static bool TryGetSubSampling(string source, out ChromaSubSampling result) =>
+      ChromaSubSamplings.TryGetValue(source, out result);
 
-    private static bool TryGetHdr(string source, out Hdr result)
-    {
-      return HdrFormats.TryGetValue(source, out result);
-    }
+    private static bool TryGetHdr(string source, out Hdr result) =>
+      HdrFormats.TryGetValue(source, out result);
 
     private string GetFullCodecName(string codecProfile)
     {
       var strFormat = Get((int)NativeMethods.Video.Video_Format_Commercial, InfoKind.Text);
       var strCodec = Get((int)NativeMethods.Video.Video_CodecID, InfoKind.Text);
 
-      var strCodecVer = Get("Format_Version").ToUpper();
+      var strCodecVer = Get((int)NativeMethods.Video.Video_Format_Version, InfoKind.Text).ToUpper();
       if (strCodec == "MPEG-4 VISUAL")
       {
-        strCodec = Get("CodecID").ToUpperInvariant();
+        strCodec = Get((int)NativeMethods.Video.Video_CodecID, InfoKind.Text).ToUpperInvariant();
       }
       else
       {
         if (!string.IsNullOrEmpty(strCodecVer))
         {
           strCodec = (strCodec + " " + strCodecVer).Trim();
-          var strCodecProf = Get("Format_Profile").ToUpper();
+          var strCodecProf = Get((int)NativeMethods.Video.Video_Format_Profile, InfoKind.Text).ToUpper();
           if (strCodecProf != "MAIN@MAIN")
           {
             strCodec = (strCodec + " " + strCodecProf).Trim();

@@ -7,7 +7,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace MediaInfo
@@ -147,7 +146,7 @@ namespace MediaInfo
       Generic_Language,
       Generic_ServiceName,
       Generic_ServiceProvider,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum General
@@ -373,7 +372,7 @@ namespace MediaInfo
       General_SoundEngineer,
       General_ArtDirector,
       General_ProductionDesigner,
-      General_Choregrapher,
+      General_Choreographer,
       General_CostumeDesigner,
       General_Actor,
       General_Actor_Character,
@@ -483,7 +482,7 @@ namespace MediaInfo
       General_Played_Count,
       General_EPG_Positions_Begin,
       General_EPG_Positions_End,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Video
@@ -685,6 +684,8 @@ namespace MediaInfo
       Video_FrameRate_Original_String,
       Video_FrameRate_Original_Num,
       Video_FrameRate_Original_Den,
+      Video_FrameRate_Real,
+      Video_FrameRate_Real_String,
       Video_FrameCount,
       Video_Source_FrameCount,
       Video_Standard,
@@ -865,7 +866,7 @@ namespace MediaInfo
       Video_MaxFALL_Source,
       Video_MaxFALL_Original,
       Video_MaxFALL_Original_Source,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Audio
@@ -1001,10 +1002,13 @@ namespace MediaInfo
       Audio_Matrix_Channel_s_,
       Audio_Matrix_Channel_s__String,
       Audio_ChannelPositions,
+      Audio_ChannelPositions_Original,
       Audio_ChannelPositions_String2,
+      Audio_ChannelPositions_Original_String2,
       Audio_Matrix_ChannelPositions,
       Audio_Matrix_ChannelPositions_String2,
       Audio_ChannelLayout,
+      Audio_ChannelLayout_Original,
       Audio_ChannelLayoutID,
       Audio_SamplesPerFrame,
       Audio_SamplingRate,
@@ -1147,7 +1151,7 @@ namespace MediaInfo
       Audio_Encoded_Date,
       Audio_Tagged_Date,
       Audio_Encryption,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Text
@@ -1390,7 +1394,7 @@ namespace MediaInfo
       Text_Encoded_Date,
       Text_Tagged_Date,
       Text_Encryption,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Other
@@ -1583,7 +1587,7 @@ namespace MediaInfo
       Other_Forced_String,
       Other_AlternateGroup,
       Other_AlternateGroup_String,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Image
@@ -1712,7 +1716,7 @@ namespace MediaInfo
       Image_colour_primaries_Original,
       Image_transfer_characteristics_Original,
       Image_matrix_coefficients_Original,
-    };
+    }
 
     //---------------------------------------------------------------------------
     internal enum Menu
@@ -1811,7 +1815,7 @@ namespace MediaInfo
       Menu_AlternateGroup_String,
       Menu_Chapters_Pos_Begin,
       Menu_Chapters_Pos_End,
-    };
+    }
 
     public enum Status
     {

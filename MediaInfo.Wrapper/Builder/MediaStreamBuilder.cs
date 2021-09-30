@@ -117,7 +117,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-      return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default(T);
+      return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default;
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ namespace MediaInfo.Builder
         throw new ArgumentNullException(nameof(convert));
       }
 
-      return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default(T);
+      return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default;
     }
 
     /// <summary>

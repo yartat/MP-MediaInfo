@@ -261,3 +261,5 @@ HD/
 HD Audio/
 Audio/
 Video/
+packages/
+nuget.config

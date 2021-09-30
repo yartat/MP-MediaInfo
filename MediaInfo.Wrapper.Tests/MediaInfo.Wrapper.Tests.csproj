@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>net4.6</TargetFramework>    
+    <TargetFramework>net4.7</TargetFramework>    
     <IsPackable>false</IsPackable>
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
@@ -13,14 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Moq" Version="$(MoqLib)" />
+    <PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
 
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdk)" />
+    <PackageReference Include="xunit" Version="$(xUnit)" />
+    <PackageReference Include="xunit.extensibility.execution" Version="$(xUnit)" />
 
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitRunner)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

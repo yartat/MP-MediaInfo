@@ -2,32 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
     <UserSecretsId>3ac0dbeb-4d8a-479e-b111-5efb8f1d0e6d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
-    <ItemGroup>
-        <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
-  </Target>
-
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-    <PackageReference Include="Macross.Json.Extensions" Version="2.0.0" />
+    <PackageReference Include="AutoMapper" Version="$(AutoMapperLib)" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="$(AutoMapperDILib)" />
+    <PackageReference Include="Macross.Json.Extensions" Version="$(MacrossJson)" />
 
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
 
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.1.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.1.4" />
-
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(Swashbuckle)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="$(Swashbuckle)" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="$(Swashbuckle)" />
   </ItemGroup>
 
   <ItemGroup>

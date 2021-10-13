@@ -6,8 +6,6 @@
 
 #endregion
 
-using System.Runtime.Serialization;
-
 namespace MediaInfo.Model
 {
   /// <summary>

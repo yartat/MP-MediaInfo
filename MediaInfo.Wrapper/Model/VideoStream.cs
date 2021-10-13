@@ -130,10 +130,10 @@ namespace MediaInfo.Model
     public TransferCharacteristic TransferCharacteristics { get; set; }
 
     /// <summary>
-    /// Gets or sets the video chroma subsampling.
+    /// Gets or sets the video chroma sub-sampling.
     /// </summary>
     /// <value>
-    /// The video chroma subsampling.
+    /// The video chroma sub-sampling.
     /// </value>
     public ChromaSubSampling SubSampling { get; set; }
 
@@ -201,31 +201,31 @@ namespace MediaInfo.Model
       {
         result = "4320";
       }
-      else if (Width >= 3840 || Height >= 2160)
+      else if (Width >= 3200 || Height >= 2100)
       {
         result = "2160";
       }
-      else if (Width >= 1920 || Height >= 1080)
+      else if (Width >= 1800 || Height >= 1000)
       {
         result = "1080";
       }
-      else if (Width >= 1280 || Height >= 720)
+      else if (Width >= 1200 || Height >= 700)
       {
         result = "720";
       }
-      else if (Height >= 576)
+      else if (Height >= 560)
       {
         result = "576";
       }
-      else if (Height >= 480)
+      else if (Height >= 460)
       {
         result = "480";
       }
-      else if (Height >= 360)
+      else if (Height >= 350)
       {
         result = "360";
       }
-      else if (Height >= 240)
+      else if (Height >= 230)
       {
         result = "240";
       }

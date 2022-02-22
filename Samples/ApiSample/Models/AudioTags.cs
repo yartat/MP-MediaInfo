@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -87,8 +87,8 @@ namespace ApiSample.Models
         /// The number of all parts in a multi-disc album.
         /// </summary>
         /// <example>1</example>
-        [DataMember(Name = "discNumber")]
-        [JsonPropertyName("discNumber")]
+        [DataMember(Name = "totalDiscs")]
+        [JsonPropertyName("totalDiscs")]
         public int? TotalDiscs { get; set; }
 
         /// <summary>

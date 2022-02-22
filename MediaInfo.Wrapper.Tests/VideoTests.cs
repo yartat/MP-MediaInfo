@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -8,6 +8,9 @@
 
 using FluentAssertions;
 using MediaInfo.Model;
+#if NET5_0_OR_GREATER
+using Microsoft.Extensions.Logging;
+#endif
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,7 +36,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadSteamVideo(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(1371743L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(310275);
@@ -68,7 +71,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadAVSteam(string fileName, long size, int rate, int audioStreams, VideoCodec codec, ChromaSubSampling sampling, long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(size);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(rate);
@@ -91,7 +94,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadSimpleVideo(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(1371743L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(310275);
@@ -126,7 +129,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadVideoWithAttachments(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(20105030);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(4180953);
@@ -161,7 +164,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadVideoWithDolbyAtmos(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(503808L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(24000000);
@@ -196,7 +199,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadVideoWithDolbyDigital(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(86016L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -226,7 +229,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadVideoWithoutAudio(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(18432L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(5000000);
@@ -258,7 +261,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(24716230397L);
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.VideoRate.Should().Be(32173617);
@@ -312,7 +315,7 @@ namespace MediaInfo.Wrapper.Tests
         long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
@@ -348,7 +351,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadUhdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling subSampling, long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
@@ -376,7 +379,7 @@ namespace MediaInfo.Wrapper.Tests
     public void Load3dDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, StereoMode stereoMode, ChromaSubSampling subSampling, long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.Is3D.Should().BeTrue("Video stream is 3D");
       var video = _mediaInfoWrapper.VideoStreams[0];
@@ -424,7 +427,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadHdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling chromaSubSampling, long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
       var video = _mediaInfoWrapper.VideoStreams[0];

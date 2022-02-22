@@ -8,7 +8,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
+COPY ["nuget.config", "."]
 COPY ["Samples/ApiSample/ApiSample.csproj", "Samples/ApiSample/"]
+COPY ["MediaInfo.Wrapper/MediaInfo.Wrapper.Core.csproj", "MediaInfo.Wrapper/"]
 RUN dotnet restore "Samples/ApiSample/ApiSample.csproj"
 COPY . .
 WORKDIR "/src/Samples/ApiSample"

@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -46,8 +46,8 @@ namespace MediaInfo
   public interface ILogger
   {
     /// <summary>Logs message.</summary>
-    /// <param name="loglevel">The log level.</param>
-    /// <param name="message">The message.</param>
+    /// <param name="loglevel">The log level value.</param>
+    /// <param name="message">The logging message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
     void Log(LogLevel loglevel, string message, params object[] parameters);
   }

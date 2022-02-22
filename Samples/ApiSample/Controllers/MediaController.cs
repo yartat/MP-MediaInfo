@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -12,6 +12,7 @@ using AutoMapper;
 using MediaInfo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,7 +43,7 @@ namespace ApiSample.Controllers
         /// <param name="mapper">The mapper instance.</param>
         /// <exception cref="System.ArgumentNullException">logger</exception>
         /// <exception cref="System.ArgumentNullException">mapper</exception>
-        public MediaController(ILogger logger, IMapper mapper)
+        public MediaController(ILogger<MediaController> logger, IMapper mapper)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -63,12 +64,9 @@ namespace ApiSample.Controllers
         public async Task<IActionResult> GetMediaInfo([FromBody, Required(ErrorMessage = "REQUEST_REQUIRED")] MediaInfoRequest request)
         {
             var media = new MediaInfoWrapper(request.Location.OriginalString, _logger);
-            if (media.MediaInfoNotloaded)
-            {
-                return NotFound();
-            }
-
-            return Ok(_mapper.Map<Models.MediaInfo>(media));
+            return media.Success ?
+                Ok(_mapper.Map<Models.MediaInfo>(media)) :
+                NotFound();
         }
     }
 }

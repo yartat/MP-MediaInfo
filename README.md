@@ -3,6 +3,11 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 
 [![Build status](https://ci.appveyor.com/api/projects/status/67ubhtmijuhyhq6q?svg=true)](https://ci.appveyor.com/project/yartat/mp-mediainfo)
 
+## Features
+* Wraps the MediaInfo library
+* Provides properties for almost all information  available using the MediaInfo library
+* Targets .NET Framework, .NET Standard
+
 ## Available packages
 | Framework | Package |
 |-----------|---------|
@@ -11,17 +16,49 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 | .NET Standard 2.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 | .NET Standard 2.1 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 | .NET 5.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
+| .NET 6.0 | [![NuGet Badge](https://buildstats.info/nuget/MediaInfo.Wrapper.Core)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 
 ## Installation
-There are 2 packages for .NET Core and full .NET. If your project is designed to run only on Windows and you are not using .NET Core, use the full .NET package. .NET Core package is designed for ASP.NET Core services only.
+There are 2 packages for .NET Core and .NET Framework. If your project is designed to run only on Windows and you are not using .NET Core, use the .NET Framework package. .NET Core package is designed for ASP.NET Core services only.
 ### .NET Core
 ```sh
 dotnet add package MediaInfo.Wrapper.Core --version 21.9.2
 ```
-### Full .NET
+### .NET Framework
 ```ps
 Install-Package MediaInfo.Wrapper -Version 21.9.2
 ```
+## Usage
+
+Add to usings:
+```csharp
+using MediaInfo;
+```
+Instantiate an object of class `MediaInfoWrapper`, providing the full path to the media file and logger instance if it is required.
+```csharp
+  var media = new MediaInfoWrapper(mediaFileLocation);
+```
+Check successfully parsing of the parameters of the media file.
+```csharp
+  if (media.Success)
+  {
+      ...
+  }
+```
+Retrieve technical and tag data from the video or audio file:
+```csharp
+  var containerFormat = media.Format;
+  var mediaHasVideo = media.HasVideo;
+  var videoBitRate = media.VideoRate;
+  foreach (var stream in media.AudioStreams)
+  {
+      var codec = stream.Codec;
+  }
+```
+## Demo application
+
+ASP.NET Core demo application is [available](https://github.com/yartat/MP-MediaInfo/tree/master/Samples/ApiSample) which shows the usage of the package, serialization and running from the docker container. Code from this demo should not be used in production code, the code is merely to demonstrate the usage of this package.
+
 ## Dependencies
 Make sure that the following dependencies are installed in the operating system before starting the project
 * [libzen](https://github.com/MediaArea/ZenLib)
@@ -108,7 +145,18 @@ sudo pacman -Syu
 sudo pacman -S libcurl-gnutls libzen libmms libssh librtmp0
 ```
 ### Docker
+#### .NET Core 3.1
 ```sh
 FROM mcr.microsoft.com/dotnet/aspnet:3.1
+RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+```
+#### .NET 5.0
+```sh
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
+RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+```
+#### .NET 6.0
+```sh
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```

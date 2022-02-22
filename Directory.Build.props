@@ -2,26 +2,26 @@
 <Project>
 
   <PropertyGroup>
-    <GitHub>1.0.0</GitHub>
+    <GitHub>1.1.1</GitHub>
     <CoreNative>21.9.1</CoreNative>
     <Native>21.9.1</Native>
-    <JsonLib>5.0.2</JsonLib>
+    <JsonLib>6.0.2</JsonLib>
     <TestSdk>16.11.0</TestSdk>
     <MoqLib>4.16.1</MoqLib>
-    <FluentAssertions>6.1.0</FluentAssertions>
-    <AutoMapperLib>10.1.1</AutoMapperLib>
-    <AutoMapperDILib>8.1.1</AutoMapperDILib>
+    <FluentAssertions>6.3.0</FluentAssertions>
+    <AutoMapperLib>11.0.1</AutoMapperLib>
+    <AutoMapperDILib>11.0.0</AutoMapperDILib>
     <xUnitRunner>2.4.3</xUnitRunner>
     <xUnit>2.4.1</xUnit>
-    <Swashbuckle>6.2.2</Swashbuckle>
-    <MacrossJson>2.0.0</MacrossJson>
+    <Swashbuckle>6.2.3</Swashbuckle>
+    <MacrossJson>2.2.0</MacrossJson>
     <MediaInfoVersion>21.9.1</MediaInfoVersion>
     <MediaInfoFileVersion>21.9.1.0</MediaInfoFileVersion>
     <PackageAuthor>yartat</PackageAuthor>
     <PackageCompany>Yaroslav Tatarenko</PackageCompany>
     <PackageRepository>https://github.com/yartat/MP-MediaInfo</PackageRepository>
-    <PackageCopyright>Copyright © 2017-2021 Yaroslav Tatarenko</PackageCopyright>
-    <PackageNotes>Copyright © 2017-2021 Yaroslav Tatarenko
+    <PackageCopyright>Copyright © 2017-2022 Yaroslav Tatarenko</PackageCopyright>
+    <PackageNotes>Copyright © 2017-2022 Yaroslav Tatarenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageNotes>
     <PackageDescription>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.

@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2020 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2020 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2020 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -9,6 +9,9 @@
 using System.Linq;
 using FluentAssertions;
 using MediaInfo.Model;
+#if NET5_0_OR_GREATER
+using Microsoft.Extensions.Logging;
+#endif
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,7 +33,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadVideoWithDtsMa(string fileName, int audioStreamCount, int dtsIndex)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
@@ -107,7 +110,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadHdAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
@@ -135,7 +138,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadDolbyCodecsFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, int index)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
       _mediaInfoWrapper.AudioStreams.Count.Should().BeGreaterThan(index);
@@ -247,7 +250,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
       var audio = _mediaInfoWrapper.AudioStreams[0];
       audio.Codec.Should().Be(codec);
@@ -311,7 +314,7 @@ namespace MediaInfo.Wrapper.Tests
         long streamSize)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
       _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
       _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioCount);
@@ -330,7 +333,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadMp3FileWithTags(string fileName, long size)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(size);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
@@ -359,7 +362,7 @@ namespace MediaInfo.Wrapper.Tests
     public void LoadMultiStreamContainer(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.MediaInfoNotloaded.Should().BeFalse("InfoWrapper should be loaded");
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
       _mediaInfoWrapper.Size.Should().Be(135172L);
       _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MKA!");
       _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");

@@ -10,14 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MediaInfo.Model;
-using static MediaInfo.Model.BaseTags;
 
 namespace MediaInfo.Builder
 {
   /// <summary>
   /// Converts the string representation of a value to specified type
   /// </summary>
-  /// <typeparam name="T"></typeparam>
+  /// <typeparam name="T">The type of the tag</typeparam>
   /// <param name="source">The source value.</param>
   /// <param name="result">The result.</param>
   /// <returns><b>true</b> if s was converted successfully; otherwise, <b>false</b>.</returns>
@@ -27,103 +26,103 @@ namespace MediaInfo.Builder
   {
     #region Tag items
 
-    private static readonly List<Tuple<NativeMethods.General, ParseDelegate<object>>> GeneralTagItems = new List<Tuple<NativeMethods.General, ParseDelegate<object>>>
+    private static readonly List<(NativeMethods.General Tag, ParseDelegate<object> ParseFunc)> GeneralTagItems = new()
     {
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Collection, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Season, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Album, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Title, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Movie, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Part, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Track, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Chapter, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_SubTrack, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Album, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Movie, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Track, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Track_More, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Track_Position, TagBuilderHelper.TryGetInt),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Track_Position_Total, TagBuilderHelper.TryGetInt),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Part_Position, TagBuilderHelper.TryGetInt),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Part_Position_Total, TagBuilderHelper.TryGetInt),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Album_Performer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Performer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Performer_Sort, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Performer_Url, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Performer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Accompaniment, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Composer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Composer_Nationality, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Arranger, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Lyricist, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Lyricist, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Conductor, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Actor, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Actor_Character, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_WrittenBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ScreenplayBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Director, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_AssistantDirector, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_DirectorOfPhotography, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ArtDirector, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_EditedBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Producer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_CoProducer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ExecutiveProducer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ProductionDesigner, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_CostumeDesigner, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_SoundEngineer, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_MasteredBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_RemixedBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ProductionStudio, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Label, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Publisher, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Publisher_URL, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_DistributedBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_EncodedBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ThanksTo, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_CommissionedBy, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ContentType, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Subject, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Summary, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Description, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Keywords, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Period, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_LawRating, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Country, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Written_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Recorded_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Released_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Mastered_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Encoded_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Tagged_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Released_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Original_Released_Date, TagBuilderHelper.TryGetDate),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Written_Location, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Recorded_Location, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Archival_Location, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Genre, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Mood, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Comment, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Rating, TagBuilderHelper.TryGetDouble),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Encoded_Application, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Encoded_Library, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Encoded_Library_Settings, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Copyright, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Producer_Copyright, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_TermsOfUse, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ISRC, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_ISBN, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_BarCode, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_LCCN, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_CatalogNumber, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_LabelCode, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_BPM, TagBuilderHelper.TryGetInt),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Cover, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Cover_Description, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Cover_Type, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Cover_Mime, TagBuilderHelper.TryGetString),
-      new Tuple<NativeMethods.General, ParseDelegate<object>>(NativeMethods.General.General_Cover_Data, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Collection, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Season, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Album, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Title, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Movie, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Part, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Track, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Chapter, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_SubTrack, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Original_Album, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Original_Movie, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Original_Track, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Track_More, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Track_Position, TagBuilderHelper.TryGetInt),
+      (NativeMethods.General.General_Track_Position_Total, TagBuilderHelper.TryGetInt),
+      (NativeMethods.General.General_Part_Position, TagBuilderHelper.TryGetInt),
+      (NativeMethods.General.General_Part_Position_Total, TagBuilderHelper.TryGetInt),
+      (NativeMethods.General.General_Album_Performer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Performer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Performer_Sort, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Performer_Url, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Original_Performer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Accompaniment, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Composer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Composer_Nationality, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Arranger, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Lyricist, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Original_Lyricist, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Conductor, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Actor, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Actor_Character, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_WrittenBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ScreenplayBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Director, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_AssistantDirector, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_DirectorOfPhotography, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ArtDirector, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_EditedBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Producer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_CoProducer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ExecutiveProducer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ProductionDesigner, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_CostumeDesigner, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_SoundEngineer, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_MasteredBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_RemixedBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ProductionStudio, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Label, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Publisher, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Publisher_URL, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_DistributedBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_EncodedBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ThanksTo, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_CommissionedBy, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ContentType, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Subject, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Summary, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Description, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Keywords, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Period, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_LawRating, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Country, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Written_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Recorded_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Released_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Mastered_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Encoded_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Tagged_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Original_Released_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Original_Released_Date, TagBuilderHelper.TryGetDate),
+      (NativeMethods.General.General_Written_Location, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Recorded_Location, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Archival_Location, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Genre, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Mood, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Comment, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Rating, TagBuilderHelper.TryGetDouble),
+      (NativeMethods.General.General_Encoded_Application, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Encoded_Library, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Encoded_Library_Settings, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Copyright, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Producer_Copyright, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_TermsOfUse, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ISRC, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_ISBN, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_BarCode, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_LCCN, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_CatalogNumber, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_LabelCode, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_BPM, TagBuilderHelper.TryGetInt),
+      (NativeMethods.General.General_Cover, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Cover_Description, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Cover_Type, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Cover_Mime, TagBuilderHelper.TryGetString),
+      (NativeMethods.General.General_Cover_Data, TagBuilderHelper.TryGetString),
     };
 
     #endregion
@@ -144,12 +143,12 @@ namespace MediaInfo.Builder
     public virtual T Build()
     {
       var result = new T();
-      foreach (var tagItem in GeneralTagItems)
+      foreach (var (tag, parseFunc) in GeneralTagItems)
       {
-        var value = MediaInfo.Get(StreamKind.General, StreamPosition, (int)tagItem.Item1);
-        if (!string.IsNullOrEmpty(value) && tagItem.Item2(value, out var tagValue))
+        var value = MediaInfo.Get(StreamKind.General, StreamPosition, (int)tag);
+        if (!string.IsNullOrEmpty(value) && parseFunc(value, out var tagValue))
         {
-          result.GeneralTags.Add(tagItem.Item1, tagValue);
+          result.GeneralTags.Add(tag, tagValue);
         }
       }
 
@@ -203,7 +202,7 @@ namespace MediaInfo.Builder
       {
         var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, "ARTIST");
         if (!string.IsNullOrEmpty(value))
-        { 
+        {
           result.GeneralTags.Add(NativeMethods.General.General_Album_Performer, value);
         }
       }
@@ -219,7 +218,7 @@ namespace MediaInfo.Builder
 
       if (!result.GeneralTags.ContainsKey(NativeMethods.General.General_Tagged_Date))
       {
-        var value = TagBuilderHelper.TryGetDate(MediaInfo.Get(StreamKind.Audio, StreamPosition, "DATE_TAGGED"), out DateTime res) ? (DateTime?)res : null;
+        var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, "DATE_TAGGED").TryGetDate(out DateTime res) ? (DateTime?)res : null;
         if (value != null)
         {
           result.GeneralTags.Add(NativeMethods.General.General_Tagged_Date, value);
@@ -237,7 +236,7 @@ namespace MediaInfo.Builder
 
       if (!result.GeneralTags.ContainsKey(NativeMethods.General.General_Rating))
       {
-        var value = TagBuilderHelper.TryGetDouble(MediaInfo.Get(StreamKind.Audio, StreamPosition, "RATING"), out double res) ? (double?)res : null;
+        var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, "RATING").TryGetDouble(out double res) ? (double?)res : null;
         if (value != null)
         {
           result.GeneralTags.Add(NativeMethods.General.General_Rating, value);
@@ -246,7 +245,7 @@ namespace MediaInfo.Builder
 
       if (!result.GeneralTags.ContainsKey(NativeMethods.General.General_Released_Date))
       {
-        var value = TagBuilderHelper.TryGetDate(MediaInfo.Get(StreamKind.Audio, StreamPosition, "Released_Date"), out DateTime res) ? (DateTime?)res : null;
+        var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, "Released_Date").TryGetDate(out DateTime res) ? (DateTime?)res : null;
         if (value != null)
         {
           result.GeneralTags.Add(NativeMethods.General.General_Released_Date, value);
@@ -262,41 +261,33 @@ namespace MediaInfo.Builder
         }
       }
 
-      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1000))
+      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1000) &&
+          MediaInfo.Get(StreamKind.General, StreamPosition, "Stereoscopic").TryGetBool(out var stereoscopic))
       {
-        if (TagBuilderHelper.TryGetBool(MediaInfo.Get(StreamKind.General, StreamPosition, "Stereoscopic"), out var value))
-        {
-          result.GeneralTags.Add((NativeMethods.General)1000, value);
-        }
+        result.GeneralTags.Add((NativeMethods.General)1000, stereoscopic);
       }
 
-      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1001))
+      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1001) &&
+          MediaInfo.Get(StreamKind.General, StreamPosition, "StereoscopicLayout").TryGetStereoMode(out var stereoscopicLayout))
       {
-        if (TagBuilderHelper.TryGetStereoMode(MediaInfo.Get(StreamKind.General, StreamPosition, "StereoscopicLayout"), out var value))
-        {
-          result.GeneralTags.Add((NativeMethods.General)1001, value);
-        }
+        result.GeneralTags.Add((NativeMethods.General)1001, stereoscopicLayout);
       }
 
-      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1002))
+      if (!result.GeneralTags.ContainsKey((NativeMethods.General)1002) &&
+          MediaInfo.Get(StreamKind.General, StreamPosition, "StereoscopicSkip").TryGetInt(out int stereoscopicSkip))
       {
-        if (TagBuilderHelper.TryGetInt(MediaInfo.Get(StreamKind.General, StreamPosition, "StereoscopicSkip"), out int value))
-        {
-          result.GeneralTags.Add((NativeMethods.General)1002, value);
-        }
+        result.GeneralTags.Add((NativeMethods.General)1002, stereoscopicSkip);
       }
 
       return result;
     }
 
-    protected static bool ToBool(string source)
-    {
-      return string.Equals(source, "t", StringComparison.OrdinalIgnoreCase)
-             || string.Equals(source, "true", StringComparison.OrdinalIgnoreCase)
-             || string.Equals(source, "y", StringComparison.OrdinalIgnoreCase)
-             || string.Equals(source, "yes", StringComparison.OrdinalIgnoreCase)
-             || string.Equals(source, "1", StringComparison.OrdinalIgnoreCase);
-    }
+    protected static bool ToBool(string source) =>
+      string.Equals(source, "t", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(source, "true", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(source, "y", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(source, "yes", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(source, "1", StringComparison.OrdinalIgnoreCase);
   }
 
   internal static class ArrayExtensions
@@ -308,7 +299,7 @@ namespace MediaInfo.Builder
         throw new ArgumentException($"Parameter {nameof(index)} is a negative value.");
       }
 
-      if (array == null)
+      if (array is null)
       {
         return defaultValue;
       }

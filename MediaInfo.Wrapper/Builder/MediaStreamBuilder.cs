@@ -88,7 +88,7 @@ namespace MediaInfo.Builder
       if (!idString.TryGetInt(out object id))
       {
         var idValues = idString.Split('/').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray();
-        if (idValues.Length >= 1 && !idValues.First().TryGetInt(out id))
+        if (idValues.Length >= 1 && !idValues[0].TryGetInt(out id))
         {
           id = 0;
         }
@@ -112,7 +112,7 @@ namespace MediaInfo.Builder
     /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property name</paramref>.</returns>
     protected T Get<T>(string parameter, ParseDelegate<T> convert, Func<string, string> extractResult = null)
     {
-      if (convert == null)
+      if (convert is null)
       {
         throw new ArgumentNullException(nameof(convert));
       }
@@ -130,7 +130,7 @@ namespace MediaInfo.Builder
     /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property index</paramref>.</returns>
     protected T Get<T>(int parameter, InfoKind infoKind, ParseDelegate<T> convert, Func<string, string> extractResult = null)
     {
-      if (convert == null)
+      if (convert is null)
       {
         throw new ArgumentNullException(nameof(convert));
       }

@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MediaInfo
 {
@@ -47,6 +48,8 @@ namespace MediaInfo
     public class MediaInfoWrapper
   {
 #region private vars
+
+    private const int BufferSize = 64 * 1024;
 
     private static readonly Dictionary<string, bool> SubTitleExtensions = new()
     {
@@ -94,6 +97,69 @@ namespace MediaInfo
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
     /// </summary>
+    /// <param name="size">The media stream size.</param>
+    /// <param name="logger">The logger instance.</param>
+    protected MediaInfoWrapper(long size, ILogger logger = null)
+    {
+      _logger = logger;
+      VideoStreams = new List<VideoStream>();
+      AudioStreams = new List<AudioStream>();
+      Subtitles = new List<SubtitleStream>();
+      Chapters = new List<ChapterStream>();
+      MenuStreams = new List<MenuStream>();
+      Size = size;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
+    /// </summary>
+    /// <param name="inputStream">The sources media stream.</param>
+    /// <param name="logger">The logger instance.</param>
+    public MediaInfoWrapper(Stream inputStream, ILogger logger = null)
+#if NET40 || NET45
+      : this(inputStream, Environment.Is64BitProcess ? ".\\x64" : ".\\x86", logger)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
+    /// </summary>
+    /// <param name="inputStream">The sources media stream.</param>
+    /// <param name="pathToDll">The path to MediaInfo.dll file.</param>
+    /// <param name="logger">The logger instance.</param>
+    public MediaInfoWrapper(Stream inputStream, string pathToDll, ILogger logger)
+#endif
+      : this(inputStream.Length, logger)
+    {
+      try
+      {
+#if NET40 || NET45
+        var realPathToDll = GetPathToMediaInfo(pathToDll, logger);
+        if (string.IsNullOrEmpty(realPathToDll))
+        {
+          logger.LogError("MediaInfo.dll was not found");
+          return;
+        }
+        ParseMedia(inputStream, realPathToDll);
+#else
+        ParseMedia(inputStream);
+#endif
+        logger.LogDebug(
+          "Process {file} was completed successfully. Video={video}, Audio={audio}, Subtitle={subtitle}",
+          inputStream,
+          VideoStreams.Count,
+          AudioStreams.Count,
+          Subtitles.Count);
+      }
+      catch (Exception ex)
+      {
+        logger.LogError(ex, "Error processing media stream");
+      }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
+    /// </summary>
     /// <param name="filePath">The file path.</param>
     /// <param name="logger">The logger instance.</param>
     public MediaInfoWrapper(string filePath, ILogger logger = null)
@@ -106,20 +172,14 @@ namespace MediaInfo
     /// Initializes a new instance of the <see cref="MediaInfoWrapper"/> class.
     /// </summary>
     /// <param name="filePath">The file path.</param>
-    /// <param name="pathToDll">The path to DLL.</param>
+    /// <param name="pathToDll">The path to MediaInfo.dll file.</param>
     /// <param name="logger">the logger instance.</param>
     public MediaInfoWrapper(string filePath, string pathToDll, ILogger logger)
 #endif
+       : this(0L, logger)
     {
       _filePath = filePath;
-      _logger = logger;
       logger.LogDebug("Analyzing media {path}.", filePath);
-      VideoStreams = new List<VideoStream>();
-      AudioStreams = new List<AudioStream>();
-      Subtitles = new List<SubtitleStream>();
-      Chapters = new List<ChapterStream>();
-      MenuStreams = new List<MenuStream>();
-
       if (string.IsNullOrEmpty(filePath))
       {
         logger.LogError("Media file name to processing is null or empty");
@@ -130,7 +190,7 @@ namespace MediaInfo
       var realPathToDll = GetPathToMediaInfo(pathToDll, logger);
       if (string.IsNullOrEmpty(realPathToDll))
       {
-        logger.LogError("MediaInfo.dll was not found");
+        logger.LogError("MediaInfo library was not found");
         return;
       }
 #endif
@@ -199,9 +259,9 @@ namespace MediaInfo
         }
 
 #if NET40 || NET45
-        ExtractInfo(filePath, realPathToDll);
+        ParseMedia(filePath, realPathToDll);
 #else
-        ExtractInfo(filePath);
+        ParseMedia(filePath);
 #endif
         logger.LogDebug(
             "Process {file} was completed successfully. Video={videos}, Audio={audios}, Subtitle={subtitles}",
@@ -225,25 +285,10 @@ namespace MediaInfo
       };
     }
 
-#if NET40 || NET45
-    private static string GetPathToMediaInfo(string path, ILogger logger) =>
-      default(string)
-        .IfExistsPath("./", logger)
-        .IfExistsPath(path, logger)
-        .IfExistsPath(
-          Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location),
-          logger)
-        .IfExistsPath(
-          Path.IsPathRooted(path) ?
-            null :
-            Path.Combine(Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location), path),
-          logger);
-#endif
-
-        /// <summary>
-        /// Writes the media information data to log.
-        /// </summary>
-        public void WriteInfo()
+    /// <summary>
+    /// Writes the media information data to log.
+    /// </summary>
+    public void WriteInfo()
     {
       _logger.LogInformation("Inspecting media    : {path}", _filePath);
       if (!Success)
@@ -302,6 +347,80 @@ namespace MediaInfo
         }
       }
     }
+
+    private void ParseStreamWithoutSeek(Stream stream, MediaInfo mediaInfo)
+    {
+      mediaInfo.Option("File_IsSeekable", "0");
+      mediaInfo.OpenBufferInit(stream.Length, 0L);
+      int readed;
+      bool processed;
+      var buffer = new byte[BufferSize];
+      do
+      {
+        readed = stream.Read(buffer, 0, buffer.Length);
+        GCHandle gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        try
+        {
+          processed = mediaInfo.OpenBufferContinue(gcHandle.AddrOfPinnedObject(), (IntPtr)readed) != IntPtr.Zero;
+        }
+        finally
+        {
+          gcHandle.Free();
+        }
+      }
+      while (processed && stream.CanRead && readed > 0);
+    }
+
+    private void ParseStreamWithSeek(Stream stream, MediaInfo mediaInfo)
+    {
+      mediaInfo.OpenBufferInit(stream.Length, 0L);
+      int readed;
+      do
+      {
+        int mediaProcessed;
+        var buffer = new byte[BufferSize];
+        readed = stream.Read(buffer, 0, buffer.Length);
+        var gcHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+        try
+        {
+          mediaProcessed = (int) mediaInfo.OpenBufferContinue(gcHandle.AddrOfPinnedObject(), (IntPtr)readed);
+        }
+        finally
+        {
+          gcHandle.Free();
+        }
+
+        if ((mediaProcessed & 8) != 8)
+        {
+          var get = mediaInfo.OpenBufferContinueGoToGet();
+          if (get != -1L)
+          {
+            var fileOffset = stream.Seek(get, SeekOrigin.Begin);
+            mediaInfo.OpenBufferInit(stream.Length, fileOffset);
+          }
+        }
+        else
+        {
+          break;
+        }
+      }
+      while (stream.CanRead && readed > 0);
+    }
+
+#if NET40 || NET45
+    private static string GetPathToMediaInfo(string path, ILogger logger) =>
+      default(string)
+        .IfExistsPath("./", logger)
+        .IfExistsPath(path, logger)
+        .IfExistsPath(
+          Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location),
+          logger)
+        .IfExistsPath(
+          Path.IsPathRooted(path) ?
+            null :
+            Path.Combine(Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location), path),
+          logger);
+#endif
 
     private static long GetDirectorySize(string folderName)
     {
@@ -381,13 +500,45 @@ namespace MediaInfo
       return (null, 0);
     }
 
-#if (NET40 || NET45)
-    private void ExtractInfo(string filePath, string pathToDll)
+#if NET40 || NET45
+    private void ParseMedia(Stream stream, string pathToDll)
 #else
-    private void ExtractInfo(string filePath)
+    private void ParseMedia(Stream stream)
 #endif
     {
-#if (NET40 || NET45)
+#if NET40 || NET45
+      using var mediaInfo = new MediaInfo(pathToDll);
+#else
+      using var mediaInfo = new MediaInfo();
+#endif
+      if (mediaInfo.Handle == IntPtr.Zero)
+      {
+        _logger.LogWarning("MediaInfo library was not loaded!");
+        return;
+      }
+
+      Version = mediaInfo.Option("Info_Version");
+      _logger.LogDebug("MediaInfo library was loaded. ({handle} Version={version}", mediaInfo.Handle, Version);
+      if (!stream.CanSeek)
+      {
+        ParseStreamWithoutSeek(stream, mediaInfo);
+      }
+      else
+      {
+        ParseStreamWithSeek(stream, mediaInfo);
+      }
+
+      mediaInfo.OpenBufferFinalize();
+      ParseMedia(mediaInfo);
+    }
+
+#if NET40 || NET45
+    private void ParseMedia(string filePath, string pathToDll)
+#else
+    private void ParseMedia(string filePath)
+#endif
+    {
+#if NET40 || NET45
       using var mediaInfo = new MediaInfo(pathToDll);
 #else
       using var mediaInfo = new MediaInfo();
@@ -412,6 +563,16 @@ namespace MediaInfo
       else
       {
         _logger.LogDebug("MediaInfo library successfully opened {path}. (handle={handle})", filePath, filePricessingHandle);
+      }
+
+      ParseMedia(mediaInfo);
+    }
+
+    private void ParseMedia(MediaInfo mediaInfo)
+    {
+      if (mediaInfo is null)
+      {
+        throw new ArgumentNullException(nameof(mediaInfo));
       }
 
       Format = mediaInfo.Get(StreamKind.General, 0, "Format");
@@ -625,13 +786,13 @@ namespace MediaInfo
       Height = BestVideoStream?.Height ?? 0;
       IsInterlaced = BestVideoStream?.Interlaced ?? false;
       Framerate = BestVideoStream?.FrameRate ?? 0;
-      ScanType = BestVideoStream != null
+      ScanType = BestVideoStream is not null
                    ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "ScanType").ToLower()
                    : string.Empty;
-      AspectRatio = BestVideoStream != null
+      AspectRatio = BestVideoStream is not null
                       ? mediaInfo.Get(StreamKind.Video, BestVideoStream.StreamPosition, "DisplayAspectRatio")
                       : string.Empty;
-      AspectRatio = BestVideoStream != null ?
+      AspectRatio = BestVideoStream is not null ?
           GetAspectRatioText(AspectRatio) :
           string.Empty;
 

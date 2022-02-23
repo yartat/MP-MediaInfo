@@ -114,10 +114,10 @@ namespace MediaInfo
     /// <param name="pathToDll">The path to mediainfo.dll.</param>
     public MediaInfo(string pathToDll)
     {
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCurlFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
-      _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.DEFAULT);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCurlFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+      _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
       try
       {
         Handle = NativeMethods.MediaInfo_New();
@@ -193,6 +193,15 @@ namespace MediaInfo
     /// <returns></returns>
     public IntPtr OpenBufferContinue(IntPtr buffer, IntPtr bufferSize) =>
       Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Continue(Handle, buffer, bufferSize);
+
+    /// <summary>
+    /// Opens the buffer continue.
+    /// </summary>
+    /// <param name="buffer">The buffer.</param>
+    /// <param name="bufferSize">Size of the buffer.</param>
+    /// <returns></returns>
+    public unsafe int OpenBufferContinue(byte* buffer, int bufferSize) =>
+      Handle == IntPtr.Zero ? 0 : (int) NativeMethods.MediaInfo_Open_Buffer_Continue(Handle, buffer, (IntPtr) bufferSize);
 
     /// <summary>
     /// Opens the buffer continue go to get.

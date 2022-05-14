@@ -285,6 +285,12 @@ namespace MediaInfo.Builder
       { "Default (H.263)", VideoCodec.H263 },
     };
 
+    private static readonly Dictionary<string, FrameRateMode> FrameRateModes = new Dictionary<string, FrameRateMode>(StringComparer.OrdinalIgnoreCase)
+    {
+      { "CFR", FrameRateMode.Constant },
+      { "VFR", FrameRateMode.Variable }
+    };
+
     #endregion
 
     /// <summary>
@@ -308,6 +314,7 @@ namespace MediaInfo.Builder
     {
       var result = base.Build();
       result.FrameRate = Get<double>((int)NativeMethods.Video.Video_FrameRate, InfoKind.Text, TagBuilderHelper.TryGetDouble);
+      result.FrameRateMode = Get<FrameRateMode>((int)NativeMethods.Video.Video_FrameRate_Mode, InfoKind.Text, TryGetFrameRateMode);
       result.Width = Get<int>((int)NativeMethods.Video.Video_Width, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Height = Get<int>((int)NativeMethods.Video.Video_Height, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Bitrate = Get<double>((int)NativeMethods.Video.Video_BitRate, InfoKind.Text, TagBuilderHelper.TryGetDouble);
@@ -416,6 +423,9 @@ namespace MediaInfo.Builder
 
     private static bool TryGetHdr(string source, out Hdr result) =>
       HdrFormats.TryGetValue(source, out result);
+
+    private static bool TryGetFrameRateMode(string source, out FrameRateMode result) =>
+      FrameRateModes.TryGetValue(source, out result);
 
     private string GetFullCodecName(string codecProfile)
     {

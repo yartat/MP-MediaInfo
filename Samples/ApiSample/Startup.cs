@@ -6,89 +6,75 @@
 
 #endregion
 
+using System;
+using System.Text.Json.Serialization;
 using ApiSample.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-using System;
 
-namespace ApiSample
+namespace ApiSample;
+
+/// <summary>
+/// Startup application
+/// </summary>
+public static class Startup
 {
     /// <summary>
-    /// Startup application
+    /// Configures the services to add services to the container.
     /// </summary>
-    public class Startup
+    /// <param name="webApplicationBuilder">The WEB application builder instance.</param>
+    public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder webApplicationBuilder)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class with host environment.
-        /// </summary>
-        /// <param name="configuration">The host configuration.</param>
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        var services = webApplicationBuilder.Services;
+        var configuration = webApplicationBuilder.Configuration;
+        services
+            .AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
 
-        /// <summary>
-        /// Gets the application configuration.
-        /// </summary>
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// Configures the services to add services to the container.
-        /// </summary>
-        /// <param name="services">The services collection.</param>
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddControllers()
-                    .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
-
-            services
-                .AddFilters()
-                .AddAutoMapper(MapperExtensions.ConfigureMapper)
-                .AddSwaggerGen(options =>
-                {
-                    options.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "duration", Default = new OpenApiString("00:01:00"), Example = new OpenApiString("00:01:00") });
-                    options.MapType<TimeSpan?>(() => new OpenApiSchema { Type = "string", Format = "duration", Default = new OpenApiString("00:01:00"), Example = new OpenApiString("00:01:00") });
-                    options
-                        .IncludeApplicationXmlComments("ApiSample.xml")
-                        .EnableAnnotations();
-                });
-        }
-
-        /// <summary>
-        /// Configures the specified application runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
-        /// <param name="app">The application builder instance.</param>
-        /// <param name="env">The host environment.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
+        services
+            .AddFilters()
+            .AddAutoMapper(MapperExtensions.ConfigureMapper)
+            .AddSwaggerGen(options =>
             {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+                options.MapType<TimeSpan>(() => new OpenApiSchema { Type = "string", Format = "duration", Default = new OpenApiString("00:01:00"), Example = new OpenApiString("00:01:00") });
+                options.MapType<TimeSpan?>(() => new OpenApiSchema { Type = "string", Format = "duration", Default = new OpenApiString("00:01:00"), Example = new OpenApiString("00:01:00") });
+                options
+                    .IncludeApplicationXmlComments("ApiSample.xml")
+                    .EnableAnnotations();
+            });
 
-            app
-                .UseHttpsRedirection()
-                .UseRouting()
-                .UseAuthorization()
-                .UseEndpoints(endpoints => endpoints.MapControllers())
-                .UseSwagger()
-                .UseSwaggerUI(options =>
-                {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Sample");
-                    options.DisplayRequestDuration();
-                });
+        return webApplicationBuilder;
+    }
+
+    /// <summary>
+    /// Configures HTTP request pipeline and prepares an application runtime.
+    /// </summary>
+    /// <param name="app">The Web application instance.</param>
+    public static WebApplication PrepareRuntime(this WebApplication app)
+    {
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
         }
+
+        app
+            .UseHttpsRedirection()
+            .UseRouting()
+            .UseAuthorization();
+        app.MapControllers();
+        app
+            .UseSwagger()
+            .UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Sample");
+                options.DisplayRequestDuration();
+            });
+
+        return app;
     }
 }

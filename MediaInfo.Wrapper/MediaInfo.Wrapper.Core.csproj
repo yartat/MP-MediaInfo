@@ -35,11 +35,11 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.22" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.29" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1' Or '$(TargetFramework)' == 'net5.0' Or '$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(LoggingAbstractions)" />
   </ItemGroup>
 
   <ItemGroup>

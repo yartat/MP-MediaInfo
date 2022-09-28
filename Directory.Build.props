@@ -6,15 +6,17 @@
     <CoreNative>21.9.1</CoreNative>
     <Native>21.9.1</Native>
     <JsonLib>6.0.2</JsonLib>
-    <TestSdk>16.11.0</TestSdk>
-    <MoqLib>4.16.1</MoqLib>
-    <FluentAssertions>6.3.0</FluentAssertions>
+    <TestSdk>17.2.0</TestSdk>
+    <MoqLib>4.18.2</MoqLib>
+    <LoggingAbstractions>6.0.2</LoggingAbstractions>
+    <AzureContainer>1.17.0</AzureContainer>
+    <FluentAssertions>6.7.0</FluentAssertions>
     <AutoMapperLib>11.0.1</AutoMapperLib>
     <AutoMapperDILib>11.0.0</AutoMapperDILib>
-    <xUnitRunner>2.4.3</xUnitRunner>
-    <xUnit>2.4.1</xUnit>
-    <Swashbuckle>6.2.3</Swashbuckle>
-    <MacrossJson>2.2.0</MacrossJson>
+    <xUnitRunner>2.4.5</xUnitRunner>
+    <xUnit>2.4.2</xUnit>
+    <Swashbuckle>6.4.0</Swashbuckle>
+    <MacrossJson>3.0.0</MacrossJson>
     <MediaInfoVersion>21.9.1</MediaInfoVersion>
     <MediaInfoFileVersion>21.9.1.0</MediaInfoFileVersion>
     <PackageAuthor>yartat</PackageAuthor>

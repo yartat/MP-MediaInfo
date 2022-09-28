@@ -9,31 +9,30 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace ApiSample.Models
+namespace ApiSample.Models;
+
+/// <summary>
+/// Describes bitrate possible modes
+/// </summary>
+[DataContract]
+[JsonConverter(typeof(JsonStringEnumMemberConverter))]
+public enum BitrateMode : byte
 {
     /// <summary>
-    /// Describes bitrate possible modes
+    /// Constant quality mode
     /// </summary>
-    [DataContract]
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum BitrateMode : byte
-    {
-        /// <summary>
-        /// Constant quality mode
-        /// </summary>
-        [EnumMember(Value = "constantQuality")]
-        Cq,
+    [EnumMember(Value = "constantQuality")]
+    Cq,
 
-        /// <summary>
-        /// Constant bitrate mode
-        /// </summary>
-        [EnumMember(Value = "constantBitrate")]
-        Cbr,
+    /// <summary>
+    /// Constant bitrate mode
+    /// </summary>
+    [EnumMember(Value = "constantBitrate")]
+    Cbr,
 
-        /// <summary>
-        /// Variable bitrate mode
-        /// </summary>
-        [EnumMember(Value = "variableBitrate")]
-        Vbr
-    }
+    /// <summary>
+    /// Variable bitrate mode
+    /// </summary>
+    [EnumMember(Value = "variableBitrate")]
+    Vbr
 }

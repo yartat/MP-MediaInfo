@@ -9,25 +9,24 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace ApiSample.Models
+namespace ApiSample.Models;
+
+/// <summary>
+/// Describes video standards
+/// </summary>
+[DataContract]
+[JsonConverter(typeof(JsonStringEnumMemberConverter))]
+public enum VideoStandard
 {
     /// <summary>
-    /// Describes video standards
+    /// NTSC standard
     /// </summary>
-    [DataContract]
-    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
-    public enum VideoStandard
-    {
-        /// <summary>
-        /// NTSC standard
-        /// </summary>
-        [EnumMember(Value = "ntsc")]
-        NTSC,
+    [EnumMember(Value = "ntsc")]
+    NTSC,
 
-        /// <summary>
-        /// PAL standard
-        /// </summary>
-        [EnumMember(Value = "pal")]
-        PAL
-    }
+    /// <summary>
+    /// PAL standard
+    /// </summary>
+    [EnumMember(Value = "pal")]
+    PAL
 }

@@ -6,35 +6,29 @@
 
 #endregion
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
-namespace ApiSample
+namespace ApiSample;
+
+/// <summary>
+/// Entry point class
+/// </summary>
+public static class Program
 {
     /// <summary>
-    /// Entry point class
+    /// Entry point with arguments
     /// </summary>
-    public static class Program
+    /// <param name="args">The application arguments.</param>
+    public static async Task Main(string[] args)
     {
-        /// <summary>
-        /// Entry point with arguments
-        /// </summary>
-        /// <param name="args">The application arguments.</param>
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+        var host = WebApplication
+            .CreateBuilder(args)
+            .ConfigureServices()
+            .Build();
 
-        /// <summary>
-        /// Creates the Web host builder.
-        /// </summary>
-        /// <param name="args">The application arguments.</param>
-        /// <returns>Returns <see cref="IHostBuilder"/> instance.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        await host
+            .PrepareRuntime()
+            .RunAsync();
     }
 }

@@ -11,53 +11,50 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace ApiSample.Models
+namespace ApiSample.Models;
+
+/// <summary>
+/// Describes properties of the menu
+/// </summary>
+/// <seealso cref="MediaStream" />
+[DataContract]
+public class MenuStream : MediaStream
 {
     /// <summary>
-    /// Describes properties of the menu
+    /// A menu duration.
     /// </summary>
-    /// <seealso cref="MediaStream" />
-    [DataContract]
-    public class MenuStream : MediaStream
-    {
-        /// <summary>
-        /// A menu duration.
-        /// </summary>
-        /// <example>10.1</example>
-        [DataMember(Name = "duration")]
-        [JsonPropertyName("duration")]
-        [JsonConverter(typeof(JsonTimeSpanConverter))]
-        public TimeSpan Duration { get; set; }
-
-        /// <summary>
-        /// A chapter list.
-        /// </summary>
-        [DataMember(Name = "chapters")]
-        [JsonPropertyName("chapters")]
-        public ICollection<Chapter> Chapters { get; }
-    }
+    /// <example>10.1</example>
+    [DataMember(Name = "duration")]
+    [JsonPropertyName("duration")]
+    public TimeSpan Duration { get; set; }
 
     /// <summary>
-    /// Describes properties of the menu chapter
+    /// A chapter list.
     /// </summary>
-    [DataContract]
-    public sealed class Chapter
-    {
-        /// <summary>
-        /// A menu position.
-        /// </summary>
-        /// <example>10:13</example>
-        [DataMember(Name = "position")]
-        [JsonPropertyName("position")]
-        [JsonConverter(typeof(JsonTimeSpanConverter))]
-        public TimeSpan Position { get; set; }
+    [DataMember(Name = "chapters")]
+    [JsonPropertyName("chapters")]
+    public ICollection<Chapter> Chapters { get; }
+}
 
-        /// <summary>
-        /// A menu chapter name.
-        /// </summary>
-        /// <example>Chapter 1</example>
-        [DataMember(Name = "name")]
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
+/// <summary>
+/// Describes properties of the menu chapter
+/// </summary>
+[DataContract]
+public sealed class Chapter
+{
+    /// <summary>
+    /// A menu position.
+    /// </summary>
+    /// <example>10:13</example>
+    [DataMember(Name = "position")]
+    [JsonPropertyName("position")]
+    public TimeSpan Position { get; set; }
+
+    /// <summary>
+    /// A menu chapter name.
+    /// </summary>
+    /// <example>Chapter 1</example>
+    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 }

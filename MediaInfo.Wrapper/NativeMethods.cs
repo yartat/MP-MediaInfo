@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2017-2021 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2022 Yaroslav Tatarenko
 
-// Copyright (C) 2017-2021 Yaroslav Tatarenko
+// Copyright (C) 2017-2022 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2021 MediaArea.net SARL. 
 // https://mediaarea.net
 
@@ -13,8 +13,7 @@ namespace MediaInfo
 {
   internal static class NativeMethods
   {
-#pragma warning disable CA1712 // Do not prefix enum values with type name
-    #region enums and structs
+    #region Native enumerations and structures
 
     internal enum Generic
     {
@@ -1829,24 +1828,23 @@ namespace MediaInfo
     [Flags]
     internal enum LoadLibraryFlags : uint
     {
-      DEFAULT = 0x00000000,
+      None = 0x00000000,
       DONT_RESOLVE_DLL_REFERENCES = 0x00000001,
-      LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010,
       LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
-      LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040,
-      LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020,
-      LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200,
-      LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000,
-      LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100,
-      LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800,
-      LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400,
       LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008,
+      LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010,
+      LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020,
+      LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040,
+      LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100,
+      LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200,
+      LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400,
+      LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800,
+      LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000,
     }
 
     #endregion
-#pragma warning restore CA1712 // Do not prefix enum values with type name
 
-#if (NET40 || NET45)
+#if NET40 || NET45
 
     [DllImport("kernel32.dll", SetLastError = true)]
     internal static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, LoadLibraryFlags dwFlags);
@@ -1861,56 +1859,63 @@ namespace MediaInfo
 #endif
 
     //Import of DLL functions. DO NOT USE until you know what you do (MediaInfo DLL do NOT use CoTaskMemAlloc to allocate memory)
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_New();
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern void MediaInfo_Delete(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPWStr)] string fileName);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoA_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string fileName);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Init(IntPtr handle, long fileSize, long fileOffset);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoA_Open(IntPtr handle, long fileSize, long fileOffset);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, IntPtr buffer, IntPtr bufferSize);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
+    [DllImport("MediaInfo.dll")]
+#else
+    [DllImport("libmediainfo")]
+#endif
+    internal unsafe static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, byte* buffer, IntPtr bufferSize);
+
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -1921,56 +1926,56 @@ namespace MediaInfo
       byte[] buffer,
       IntPtr bufferSize);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern long MediaInfo_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern long MediaInfoA_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Finalize(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoA_Open_Buffer_Finalize(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern void MediaInfo_Close(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -1982,7 +1987,7 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -1994,7 +1999,7 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2007,7 +2012,7 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2020,7 +2025,7 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2030,7 +2035,7 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2040,35 +2045,35 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_State_Get(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfo_Count_Get(IntPtr handle, IntPtr streamKind, IntPtr streamNumber);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoList_New();
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern void MediaInfoList_Delete(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2078,7 +2083,7 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPWStr)] string fileName,
       IntPtr options);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2088,28 +2093,28 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string fileName,
       IntPtr options);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern void MediaInfoList_Close(IntPtr handle, IntPtr filePos);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2122,7 +2127,7 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2135,7 +2140,7 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2149,7 +2154,7 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2163,7 +2168,7 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2173,7 +2178,7 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
@@ -2183,14 +2188,14 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]
 #endif
     internal static extern IntPtr MediaInfoList_State_Get(IntPtr handle);
 
-#if (NET40 || NET45)
+#if NET40 || NET45
     [DllImport("MediaInfo.dll")]
 #else
     [DllImport("libmediainfo")]

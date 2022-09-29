@@ -8,7 +8,7 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 
 * Wraps the MediaInfo library
 * Provides properties for almost all information  available using the MediaInfo library
-* Targets .NET Framework, .NET Standard
+* Targets .NET Framework, .NET Standard, .NET 5, .NET 6
 
 ## Available packages
 
@@ -27,13 +27,13 @@ There are 2 packages for .NET Core and .NET Framework. If your project is design
 
 ### .NET Core
 
-```sh
+```Shell{:copy}
 dotnet add package MediaInfo.Wrapper.Core --version 21.9.3
 ```
 
 ### .NET Framework
 
-```ps
+```PowerShell{:copy}
 Install-Package MediaInfo.Wrapper -Version 21.9.3
 ```
 
@@ -48,28 +48,28 @@ using MediaInfo;
 Instantiate an object of class `MediaInfoWrapper`, providing the full path to the media file and logger instance if it is required.
 
 ```csharp
-  var media = new MediaInfoWrapper(mediaFileLocation);
+var media = new MediaInfoWrapper(mediaFileLocation);
 ```
 
 Check successfully parsing of the parameters of the media file.
 
 ```csharp
-  if (media.Success)
-  {
-      ...
-  }
+if (media.Success)
+{
+    ...
+}
 ```
 
 Retrieve technical and tag data from the video or audio file:
 
 ```csharp
-  var containerFormat = media.Format;
-  var mediaHasVideo = media.HasVideo;
-  var videoBitRate = media.VideoRate;
-  foreach (var stream in media.AudioStreams)
-  {
-      var codec = stream.Codec;
-  }
+var containerFormat = media.Format;
+var mediaHasVideo = media.HasVideo;
+var videoBitRate = media.VideoRate;
+foreach (var stream in media.AudioStreams)
+{
+    var codec = stream.Codec;
+}
 ```
 
 ## Demo application
@@ -102,13 +102,13 @@ Make sure that the following dependencies are installed in the operating system 
 
 Some dependencies are available with MacPorts. To install MacPorts: <https://guide.macports.org/#installing>
 
-```sh
+```sh{:copy}
 port install zlib curl zenlib
 ```
 
 ### Ubuntu
 
-```sh
+```Shell{:copy}
 sudo apt-get update
 sudo apt-get install libzen0v5 libmms0 zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0-dev
 ```
@@ -117,7 +117,7 @@ sudo apt-get install libzen0v5 libmms0 zlib1g zlibc libnghttp2-14 librtmp1 curl 
 
 #### CentOS 7
 
-```sh
+```Shell{:copy}
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y update
 sudo yum -y install zlib curl libzen bzip2 libcurl
@@ -126,7 +126,7 @@ sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/7/x86_64/l/libmms-
 
 #### CentOS 8
 
-```sh
+```Shell{:copy}
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo yum -y update
 sudo yum -y install zlib curl libzen bzip2 libcurl
@@ -135,14 +135,14 @@ sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/8/x86_64/l/libmms-
 
 ### Fedora
 
-```sh
+```Shell{:copy}
 sudo dnf update
 sudo dnf -y install zlib curl libzen openssl libmms
 ```
 
 ### OpenSUSE
 
-```sh
+```Shell{:copy}
 sudo zypper refresh
 sudo zypper update -y
 sudo zypper install -y zlib curl libmms0 openssl libnghttp2-14
@@ -152,7 +152,7 @@ sudo zypper install -y zlib curl libmms0 openssl libnghttp2-14
 
 #### RedHat 7
 
-```sh
+```Shell{:copy}
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y update
 sudo yum -y install zlib curl libzen bzip2 libcurl
@@ -161,7 +161,7 @@ sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/7/x86_64/l/libmms-
 
 #### RedHat 8
 
-```sh
+```Shell{:copy}
 sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo yum -y update
 sudo yum -y install zlib curl libzen bzip2 libcurl
@@ -170,7 +170,7 @@ sudo rpm -ivh https://download1.rpmfusion.org/free/el/updates/8/x86_64/l/libmms-
 
 ### Debian
 
-```sh
+```Shell{:copy}
 sudo apt-get update
 sudo apt-get install libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```
@@ -181,7 +181,7 @@ Windows package contains all dependencies and does not required any actions.
 
 ### ArchLinux
 
-```sh
+```Shell{:copy}
 sudo pacman -Syu
 sudo pacman -S libcurl-gnutls libzen libmms libssh librtmp0
 ```
@@ -190,21 +190,21 @@ sudo pacman -S libcurl-gnutls libzen libmms libssh librtmp0
 
 #### .NET Core 3.1
 
-```sh
+```Dockerfile{:copy}
 FROM mcr.microsoft.com/dotnet/aspnet:3.1
 RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```
 
 #### .NET 5.0
 
-```sh
+```Dockerfile{:copy}
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```
 
 #### .NET 6.0
 
-```sh
+```Dockerfile{:copy}
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
 ```

@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes video aspect ratio
+/// </summary>
+public enum AspectRatio
 {
-  /// <summary>
-  /// Describes video aspect ratio
-  /// </summary>
-  public enum AspectRatio
-  {
     /// <summary>
     /// The opaque (1:1)
     /// </summary>
@@ -57,5 +57,4 @@ namespace MediaInfo.Model
     /// The cinema scope (21:9)
     /// </summary>
     CinemaScope
-  }
 }

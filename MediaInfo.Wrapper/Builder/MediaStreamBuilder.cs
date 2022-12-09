@@ -10,14 +10,14 @@ using System;
 using System.Linq;
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes base methods to build media stream
+/// </summary>
+/// <typeparam name="TStream">The type of the stream.</typeparam>
+internal abstract class MediaStreamBuilder<TStream> : IMediaBuilder<TStream> where TStream : MediaStream, new()
 {
-  /// <summary>
-  /// Describes base methods to build media stream
-  /// </summary>
-  /// <typeparam name="TStream">The type of the stream.</typeparam>
-  internal abstract class MediaStreamBuilder<TStream> : IMediaBuilder<TStream> where TStream : MediaStream, new()
-  {
     /// <summary>
     /// Converts the string representation of a value to specified type
     /// </summary>
@@ -35,72 +35,61 @@ namespace MediaInfo.Builder
     /// <param name="position">The stream position.</param>
     protected MediaStreamBuilder(MediaInfo info, int number, int position)
     {
-      Info = info;
-      StreamNumber = number;
-      StreamPosition = position;
+        Info = info;
+        StreamNumber = number;
+        StreamPosition = position;
     }
 
     /// <summary>
-    /// Gets the stream position.
-    /// </summary>
-    /// <value>
     /// The stream position.
-    /// </value>
+    /// </summary>
     protected int StreamPosition { get; set; }
 
     /// <summary>
-    /// Gets the logical stream number.
-    /// </summary>
-    /// <value>
     /// The logical stream number.
-    /// </value>
+    /// </summary>
     protected int StreamNumber { get; set; }
 
     /// <summary>
-    /// Gets the kind of media stream.
-    /// </summary>
-    /// <value>
     /// The kind of media stream.
-    /// </value>
+    /// </summary>
     public abstract MediaStreamKind Kind { get; }
 
     /// <summary>
-    /// Gets the kind of the stream.
-    /// </summary>
-    /// <value>
     /// The kind of the stream.
-    /// </value>
+    /// </summary>
     protected abstract StreamKind StreamKind { get; }
 
     /// <summary>
-    /// Gets the media info object to access to low-level functions.
+    /// The media info object to access to low-level functions.
     /// </summary>
-    /// <value>
-    /// The media info object.
-    /// </value>
     protected MediaInfo Info { get; }
 
     /// <inheritdoc />
     public virtual TStream Build()
     {
-      // Check for video stereo stream
-      var idString = Get("ID");
-      if (!idString.TryGetInt(out object id))
-      {
-        var idValues = idString.Split('/').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray();
-        if (idValues.Length >= 1 && !idValues[0].TryGetInt(out id))
+        // Check for video stereo stream
+        var idString = Get("ID");
+        if (!idString.TryGetInt(out object? id))
         {
-          id = 0;
+            var idValues = idString
+                .Split('/')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .ToArray();
+            if (idValues.Length >= 1 && !idValues[0].TryGetInt(out id))
+            {
+                id = 0;
+            }
         }
-      }
 
-      return new TStream
-      {
-        Id = (int)id,
-        Name = Get("Title"),
-        StreamPosition = this.StreamPosition,
-        StreamNumber = this.StreamNumber,
-      };
+        return new TStream
+        {
+            Id = (int?)id ?? 0,
+            Name = Get("Title"),
+            StreamPosition = this.StreamPosition,
+            StreamNumber = this.StreamNumber,
+        };
     }
 
     /// <summary>
@@ -110,15 +99,10 @@ namespace MediaInfo.Builder
     /// <param name="convert"></param>
     /// <param name="extractResult">The manual extract result function.</param>
     /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property name</paramref>.</returns>
-    protected T Get<T>(string parameter, ParseDelegate<T> convert, Func<string, string> extractResult = null)
-    {
-      if (convert is null)
-      {
-        throw new ArgumentNullException(nameof(convert));
-      }
-
-      return convert(Get(parameter, extractResult), out var parsedValue) ? parsedValue : default;
-    }
+    protected T? Get<T>(string parameter, ParseDelegate<T> convert, Func<string?, string?>? extractResult = null) =>
+        convert(Get(parameter, extractResult), out var parsedValue) ?
+            parsedValue :
+            default;
 
     /// <summary>
     /// Gets the property <typeparamref name="T">value</typeparamref> by the <paramref name="parameter">property index</paramref>.
@@ -128,15 +112,10 @@ namespace MediaInfo.Builder
     /// <param name="convert"></param>
     /// <param name="extractResult">The manual extract result function.</param>
     /// <returns>Returns property <typeparamref name="T">value</typeparamref> of specified stream <paramref name="parameter">property index</paramref>.</returns>
-    protected T Get<T>(int parameter, InfoKind infoKind, ParseDelegate<T> convert, Func<string, string> extractResult = null)
-    {
-      if (convert is null)
-      {
-        throw new ArgumentNullException(nameof(convert));
-      }
-
-      return convert(Get(parameter, infoKind, extractResult), out var parsedValue) ? parsedValue : default;
-    }
+    protected T? Get<T>(int parameter, InfoKind infoKind, ParseDelegate<T> convert, Func<string?, string?>? extractResult = null) =>
+        convert(Get(parameter, infoKind, extractResult), out var parsedValue) ?
+            parsedValue :
+            default;
 
     /// <summary>
     /// Gets the specified property value by <paramref name="parameter">property name</paramref>.
@@ -144,15 +123,15 @@ namespace MediaInfo.Builder
     /// <param name="parameter">The parameter.</param>
     /// <param name="extractResult">The extract result.</param>
     /// <returns>Returns property value by name. If property does not defined will return <see cref="string.Empty"/>.</returns>
-    protected string Get(string parameter, Func<string, string> extractResult = null)
+    protected string Get(string parameter, Func<string?, string?>? extractResult = null)
     {
-      var result = Info.Get(StreamKind, StreamPosition, parameter);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
+        var result = Info.Get(StreamKind, StreamPosition, parameter);
+        if (extractResult is not null)
+        {
+            result = extractResult(result) ?? result;
+        }
 
-      return result ?? string.Empty;
+        return result ?? string.Empty;
     }
 
     /// <summary>
@@ -162,15 +141,14 @@ namespace MediaInfo.Builder
     /// <param name="infoKind">The kind of property value</param>
     /// <param name="extractResult">The extract result.</param>
     /// <returns>Returns property value by name. If property does not defined will return <see cref="string.Empty"/>.</returns>
-    protected string Get(int parameter, InfoKind infoKind, Func<string, string> extractResult = null)
+    protected string Get(int parameter, InfoKind infoKind, Func<string?, string?>? extractResult = null)
     {
-      var result = Info.Get(StreamKind, StreamPosition, parameter, infoKind);
-      if (extractResult != null)
-      {
-        result = extractResult(result) ?? result;
-      }
+        var result = Info.Get(StreamKind, StreamPosition, parameter, infoKind);
+        if (extractResult is not null)
+        {
+            result = extractResult(result) ?? result;
+        }
 
-      return result ?? string.Empty;
+        return result ?? string.Empty;
     }
-  }
 }

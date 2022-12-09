@@ -26,5 +26,5 @@ public class MediaInfoRequest
     [DataMember(Name = "location")]
     [JsonPropertyName("location")]
     [Required(ErrorMessage = "LOCATION_REQUIRED")]
-    public Uri Location { get; set; }
+    public Uri Location { get; set; } = default!;
 }

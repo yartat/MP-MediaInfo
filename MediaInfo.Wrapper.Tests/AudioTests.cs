@@ -15,16 +15,16 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MediaInfo.Wrapper.Tests
+namespace MediaInfo.Wrapper.Tests;
+
+public class AudioTests
 {
-  public class AudioTests
-  {
-    private readonly ILogger _logger;
-    private MediaInfoWrapper _mediaInfoWrapper;
+    private readonly ILogger? _logger;
+    private MediaInfoWrapper? _mediaInfoWrapper;
 
     public AudioTests(ITestOutputHelper testOutputHelper)
     {
-      _logger = new TestLogger(testOutputHelper);
+        _logger = new TestLogger(testOutputHelper);
     }
 
     [Theory]
@@ -32,21 +32,21 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("./Data/Test_H264_DTS2.m2ts", 6, 0)]
     public void LoadVideoWithDtsMa(string fileName, int audioStreamCount, int dtsIndex)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioStreamCount);
-      var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
-      dts.Codec.Should().Be(AudioCodec.DtsHdMa);
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
-      _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioStreamCount);
+        var dts = _mediaInfoWrapper.AudioStreams[dtsIndex];
+        dts.Codec.Should().Be(AudioCodec.DtsHdMa);
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.VideoStreams[0].Tags.GeneralTags.Should().BeEmpty();
     }
 
 #if DEBUG
@@ -109,20 +109,20 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../HD Audio/working_dts_with_dtscore.dts", 6, 16, 48000.0, AudioCodec.Dts)]
     public void LoadHdAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream does not exist");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream does not exist");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(codec);
-      audio.Channel.Should().Be(channels);
-      audio.BitDepth.Should().Be(bitDepth);
-      audio.SamplingRate.Should().Be(samplingRate);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream does not exist");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream does not exist");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[0];
+        audio.Codec.Should().Be(codec);
+        audio.Channel.Should().Be(channels);
+        audio.BitDepth.Should().Be(bitDepth);
+        audio.SamplingRate.Should().Be(samplingRate);
     }
 
 #if DEBUG
@@ -137,17 +137,17 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../HD/Living_Room_1080p_51_192k_2997fps.mpd", 2, 0, 0, AudioCodec.Ac4, 0)]
     public void LoadDolbyCodecsFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, int index)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.AudioStreams.Count.Should().BeGreaterThan(index);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[index];
-      audio.Codec.Should().Be(codec);
-      audio.Channel.Should().Be(channels);
-      audio.BitDepth.Should().Be(bitDepth);
-      audio.SamplingRate.Should().Be(samplingRate);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.AudioStreams.Count.Should().BeGreaterThan(index);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[index];
+        audio.Codec.Should().Be(codec);
+        audio.Channel.Should().Be(channels);
+        audio.BitDepth.Should().Be(bitDepth);
+        audio.SamplingRate.Should().Be(samplingRate);
     }
 
 #if DEBUG
@@ -249,15 +249,15 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../Audio/wmv3-wmaspeeech.wmv", 1, 16, 8000.0, AudioCodec.WmaVoice, 6208L)]
     public void LoadAudioFile(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec, long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(codec);
-      audio.Channel.Should().Be(channels);
-      audio.BitDepth.Should().Be(bitDepth);
-      audio.SamplingRate.Should().Be(samplingRate);
-      audio.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[0];
+        audio.Codec.Should().Be(codec);
+        audio.Channel.Should().Be(channels);
+        audio.BitDepth.Should().Be(bitDepth);
+        audio.SamplingRate.Should().Be(samplingRate);
+        audio.StreamSize.Should().Be(streamSize);
     }
 
 #if DEBUG
@@ -313,18 +313,18 @@ namespace MediaInfo.Wrapper.Tests
         int audioCount,
         long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioCount);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[index];
-      audio.Codec.Should().Be(codec);
-      audio.Channel.Should().Be(channels);
-      audio.BitDepth.Should().Be(bitDepth);
-      audio.SamplingRate.Should().Be(samplingRate);
-      audio.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioCount);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[index];
+        audio.Codec.Should().Be(codec);
+        audio.Channel.Should().Be(channels);
+        audio.BitDepth.Should().Be(bitDepth);
+        audio.SamplingRate.Should().Be(samplingRate);
+        audio.StreamSize.Should().Be(streamSize);
     }
 
     [Theory]
@@ -332,67 +332,66 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("./Data/Test_MP3Tags_2.mp3", 212274L)]
     public void LoadMp3FileWithTags(string fileName, long size)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(size);
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      // MP3 file contains all tags in general stream
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
-      _mediaInfoWrapper.Tags.Album.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.Track.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.TrackPosition.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Artist.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.RecordedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.Genre.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(AudioCodec.MpegLayer3);
-      audio.Tags.GeneralTags.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeEmpty();
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(size);
+        _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MP3!");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        // MP3 file contains all tags in general stream
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
+        _mediaInfoWrapper.Tags.Album.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.Tags.Track.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.Tags.TrackPosition.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.Artist.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.Tags.RecordedDate.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.Genre.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[0];
+        audio.Codec.Should().Be(AudioCodec.MpegLayer3);
+        audio.Tags.GeneralTags.Should().NotBeNull();
+        audio.Tags.GeneralTags.Should().NotBeEmpty();
     }
 
     [Theory]
     [InlineData("./Data/Test_MP3Tags.mka")]
     public void LoadMultiStreamContainer(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(135172L);
-      _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MKA!");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      // MKA file contains all tags in general stream
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
-      _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeEmpty();
-      audio.Tags.Album.Should().NotBeNullOrEmpty();
-      audio.Tags.Track.Should().NotBeNullOrEmpty();
-      audio.Tags.Artist.Should().NotBeNullOrEmpty();
-      audio.Tags.ReleasedDate.Should().NotBeNull();
-      audio.Codec.Should().Be(AudioCodec.MpegLayer3);
-      audio = _mediaInfoWrapper.AudioStreams[1];
-      audio.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeNull();
-      audio.Tags.GeneralTags.Should().NotBeEmpty();
-      audio.Tags.Album.Should().NotBeNullOrEmpty();
-      audio.Tags.Track.Should().NotBeNullOrEmpty();
-      audio.Tags.Artist.Should().NotBeNullOrEmpty();
-      audio.Codec.Should().Be(AudioCodec.MpegLayer3);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(135172L);
+        _mediaInfoWrapper.HasVideo.Should().BeFalse("Video stream does not supported in MKA!");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is missing");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        // MKA file contains all tags in general stream
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeEmpty();
+        _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[0];
+        audio.Should().NotBeNull();
+        audio.Tags.GeneralTags.Should().NotBeNull();
+        audio.Tags.GeneralTags.Should().NotBeEmpty();
+        audio.Tags.Album.Should().NotBeNullOrEmpty();
+        audio.Tags.Track.Should().NotBeNullOrEmpty();
+        audio.Tags.Artist.Should().NotBeNullOrEmpty();
+        audio.Tags.ReleasedDate.Should().NotBeNull();
+        audio.Codec.Should().Be(AudioCodec.MpegLayer3);
+        audio = _mediaInfoWrapper.AudioStreams[1];
+        audio.Should().NotBeNull();
+        audio.Tags.GeneralTags.Should().NotBeNull();
+        audio.Tags.GeneralTags.Should().NotBeEmpty();
+        audio.Tags.Album.Should().NotBeNullOrEmpty();
+        audio.Tags.Track.Should().NotBeNullOrEmpty();
+        audio.Tags.Artist.Should().NotBeNullOrEmpty();
+        audio.Codec.Should().Be(AudioCodec.MpegLayer3);
     }
-  }
 }

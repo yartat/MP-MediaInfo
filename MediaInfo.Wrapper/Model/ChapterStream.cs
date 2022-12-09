@@ -6,24 +6,24 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Provides properties and overridden methods for the analyze chapter in media
+/// and contains information about chapter.
+/// </summary>
+/// <seealso cref="MediaStream" />
+public class ChapterStream : MediaStream
 {
-  /// <summary>
-  /// Provides properties and overridden methods for the analyze chapter in media
-  /// and contains information about chapter.
-  /// </summary>
-  /// <seealso cref="MediaStream" />
-  public class ChapterStream : MediaStream
-  {
     /// <summary>
     /// Initializes a new instance of the <see cref="ChapterStream"/> class.
     /// </summary>
-    /// <param name="offset">The offset.</param>
-    /// <param name="description">The description.</param>
+    /// <param name="offset">The offset of the stream.</param>
+    /// <param name="description">The stream description.</param>
     public ChapterStream(double offset, string description)
     {
-      Offset = offset;
-      Description = description;
+        Offset = offset;
+        Description = description;
     }
 
     /// <summary>
@@ -33,26 +33,19 @@ namespace MediaInfo.Model
     {
     }
 
-      /// <inheritdoc />
+    /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;
 
     /// <summary>
-    /// Gets the chapter offset.
-    /// </summary>
-    /// <value>
     /// The chapter offset.
-    /// </value>
-    public double Offset { get; }
+    /// </summary>
+    public double Offset { get; } = 0.0;
 
     /// <summary>
-    /// Gets the chapter description.
-    /// </summary>
-    /// <value>
     /// The chapter description.
-    /// </value>
-    public string Description { get; }
-  }
+    /// </summary>
+    public string? Description { get; }
 }

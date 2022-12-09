@@ -8,14 +8,14 @@
 
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes base methods to build media stream with language
+/// </summary>
+/// <typeparam name="TStream">The type of the stream.</typeparam>
+internal abstract class LanguageMediaStreamBuilder<TStream> : MediaStreamBuilder<TStream> where TStream : LanguageMediaStream, new()
 {
-  /// <summary>
-  /// Describes base methods to build media stream with language
-  /// </summary>
-  /// <typeparam name="TStream">The type of the stream.</typeparam>
-  internal abstract class LanguageMediaStreamBuilder<TStream> : MediaStreamBuilder<TStream> where TStream : LanguageMediaStream, new()
-  {
     /// <summary>
     /// Initializes a new instance of the <see cref="LanguageMediaStreamBuilder{TStream}"/> class.
     /// </summary>
@@ -30,14 +30,13 @@ namespace MediaInfo.Builder
     /// <inheritdoc />
     public override TStream Build()
     {
-      var result = base.Build();
-      var language = Get("Language").ToLower();
-      result.Language = LanguageHelper.GetLanguageByShortName(language);
-      result.Default = Get<bool>("Default", TagBuilderHelper.TryGetBool);
-      result.Forced = Get<bool>("Forced", TagBuilderHelper.TryGetBool);
-      result.Lcid = LanguageHelper.GetLcidByShortName(language);
-      result.StreamSize = Get<long>("StreamSize", TagBuilderHelper.TryGetLong);
-      return result;
+        var result = base.Build();
+        var language = Get("Language").ToLower();
+        result.Language = LanguageHelper.GetLanguageByShortName(language);
+        result.Default = Get<bool>("Default", TagBuilderHelper.TryGetBool);
+        result.Forced = Get<bool>("Forced", TagBuilderHelper.TryGetBool);
+        result.Lcid = LanguageHelper.GetLcidByShortName(language);
+        result.StreamSize = Get<long>("StreamSize", TagBuilderHelper.TryGetLong);
+        return result;
     }
-  }
 }

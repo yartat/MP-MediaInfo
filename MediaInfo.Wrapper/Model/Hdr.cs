@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes HDR modes
+/// </summary>
+public enum Hdr
 {
-  /// <summary>
-  /// Describes HDR modes
-  /// </summary>
-  public enum Hdr
-  {
     /// <summary>
     /// No HDR 
     /// </summary>
@@ -52,5 +52,4 @@ namespace MediaInfo.Model
     /// Advanced HDR by Technicolor (SL-HDR3)
     /// </summary>
     SLHDR3
-  }
 }

@@ -8,13 +8,13 @@
 
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes method to build chapter stream.
+/// </summary>
+internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
 {
-  /// <summary>
-  /// Describes method to build chapter stream.
-  /// </summary>
-  internal class ChapterStreamBuilder : MediaStreamBuilder<ChapterStream>
-  {
     public ChapterStreamBuilder(MediaInfo info, int number, int position)
       : base(info, number, position)
     {
@@ -25,5 +25,4 @@ namespace MediaInfo.Builder
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;
-  }
 }

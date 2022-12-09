@@ -8,13 +8,13 @@
 
 using System;
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Defines constants for media stream kinds.
+/// </summary>
+public enum MediaStreamKind
 {
-    /// <summary>
-    /// Defines constants for media stream kinds.
-    /// </summary>
-    public enum MediaStreamKind
-  {
     /// <summary>
     /// The video stream
     /// </summary>
@@ -39,15 +39,15 @@ namespace MediaInfo.Model
     /// Menu
     /// </summary>
     Menu
-  }
+}
 
-  /// <summary>
-  /// Provides basic properties and instance methods for the analyze stream
-  /// and contains information about media stream.
-  /// </summary>
-  /// <seealso cref="MarshalByRefObject" />
-  public abstract class MediaStream : MarshalByRefObject
-  {
+/// <summary>
+/// Provides basic properties and instance methods for the analyze stream
+/// and contains information about media stream.
+/// </summary>
+/// <seealso cref="MarshalByRefObject" />
+public abstract class MediaStream : MarshalByRefObject
+{
     /// <summary>
     /// Gets or sets the media steam id.
     /// </summary>
@@ -62,7 +62,7 @@ namespace MediaInfo.Model
     /// <value>
     /// The name of stream.
     /// </value>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets the kind of media stream.
@@ -95,5 +95,4 @@ namespace MediaInfo.Model
     /// The logical stream number.
     /// </value>
     public int StreamNumber { get; set; }
-  }
 }

@@ -6,33 +6,27 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Provides properties and overridden methods for the analyze stream
+/// and contains information about media stream.
+/// </summary>
+/// <seealso cref="MediaStream" />
+public abstract class LanguageMediaStream : MediaStream
 {
     /// <summary>
-    /// Provides properties and overridden methods for the analyze stream
-    /// and contains information about media stream.
-    /// </summary>
-    /// <seealso cref="MediaStream" />
-    public abstract class LanguageMediaStream : MediaStream
-  {
-    /// <summary>
-    /// Gets the media stream language.
-    /// </summary>
-    /// <value>
     /// The media stream language.
-    /// </value>
-    public string Language { get; set; }
+    /// </summary>
+    public string Language { get; set; } = default!;
 
     /// <summary>
-    /// Gets the media stream LCID.
-    /// </summary>
-    /// <value>
     /// The media stream LCID.
-    /// </value>
+    /// </summary>
     public int Lcid { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is default.
+    /// A value indicating whether this <see cref="LanguageMediaStream"/> is default.
     /// </summary>
     /// <value>
     ///   <c>true</c> if default; otherwise, <c>false</c>.
@@ -40,7 +34,7 @@ namespace MediaInfo.Model
     public bool Default { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether this <see cref="LanguageMediaStream"/> is forced.
+    /// A value indicating whether this <see cref="LanguageMediaStream"/> is forced.
     /// </summary>
     /// <value>
     ///   <c>true</c> if forced; otherwise, <c>false</c>.
@@ -48,11 +42,7 @@ namespace MediaInfo.Model
     public bool Forced { get; set; }
 
     /// <summary>
-    /// Gets the stream size.
-    /// </summary>
-    /// <value>
     /// The stream size (bytes).
-    /// </value>
+    /// </summary>
     public long StreamSize { get; set; }
-  }
 }

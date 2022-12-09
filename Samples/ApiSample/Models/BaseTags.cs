@@ -25,7 +25,7 @@ public abstract class BaseTags
     /// <example>The title</example>
     [DataMember(Name = "title")]
     [JsonPropertyName("title")]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// A short description of the contents, such as "Two birds flying".
@@ -33,7 +33,7 @@ public abstract class BaseTags
     /// <example>Description</example>
     [DataMember(Name = "description")]
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// The keywords to the item separated by a comma, used for searching.
@@ -41,7 +41,7 @@ public abstract class BaseTags
     /// <example>Description</example>
     [DataMember(Name = "keywords")]
     [JsonPropertyName("keywords")]
-    public string[] Keywords { get; set; }
+    public string[]? Keywords { get; set; }
 
     /// <summary>
     /// A country.
@@ -49,7 +49,7 @@ public abstract class BaseTags
     /// <example>USA</example>
     [DataMember(Name = "country")]
     [JsonPropertyName("country")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     /// <summary>
     /// The date that the item was originally released.
@@ -84,7 +84,7 @@ public abstract class BaseTags
     /// <example>Comments</example>
     [DataMember(Name = "comment")]
     [JsonPropertyName("comment")]
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
 
     /// <summary>
     /// A numeric value defining how much a person likes the song/movie. The number is between 0 and 5 with decimal values possible (e.g. 2.7), 5(.0) being the highest possible rating.
@@ -99,7 +99,7 @@ public abstract class BaseTags
     /// </summary>
     [DataMember(Name = "copyright")]
     [JsonPropertyName("copyright")]
-    public string Copyright { get; set; }
+    public string? Copyright { get; set; }
 
     /// <summary>
     /// The name of the organization producing the track (i.e. the 'record label').
@@ -107,7 +107,7 @@ public abstract class BaseTags
     /// <example>Sony Music Entertainment</example>
     [DataMember(Name = "publisher")]
     [JsonPropertyName("publisher")]
-    public string Publisher { get; set; }
+    public string? Publisher { get; set; }
 
     /// <summary>
     /// The publishers official web page.
@@ -115,7 +115,7 @@ public abstract class BaseTags
     /// <example>https://www.sonymusic.com</example>
     [DataMember(Name = "publisherUrl")]
     [JsonPropertyName("publisherUrl")]
-    public string PublisherUrl { get; set; }
+    public string? PublisherUrl { get; set; }
 
     /// <summary>
     /// The name of the organization distributing track.
@@ -123,7 +123,7 @@ public abstract class BaseTags
     /// <example>Sony Music Entertainment</example>
     [DataMember(Name = "distributedBy")]
     [JsonPropertyName("distributedBy")]
-    public string DistributedBy { get; set; }
+    public string? DistributedBy { get; set; }
 
     /// <summary>
     /// An average number of beats per minute in the complete target.
@@ -138,7 +138,7 @@ public abstract class BaseTags
     /// </summary>
     [DataMember(Name = "covers")]
     [JsonPropertyName("covers")]
-    public IEnumerable<CoverInfo> Covers { get; set; }
+    public IEnumerable<CoverInfo>? Covers { get; set; }
 }
 
 /// <summary>
@@ -159,19 +159,19 @@ public class CoverInfo
     /// </summary>
     [DataMember(Name = "description")]
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// A type of the cover.
     /// </summary>
     [DataMember(Name = "type")]
     [JsonPropertyName("type")]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     /// <summary>
     /// MIME of the cover.
     /// </summary>
     [DataMember(Name = "mime")]
     [JsonPropertyName("mime")]
-    public string Mime { get; set; }
+    public string? Mime { get; set; }
 }

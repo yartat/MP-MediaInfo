@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes video transfer characteristics
+/// </summary>
+public enum TransferCharacteristic
 {
-  /// <summary>
-  /// Describes video transfer characteristics
-  /// </summary>
-  public enum TransferCharacteristic
-  {
     /// <summary>
     /// Printing density
     /// </summary>
@@ -72,5 +72,4 @@ namespace MediaInfo.Model
     /// Z (depth) - homogeneous
     /// </summary>
     ZHomogeneous
-  }
 }

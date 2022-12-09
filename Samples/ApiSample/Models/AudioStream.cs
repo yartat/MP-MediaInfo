@@ -34,7 +34,7 @@ public class AudioStream : LanguageMediaStream
     /// <example>DTS-HD</example>
     [DataMember(Name = "codecFriendly")]
     [JsonPropertyName("codecFriendly")]
-    public string CodecFriendly { get; set; }
+    public string? CodecFriendly { get; set; }
 
     /// <summary>
     /// A duration of the stream in seconds.
@@ -90,7 +90,7 @@ public class AudioStream : LanguageMediaStream
     /// <example>DTS</example>
     [DataMember(Name = "format")]
     [JsonPropertyName("format")]
-    public string Format { get; set; }
+    public string? Format { get; set; }
 
     /// <summary>
     /// The audio codec name.
@@ -98,7 +98,7 @@ public class AudioStream : LanguageMediaStream
     /// <example>AVC</example>
     [DataMember(Name = "codecName")]
     [JsonPropertyName("codecName")]
-    public string CodecName { get; set; }
+    public string? CodecName { get; set; }
 
     /// <summary>
     /// The audio codec description.
@@ -106,7 +106,7 @@ public class AudioStream : LanguageMediaStream
     /// <example>DTS-HD</example>
     [DataMember(Name = "codecDescription")]
     [JsonPropertyName("codecDescription")]
-    public string CodecDescription { get; set; }
+    public string? CodecDescription { get; set; }
 
     /// <summary>
     /// The audio channels friendly.
@@ -114,7 +114,7 @@ public class AudioStream : LanguageMediaStream
     /// <example>7.1</example>
     [DataMember(Name = "audioChannelsFriendly")]
     [JsonPropertyName("audioChannelsFriendly")]
-    public string AudioChannelsFriendly { get; set; }
+    public string? AudioChannelsFriendly { get; set; }
 
     /// <summary>
     /// The stream tags.

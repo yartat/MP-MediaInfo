@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes type of video codecs
+/// </summary>
+public enum VideoCodec
 {
-  /// <summary>
-  /// Describes type of video codecs
-  /// </summary>
-  public enum VideoCodec
-  {
     /// <summary>
     /// The undefined
     /// </summary>
@@ -332,5 +332,4 @@ namespace MediaInfo.Model
     /// HuffYUV
     /// </summary>
     HuffYUV,
-  }
 }

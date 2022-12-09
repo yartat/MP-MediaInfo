@@ -25,7 +25,7 @@ public class VideoTags : BaseTags
     /// <example>Title of the collection</example>
     [DataMember(Name = "collection")]
     [JsonPropertyName("collection")]
-    public string Collection { get; set; }
+    public string? Collection { get; set; }
 
     /// <summary>
     /// A title of the season.
@@ -33,7 +33,7 @@ public class VideoTags : BaseTags
     /// <example>Title of the season</example>
     [DataMember(Name = "season")]
     [JsonPropertyName("season")]
-    public string Season { get; set; }
+    public string? Season { get; set; }
 
     /// <summary>
     /// A title of the part.
@@ -41,7 +41,7 @@ public class VideoTags : BaseTags
     /// <example>Title of the part</example>
     [DataMember(Name = "part")]
     [JsonPropertyName("part")]
-    public string Part { get; set; }
+    public string? Part { get; set; }
 
     /// <summary>
     /// A title of the file for a video file.
@@ -49,7 +49,7 @@ public class VideoTags : BaseTags
     /// <example>Title of the file</example>
     [DataMember(Name = "movie")]
     [JsonPropertyName("movie")]
-    public string Movie { get; set; }
+    public string? Movie { get; set; }
 
     /// <summary>
     /// A title of chapter.
@@ -57,7 +57,7 @@ public class VideoTags : BaseTags
     /// <example>Title of the chapter</example>
     [DataMember(Name = "chapter")]
     [JsonPropertyName("chapter")]
-    public string Chapter { get; set; }
+    public string? Chapter { get; set; }
 
     /// <summary>
     /// An original movie.
@@ -65,7 +65,7 @@ public class VideoTags : BaseTags
     /// <example>Movie</example>
     [DataMember(Name = "originalMovie")]
     [JsonPropertyName("originalMovie")]
-    public string OriginalMovie { get; set; }
+    public string? OriginalMovie { get; set; }
 
     /// <summary>
     /// A track position.
@@ -80,7 +80,7 @@ public class VideoTags : BaseTags
     /// </summary>
     [DataMember(Name = "composer")]
     [JsonPropertyName("composer")]
-    public string Composer { get; set; }
+    public string? Composer { get; set; }
 
     /// <summary>
     /// A composer nationality.
@@ -88,126 +88,126 @@ public class VideoTags : BaseTags
     /// <example>USA</example>
     [DataMember(Name = "composerNationality")]
     [JsonPropertyName("composerNationality")]
-    public string ComposerNationality { get; set; }
+    public string? ComposerNationality { get; set; }
 
     /// <summary>
     /// An arranger name.
     /// </summary>
     [DataMember(Name = "arranger")]
     [JsonPropertyName("arranger")]
-    public string Arranger { get; set; }
+    public string? Arranger { get; set; }
 
     /// <summary>
     /// A lyricist name.
     /// </summary>
     [DataMember(Name = "lyricist")]
     [JsonPropertyName("lyricist")]
-    public string Lyricist { get; set; }
+    public string? Lyricist { get; set; }
 
     /// <summary>
     /// A conductor name.
     /// </summary>
     [DataMember(Name = "conductor")]
     [JsonPropertyName("conductor")]
-    public string Conductor { get; set; }
+    public string? Conductor { get; set; }
 
     /// <summary>
     /// A sound engineer name.
     /// </summary>
     [DataMember(Name = "soundEngineer")]
     [JsonPropertyName("soundEngineer")]
-    public string SoundEngineer { get; set; }
+    public string? SoundEngineer { get; set; }
 
     /// <summary>
     /// A real name of actor.
     /// </summary>
     [DataMember(Name = "actor")]
     [JsonPropertyName("actor")]
-    public string Actor { get; set; }
+    public string? Actor { get; set; }
 
     /// <summary>
     /// A name of the character an actor or actress plays in this movie.
     /// </summary>
     [DataMember(Name = "actorCharacter")]
     [JsonPropertyName("actorCharacter")]
-    public string ActorCharacter { get; set; }
+    public string? ActorCharacter { get; set; }
 
     /// <summary>
     /// An author of the story or script.
     /// </summary>
     [DataMember(Name = "writtenBy")]
     [JsonPropertyName("writtenBy")]
-    public string WrittenBy { get; set; }
+    public string? WrittenBy { get; set; }
 
     /// <summary>
     /// an author of the screenplay or scenario (used for movies and TV shows).
     /// </summary>
     [DataMember(Name = "screenplayBy")]
     [JsonPropertyName("screenplayBy")]
-    public string ScreenplayBy { get; set; }
+    public string? ScreenplayBy { get; set; }
 
     /// <summary>
     /// A name of the director.
     /// </summary>
     [DataMember(Name = "director")]
     [JsonPropertyName("director")]
-    public string Director { get; set; }
+    public string? Director { get; set; }
 
     /// <summary>
     /// A name of assistant director.
     /// </summary>
     [DataMember(Name = "assistantDirector")]
     [JsonPropertyName("assistantDirector")]
-    public string AssistantDirector { get; set; }
+    public string? AssistantDirector { get; set; }
 
     /// <summary>
     /// A name of the director of photography, also known as cinematographer.
     /// </summary>
     [DataMember(Name = "directorOfPhotography")]
     [JsonPropertyName("directorOfPhotography")]
-    public string DirectorOfPhotography { get; set; }
+    public string? DirectorOfPhotography { get; set; }
 
     /// <summary>
     /// A person who oversees the artists and craftspeople who build the sets.
     /// </summary>
     [DataMember(Name = "artDirector")]
     [JsonPropertyName("artDirector")]
-    public string ArtDirector { get; set; }
+    public string? ArtDirector { get; set; }
 
     /// <summary>
     /// An editor name.
     /// </summary>
     [DataMember(Name = "editedBy")]
     [JsonPropertyName("editedBy")]
-    public string EditedBy { get; set; }
+    public string? EditedBy { get; set; }
 
     /// <summary>
     /// A name of producer the movie.
     /// </summary>
     [DataMember(Name = "producer")]
     [JsonPropertyName("producer")]
-    public string Producer { get; set; }
+    public string? Producer { get; set; }
 
     /// <summary>
     /// A name of co-producer.
     /// </summary>
     [DataMember(Name = "coProducer")]
     [JsonPropertyName("coProducer")]
-    public string CoProducer { get; set; }
+    public string? CoProducer { get; set; }
 
     /// <summary>
     /// A name of executive producer.
     /// </summary>
     [DataMember(Name = "executiveProducer")]
     [JsonPropertyName("executiveProducer")]
-    public string ExecutiveProducer { get; set; }
+    public string? ExecutiveProducer { get; set; }
 
     /// <summary>
     /// An artist responsible for designing the overall visual appearance of a movie.
     /// </summary>
     [DataMember(Name = "productionDesigner")]
     [JsonPropertyName("productionDesigner")]
-    public string ProductionDesigner { get; set; }
+    public string? ProductionDesigner { get; set; }
 
     /// <summary>
     /// A name of the costume designer.
@@ -217,21 +217,21 @@ public class VideoTags : BaseTags
     /// </value>
     [DataMember(Name = "costumeDesigner")]
     [JsonPropertyName("costumeDesigner")]
-    public string CostumeDesigner { get; set; }
+    public string? CostumeDesigner { get; set; }
 
     /// <summary>
     /// A name of the choreographer.
     /// </summary>
     [DataMember(Name = "choreographer")]
     [JsonPropertyName("choreographer")]
-    public string Choreographer { get; set; }
+    public string? Choreographer { get; set; }
 
     /// <summary>
     /// A name of production studio.
     /// </summary>
     [DataMember(Name = "productionStudio")]
     [JsonPropertyName("productionStudio")]
-    public string ProductionStudio { get; set; }
+    public string? ProductionStudio { get; set; }
 
     /// <summary>
     /// A date and time that the composition of the music/script began.
@@ -248,7 +248,7 @@ public class VideoTags : BaseTags
     /// <example>sci-fi</example>
     [DataMember(Name = "genre")]
     [JsonPropertyName("genre")]
-    public string Genre { get; set; }
+    public string? Genre { get; set; }
 
     /// <summary>
     /// Gets intended to reflect the mood of the item with a few keywords, e.g. "Romantic", "Sad", "Uplifting", etc.
@@ -256,33 +256,33 @@ public class VideoTags : BaseTags
     /// <example>romantic</example>
     [DataMember(Name = "mood")]
     [JsonPropertyName("mood")]
-    public string Mood { get; set; }
+    public string? Mood { get; set; }
 
     /// <summary>
     /// A name of the software package used to create the file, such as "Microsoft WaveEdit."
     /// </summary>
     [DataMember(Name = "encodedApplication")]
     [JsonPropertyName("encodedApplication")]
-    public string EncodedApplication { get; set; }
+    public string? EncodedApplication { get; set; }
 
     /// <summary>
     /// Software or hardware used to encode this item; e.g. "LAME" or "XviD"
     /// </summary>
     [DataMember(Name = "encodedLibrary")]
     [JsonPropertyName("encodedLibrary")]
-    public string EncodedLibrary { get; set; }
+    public string? EncodedLibrary { get; set; }
 
     /// <summary>
     /// A list of the settings used for encoding this item. No specific format.
     /// </summary>
     [DataMember(Name = "encodedLibrarySettings")]
     [JsonPropertyName("encodedLibrarySettings")]
-    public string EncodedLibrarySettings { get; set; }
+    public string? EncodedLibrarySettings { get; set; }
 
     /// <summary>
     /// A plot outline or a summary of the story.
     /// </summary>
     [DataMember(Name = "summary")]
     [JsonPropertyName("summary")]
-    public string Summary { get; set; }
+    public string? Summary { get; set; }
 }

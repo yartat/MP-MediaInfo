@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes video color space
+/// </summary>
+public enum ColorSpace
 {
-  /// <summary>
-  /// Describes video color space
-  /// </summary>
-  public enum ColorSpace
-  {
     /// <summary>
     /// Generic film
     /// </summary>
@@ -112,5 +112,4 @@ namespace MediaInfo.Model
     /// Display P3
     /// </summary>
     DisplayP3
-  }
 }

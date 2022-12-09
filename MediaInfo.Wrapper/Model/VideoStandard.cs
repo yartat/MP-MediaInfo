@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes video standards
+/// </summary>
+public enum VideoStandard
 {
-  /// <summary>
-  /// Describes video standards
-  /// </summary>
-  public enum VideoStandard
-  {
     /// <summary>
     /// NTSC standard
     /// </summary>
@@ -22,5 +22,4 @@ namespace MediaInfo.Model
     /// PAL standard
     /// </summary>
     PAL
-  }
 }

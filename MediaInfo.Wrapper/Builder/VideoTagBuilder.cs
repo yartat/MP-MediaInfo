@@ -10,24 +10,24 @@ using System;
 using System.Collections.Generic;
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+internal class VideoTagBuilder : GeneralTagBuilder<VideoTags>
 {
-  internal class VideoTagBuilder: GeneralTagBuilder<VideoTags>
-  {
-#region Tag items
+    #region Tag items
 
-    private static readonly List<Tuple<NativeMethods.Video, ParseDelegate<object>>> GeneralTagItems;
+    private static readonly List<(NativeMethods.Video VideoTagType, ParseDelegate<object> ParseFunc)> GeneralTagItems;
 
-#endregion
+    #endregion
 
     static VideoTagBuilder()
     {
-      var values = typeof(NativeMethods.Video).GetEnumValues();
-      GeneralTagItems = new List<Tuple<NativeMethods.Video, ParseDelegate<object>>>(values.Length);
-      foreach (NativeMethods.Video item in values)
-      {
-        GeneralTagItems.Add(new Tuple<NativeMethods.Video, ParseDelegate<object>>(item, TagBuilderHelper.TryGetString));
-      }
+        var values = typeof(NativeMethods.Video).GetEnumValues();
+        GeneralTagItems = new List<(NativeMethods.Video, ParseDelegate<object>)>(values.Length);
+        foreach (NativeMethods.Video item in values)
+        {
+            GeneralTagItems.Add((item, TagBuilderHelper.TryGetString));
+        }
     }
 
     /// <summary>
@@ -42,17 +42,16 @@ namespace MediaInfo.Builder
 
     public override VideoTags Build()
     {
-      var result = base.Build();
-      foreach (var tagItem in GeneralTagItems)
-      {
-        var value = MediaInfo.Get(StreamKind.Video, StreamPosition, (int)tagItem.Item1);
-        if (!string.IsNullOrEmpty(value) && tagItem.Item2(value, out var tagValue))
+        var result = base.Build();
+        foreach (var tagItem in GeneralTagItems)
         {
-          result.VideoDataTags.Add(tagItem.Item1, tagValue);
+            var value = MediaInfo.Get(StreamKind.Video, StreamPosition, (int)tagItem.Item1);
+            if (!string.IsNullOrEmpty(value) && tagItem.ParseFunc(value, out var tagValue) && tagValue is not null)
+            {
+                result.VideoDataTags.Add(tagItem.VideoTagType, tagValue);
+            }
         }
-      }
 
-      return result;
+        return result;
     }
-  }
 }

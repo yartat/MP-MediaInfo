@@ -6,29 +6,23 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Provides properties and overridden methods for the analyze subtitle stream
+/// and contains information about subtitle.
+/// </summary>
+/// <seealso cref="LanguageMediaStream" />
+public class SubtitleStream : LanguageMediaStream
 {
-  /// <summary>
-  /// Provides properties and overridden methods for the analyze subtitle stream
-  /// and contains information about subtitle.
-  /// </summary>
-  /// <seealso cref="LanguageMediaStream" />
-  public class SubtitleStream : LanguageMediaStream
-  {
     /// <summary>
-    /// Gets the subtitle format.
-    /// </summary>
-    /// <value>
     /// The subtitle format.
-    /// </value>
-    public string Format { get; set; }
+    /// </summary>
+    public string Format { get; set; } = default!;
 
     /// <summary>
-    /// Gets the subtitle codec.
-    /// </summary>
-    /// <value>
     /// The subtitle codec.
-    /// </value>
+    /// </summary>
     public SubtitleCodec Codec { get; set; }
 
     /// <inheritdoc />
@@ -36,5 +30,4 @@ namespace MediaInfo.Model
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Text;
-  }
 }

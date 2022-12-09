@@ -68,7 +68,7 @@ public abstract class MediaStream
     /// </summary>
     [DataMember(Name = "name")]
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// A kind of media stream.

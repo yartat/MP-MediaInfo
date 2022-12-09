@@ -9,64 +9,62 @@
 using System;
 using System.Collections.Generic;
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes properties of the menu
+/// </summary>
+/// <seealso cref="MediaStream" />
+public class MenuStream : MediaStream
 {
-    /// <summary>
-    /// Describes properties of the menu
-    /// </summary>
-    /// <seealso cref="MediaStream" />
-    public class MenuStream : MediaStream
-  {
     /// <summary>
     /// Initializes a new instance of the <see cref="MenuStream"/> class.
     /// </summary>
     public MenuStream()
     {
-      Chapters = new List<Chapter>();
+        Chapters = new List<Chapter>();
     }
 
     /// <summary>
-    /// Gets or sets the menu duration.
-    /// </summary>
-    /// <value>
     /// The menu duration.
-    /// </value>
+    /// </summary>
     public TimeSpan Duration { get; set; }
 
     /// <summary>
-    /// Gets the chapters.
-    /// </summary>
-    /// <value>
     /// The chapters.
-    /// </value>
-    public ICollection<Chapter> Chapters { get; }
+    /// </summary>
+    public ICollection<Chapter> Chapters { get; } = new List<Chapter>();
 
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Menu;
-  }
+}
 
-  /// <summary>
-  /// Describes properties of the menu chapter
-  /// </summary>
-  public sealed class Chapter
-  {
+#if NET5_0_OR_GREATER
+/// <summary>
+/// Describes properties of the menu chapter
+/// </summary>
+/// <param name="Position">The menu position.</param>
+/// <param name="Name">The menu chapter name.</param>
+public record Chapter(
+    TimeSpan Position,
+    string? Name);
+#else
+/// <summary>
+/// Describes properties of the menu chapter
+/// </summary>
+public record Chapter
+{
     /// <summary>
-    /// Gets or sets the menu position.
-    /// </summary>
-    /// <value>
     /// The menu position.
-    /// </value>
+    /// </summary>
     public TimeSpan Position { get; set; }
 
     /// <summary>
-    /// Gets or sets the menu chapter name.
-    /// </summary>
-    /// <value>
     /// The menu chapter name.
-    /// </value>
-    public string Name { get; set; }
-  }
+    /// </summary>
+    public string? Name { get; set; }
 }
+#endif

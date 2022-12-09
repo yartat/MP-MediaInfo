@@ -33,5 +33,5 @@ public class ChapterStream : MediaStream
     /// <example>Chapter description</example>
     [DataMember(Name = "description")]
     [JsonPropertyName("description")]
-    public string Description { get; }
+    public string? Description { get; }
 }

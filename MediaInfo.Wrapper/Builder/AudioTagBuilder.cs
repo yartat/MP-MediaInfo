@@ -10,24 +10,24 @@ using System;
 using System.Collections.Generic;
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+internal class AudioTagBuilder : GeneralTagBuilder<AudioTags>
 {
-  internal class AudioTagBuilder: GeneralTagBuilder<AudioTags>
-  {
-#region Tag items
+    #region Tag items
 
-    private static readonly List<Tuple<NativeMethods.Audio, ParseDelegate<object>>> GeneralTagItems;
+    private static readonly List<(NativeMethods.Audio AudioTagType, ParseDelegate<object> ParseFunc)> GeneralTagItems;
 
-#endregion
+    #endregion
 
     static AudioTagBuilder()
     {
-      var values = typeof(NativeMethods.Audio).GetEnumValues();
-      GeneralTagItems = new List<Tuple<NativeMethods.Audio, ParseDelegate<object>>>(values.Length);
-      foreach (NativeMethods.Audio item in values)
-      {
-        GeneralTagItems.Add(new Tuple<NativeMethods.Audio, ParseDelegate<object>>(item, TagBuilderHelper.TryGetString));
-      }
+        var values = typeof(NativeMethods.Audio).GetEnumValues();
+        GeneralTagItems = new List<(NativeMethods.Audio, ParseDelegate<object>)>(values.Length);
+        foreach (NativeMethods.Audio item in values)
+        {
+            GeneralTagItems.Add((item, TagBuilderHelper.TryGetString));
+        }
     }
 
     /// <summary>
@@ -36,23 +36,22 @@ namespace MediaInfo.Builder
     /// <param name="mediaInfo">The media information.</param>
     /// <param name="streamPosition">The stream position.</param>
     public AudioTagBuilder(MediaInfo mediaInfo, int streamPosition)
-      : base(mediaInfo, streamPosition)
+        : base(mediaInfo, streamPosition)
     {
     }
 
     public override AudioTags Build()
     {
-      var result = base.Build();
-      foreach (var tagItem in GeneralTagItems)
-      {
-          var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, (int)tagItem.Item1);
-          if (!string.IsNullOrEmpty(value) && tagItem.Item2(value, out var tagValue))
-          {
-              result.AudioDataTags.Add(tagItem.Item1, tagValue);
-          }
-      }
+        var result = base.Build();
+        foreach (var tagItem in GeneralTagItems)
+        {
+            var value = MediaInfo.Get(StreamKind.Audio, StreamPosition, (int)tagItem.AudioTagType);
+            if (!string.IsNullOrEmpty(value) && tagItem.ParseFunc(value, out var tagValue) && tagValue is not null)
+            {
+                result.AudioDataTags.Add(tagItem.AudioTagType, tagValue);
+            }
+        }
 
-      return result;
+        return result;
     }
-  }
 }

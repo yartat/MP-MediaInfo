@@ -6,11 +6,12 @@
 
 #endregion
 
-namespace MediaInfo
+#if NET40 || NET45
+namespace MediaInfo;
+
+/// <summary>Values that represent log levels.</summary>
+public enum LogLevel
 {
-  /// <summary>Values that represent log levels.</summary>
-  public enum LogLevel
-  {
     /// <summary>
     /// The verbose level
     /// </summary>
@@ -40,15 +41,15 @@ namespace MediaInfo
     /// The critical error level
     /// </summary>
     Critical
-  }
+}
 
-  /// <summary>Interface for logger.</summary>
-  public interface ILogger
-  {
+/// <summary>Interface for logger.</summary>
+public interface ILogger
+{
     /// <summary>Logs message.</summary>
     /// <param name="loglevel">The log level value.</param>
     /// <param name="message">The logging message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    void Log(LogLevel loglevel, string message, params object[] parameters);
-  }
+    void Log(LogLevel loglevel, string message, params object?[] parameters);
 }
+#endif

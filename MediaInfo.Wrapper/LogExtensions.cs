@@ -6,108 +6,109 @@
 
 #endregion
 
+#if NET40 || NET45
 using System;
 using System.Text;
 
-namespace MediaInfo
+namespace MediaInfo;
+
+/// <summary>A log extensions.</summary>
+public static class LogExtensions
 {
-  /// <summary>A log extensions.</summary>
-  public static class LogExtensions
-  {
     /// <summary>Logs a verbose message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogVerbose(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Verbose, message, parameters);
+    public static void LogVerbose(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Verbose, message, parameters);
 
     /// <summary>Logs a debug message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogDebug(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Debug, message, parameters);
+    public static void LogDebug(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Debug, message, parameters);
 
     /// <summary>Logs a information message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogInformation(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Information, message, parameters);
+    public static void LogInformation(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Information, message, parameters);
 
     /// <summary>Logs a warning message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogWarning(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Warning, message, parameters);
+    public static void LogWarning(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Warning, message, parameters);
 
     /// <summary>Logs a error message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogError(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Error, message, parameters);
+    public static void LogError(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Error, message, parameters);
 
     /// <summary>Logs a error message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="exception">The source exception object.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogError(this ILogger logger, Exception exception, string message, params object[] parameters)
+    public static void LogError(this ILogger logger, Exception exception, string message, params object?[] parameters)
     {
-      if (logger != null)
-      {
-        var errorMessage = string.Format(message, parameters);
-        if (exception != null)
+        if (logger is not null)
         {
-          var msg = new StringBuilder()
-            .AppendFormat(message, parameters)
-            .AppendLine()
-            .Append("Exception: ")
-            .AppendLine(exception.Message)
-            .AppendLine("Callstack:")
-            .Append(exception.StackTrace);
+            var errorMessage = string.Format(message, parameters);
+            if (exception != null)
+            {
+                var msg = new StringBuilder()
+                  .AppendFormat(message, parameters)
+                  .AppendLine()
+                  .Append("Exception: ")
+                  .AppendLine(exception.Message)
+                  .AppendLine("Callstack:")
+                  .Append(exception.StackTrace);
 
-          errorMessage = msg.ToString();
+                errorMessage = msg.ToString();
+            }
+
+            logger.Log(LogLevel.Error, errorMessage);
         }
-
-        logger.Log(LogLevel.Error, errorMessage);
-      }
     }
 
     /// <summary>Logs a critical message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogCritical(this ILogger logger, string message, params object[] parameters) =>
-      logger?.Log(LogLevel.Critical, message, parameters);
+    public static void LogCritical(this ILogger logger, string message, params object?[] parameters) =>
+        logger.Log(LogLevel.Critical, message, parameters);
 
     /// <summary>Logs a critical message.</summary>
     /// <param name="logger">The logger instance.</param>
     /// <param name="exception">The source exception object.</param>
     /// <param name="message">The message.</param>
     /// <param name="parameters">A variable-length parameters list containing message parameters.</param>
-    public static void LogCritical(this ILogger logger, Exception exception, string message, params object[] parameters)
+    public static void LogCritical(this ILogger logger, Exception exception, string message, params object?[] parameters)
     {
-      if (logger != null)
-      {
-        var errorMessage = string.Format(message, parameters);
-        if (exception != null)
+        if (logger is not null)
         {
-          var msg = new StringBuilder()
-            .AppendFormat(message, parameters)
-            .AppendLine()
-            .Append("Exception: ")
-            .AppendLine(exception.Message)
-            .AppendLine("Callstack:")
-            .Append(exception.StackTrace);
+            var errorMessage = string.Format(message, parameters);
+            if (exception != null)
+            {
+                var msg = new StringBuilder()
+                  .AppendFormat(message, parameters)
+                  .AppendLine()
+                  .Append("Exception: ")
+                  .AppendLine(exception.Message)
+                  .AppendLine("Callstack:")
+                  .Append(exception.StackTrace);
 
-          errorMessage = msg.ToString();
+                errorMessage = msg.ToString();
+            }
+
+            logger.Log(LogLevel.Critical, errorMessage);
         }
-
-        logger.Log(LogLevel.Critical, errorMessage);
-      }
     }
-  }
 }
+#endif

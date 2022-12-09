@@ -2,33 +2,61 @@
 <Project>
 
   <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
     <GitHub>1.1.1</GitHub>
     <CoreNative>21.9.1</CoreNative>
     <Native>21.9.1</Native>
-    <JsonLib>6.0.2</JsonLib>
-    <TestSdk>17.2.0</TestSdk>
+    <JsonLib>6.0.6</JsonLib>
+    <TestSdk>17.4.0</TestSdk>
     <MoqLib>4.18.2</MoqLib>
-    <LoggingAbstractions>6.0.2</LoggingAbstractions>
+    <LoggingAbstractions70>7.0.0</LoggingAbstractions70>
+    <LoggingAbstractions60>6.0.3</LoggingAbstractions60>
+    <LoggingAbstractions50>5.0.0</LoggingAbstractions50>
+    <LoggingAbstractions31>3.1.31</LoggingAbstractions31>
     <AzureContainer>1.17.0</AzureContainer>
-    <FluentAssertions>6.7.0</FluentAssertions>
-    <AutoMapperLib>11.0.1</AutoMapperLib>
-    <AutoMapperDILib>11.0.0</AutoMapperDILib>
+    <FluentAssertions>6.8.0</FluentAssertions>
+    <AutoMapperLib>12.0.0</AutoMapperLib>
+    <AutoMapperDILib>12.0.0</AutoMapperDILib>
     <xUnitRunner>2.4.5</xUnitRunner>
     <xUnit>2.4.2</xUnit>
     <Swashbuckle>6.4.0</Swashbuckle>
     <MacrossJson>3.0.0</MacrossJson>
-    <MediaInfoVersion>21.9.1</MediaInfoVersion>
-    <MediaInfoFileVersion>21.9.1.0</MediaInfoFileVersion>
-    <PackageAuthor>yartat</PackageAuthor>
-    <PackageCompany>Yaroslav Tatarenko</PackageCompany>
-    <PackageRepository>https://github.com/yartat/MP-MediaInfo</PackageRepository>
-    <PackageCopyright>Copyright © 2017-2022 Yaroslav Tatarenko</PackageCopyright>
-    <PackageNotes>Copyright © 2017-2022 Yaroslav Tatarenko
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageNotes>
-    <PackageDescription>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
-MediaInfo .NET wrapper with support network AV streams.</PackageDescription>
+    <ReferenceAssemblies>1.0.3</ReferenceAssemblies>
+    <SystemMemory>4.5.5</SystemMemory>
     <PackageIconValue>MediaInfo_90x90.png</PackageIconValue>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!($(MSBuildProjectName.EndsWith(`.Tests`)))">
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Tests" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="!($(MSBuildProjectName.EndsWith(`.Tests`)))">
+    <Version>21.9.1</Version>
+    <RootNamespace>MediaInfo</RootNamespace>
+    <AssemblyVersion>21.9.1.0</AssemblyVersion>
+    <FileVersion>21.9.1.0</FileVersion>
+    <Company>Yaroslav Tatarenko</Company>
+    <Authors>yartat</Authors>
+    <Product>MP-MediaInfo</Product>
+    <Copyright>Copyright © 2017-2022 Yaroslav Tatarenko</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/yartat/MP-MediaInfo</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/yartat/MP-MediaInfo</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>$(PackageIconValue)</PackageIcon>
+    <Description>MediaInfo(Lib) is a convenient unified display of the most relevant technical and tag data for video and audio files.
+MediaInfo .NET wrapper with support network AV streams.</Description>
+    <PackageReleaseNotes>Copyright © 2017-2022 Yaroslav Tatarenko
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software").</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PackageTags>mediainfo wrapper dotnet .net</PackageTags>
   </PropertyGroup>
 
 </Project>

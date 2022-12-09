@@ -45,14 +45,14 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "videos")]
     [JsonPropertyName("videos")]
-    public IList<VideoStream> VideoStreams { get; set; }
+    public IList<VideoStream> VideoStreams { get; set; } = new List<VideoStream>();
 
     /// <summary>
     /// A video codec.
     /// </summary>
     [DataMember(Name = "videoCodec")]
     [JsonPropertyName("videoCodec")]
-    public string VideoCodec { get; set; }
+    public string? VideoCodec { get; set; }
 
     /// <summary>
     /// A video frame rate.
@@ -80,14 +80,14 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "aspectRatio")]
     [JsonPropertyName("aspectRatio")]
-    public string AspectRatio { get; set; }
+    public string? AspectRatio { get; set; }
 
     /// <summary>
     /// A type of the scan.
     /// </summary>
     [DataMember(Name = "scanType")]
     [JsonPropertyName("scanType")]
-    public string ScanType { get; set; }
+    public string? ScanType { get; set; }
 
     /// <summary>
     /// A value indicating whether this video is interlaced.
@@ -101,7 +101,7 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "videoResolution")]
     [JsonPropertyName("videoResolution")]
-    public string VideoResolution { get; set; }
+    public string? VideoResolution { get; set; }
 
     /// <summary>
     /// A video rate.
@@ -115,14 +115,14 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "audios")]
     [JsonPropertyName("audios")]
-    public IList<AudioStream> AudioStreams { get; set; }
+    public IList<AudioStream> AudioStreams { get; set; } = new List<AudioStream>();
 
     /// <summary>
     /// An audio codec.
     /// </summary>
     [DataMember(Name = "audioCodec")]
     [JsonPropertyName("audioCodec")]
-    public string AudioCodec { get; set; }
+    public string? AudioCodec { get; set; }
 
     /// <summary>
     /// An audio rate.
@@ -143,14 +143,14 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "audioChannelsFriendly")]
     [JsonPropertyName("audioChannelsFriendly")]
-    public string AudioChannelsFriendly { get; set; }
+    public string? AudioChannelsFriendly { get; set; }
 
     /// <summary>
     /// The subtitle streams.
     /// </summary>
     [DataMember(Name = "subtitles")]
     [JsonPropertyName("subtitles")]
-    public IList<SubtitleStream> Subtitles { get; set; }
+    public IList<SubtitleStream> Subtitles { get; set; } = new List<SubtitleStream>();
 
     /// <summary>
     /// A value indicating whether this video has external subtitles.
@@ -164,14 +164,14 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "chapters")]
     [JsonPropertyName("chapters")]
-    public IList<ChapterStream> Chapters { get; set; }
+    public IList<ChapterStream> Chapters { get; set; } = new List<ChapterStream>();
 
     /// <summary>
     /// The menu streams.
     /// </summary>
     [DataMember(Name = "menus")]
     [JsonPropertyName("menus")]
-    public IList<MenuStream> MenuStreams { get; set; }
+    public IList<MenuStream> MenuStreams { get; set; } = new List<MenuStream>();
 
     /// <summary>
     /// A value indicating whether this video is DVD format.
@@ -185,7 +185,7 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "format")]
     [JsonPropertyName("format")]
-    public string Format { get; set; }
+    public string? Format { get; set; }
 
     /// <summary>
     /// A value indicating whether this media is streamable.
@@ -199,42 +199,42 @@ public class MediaInfo
     /// </summary>
     [DataMember(Name = "writingApplication")]
     [JsonPropertyName("writingApplication")]
-    public string WritingApplication { get; set; }
+    public string? WritingApplication { get; set; }
 
     /// <summary>
     /// A writing media library.
     /// </summary>
     [DataMember(Name = "writingLibrary")]
     [JsonPropertyName("writingLibrary")]
-    public string WritingLibrary { get; set; }
+    public string? WritingLibrary { get; set; }
 
     /// <summary>
     /// The media attachments.
     /// </summary>
     [DataMember(Name = "attachments")]
     [JsonPropertyName("attachments")]
-    public string Attachments { get; set; }
+    public string? Attachments { get; set; }
 
     /// <summary>
     /// A media format version.
     /// </summary>
     [DataMember(Name = "formatVersion")]
     [JsonPropertyName("formatVersion")]
-    public string FormatVersion { get; set; }
+    public string? FormatVersion { get; set; }
 
     /// <summary>
     /// A media profile.
     /// </summary>
     [DataMember(Name = "profile")]
     [JsonPropertyName("profile")]
-    public string Profile { get; set; }
+    public string? Profile { get; set; }
 
     /// <summary>
     /// A media codec.
     /// </summary>
     [DataMember(Name = "codec")]
     [JsonPropertyName("codec")]
-    public string Codec { get; set; }
+    public string? Codec { get; set; }
 
     /// <summary>
     /// A value indicating whether this media is Blu-Ray.

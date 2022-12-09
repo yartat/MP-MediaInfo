@@ -25,7 +25,7 @@ public abstract class LanguageMediaStream : MediaStream
     /// <example>en</example>
     [DataMember(Name = "language")]
     [JsonPropertyName("language")]
-    public string Language { get; set; }
+    public string Language { get; set; } = default!;
 
     /// <summary>
     /// A media stream LCID.

@@ -25,7 +25,7 @@ public class SubtitleStream : LanguageMediaStream
     /// <example>utf8</example>
     [DataMember(Name = "format")]
     [JsonPropertyName("format")]
-    public string Format { get; set; }
+    public string? Format { get; set; }
 
     /// <summary>
     /// Gets the subtitle codec.

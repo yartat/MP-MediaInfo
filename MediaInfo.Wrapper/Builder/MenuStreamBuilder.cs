@@ -9,13 +9,13 @@
 using System;
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes method to build menu stream.
+/// </summary>
+internal class MenuStreamBuilder : MediaStreamBuilder<MenuStream>
 {
-  /// <summary>
-  /// Describes method to build menu stream.
-  /// </summary>
-  internal class MenuStreamBuilder : MediaStreamBuilder<MenuStream>
-  {
     public MenuStreamBuilder(MediaInfo info, int number, int position)
       : base(info, number, position)
     {
@@ -30,19 +30,24 @@ namespace MediaInfo.Builder
     /// <inheritdoc />
     public override MenuStream Build()
     {
-      var result = base.Build();
-      var chapterStartId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_Begin, InfoKind.Text, TagBuilderHelper.TryGetInt);
-      var chapterEndId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_End, InfoKind.Text, TagBuilderHelper.TryGetInt);
-      for (var i = chapterStartId; i < chapterEndId; ++i)
-      {
-        result.Chapters.Add(new Chapter
+        var result = base.Build();
+        var chapterStartId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_Begin, InfoKind.Text, TagBuilderHelper.TryGetInt);
+        var chapterEndId = Get<int>((int)NativeMethods.Menu.Menu_Chapters_Pos_End, InfoKind.Text, TagBuilderHelper.TryGetInt);
+        for (var i = chapterStartId; i < chapterEndId; ++i)
         {
-          Name = Get(i, InfoKind.Text),
-          Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse)
-        });
-      }
+#if NET5_0_OR_GREATER
+            result.Chapters.Add(new Chapter(
+                Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse),
+                Get(i, InfoKind.Text)));
+#else
+            result.Chapters.Add(new Chapter
+            {
+                Position = Get<TimeSpan>(i, InfoKind.NameText, TimeSpan.TryParse),
+                Name = Get(i, InfoKind.Text),
+            });
+#endif
+        }
 
-      return result;
+        return result;
     }
-  }
 }

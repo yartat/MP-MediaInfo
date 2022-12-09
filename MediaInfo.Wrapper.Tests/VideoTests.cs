@@ -14,17 +14,17 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MediaInfo.Wrapper.Tests
+namespace MediaInfo.Wrapper.Tests;
+
+/// <summary>A video tests.</summary>
+public class VideoTests
 {
-  /// <summary>A video tests.</summary>
-  public class VideoTests
-  {
-    private MediaInfoWrapper _mediaInfoWrapper;
+    private MediaInfoWrapper? _mediaInfoWrapper;
     private readonly ILogger _logger;
 
     public VideoTests(ITestOutputHelper testOutputHelper)
     {
-      _logger = new TestLogger(testOutputHelper);
+        _logger = new TestLogger(testOutputHelper);
     }
 
 #if DEBUG
@@ -35,29 +35,29 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov")]
     public void LoadSteamVideo(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(1371743L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(310275);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.TaggedDate.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.H263);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().NotBeEmpty();
-      videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(1371743L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(310275);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.TaggedDate.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.H263);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().NotBeEmpty();
+        videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
     }
 
 #if DEBUG
@@ -70,54 +70,54 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("http://localhost/video/iphone6s_4k.mov", 118742364L, 51105477, 1, VideoCodec.Mpeg4IsoAvc, ChromaSubSampling.Sampling420, 118512869L)]
     public void LoadAVSteam(string fileName, long size, int rate, int audioStreams, VideoCodec codec, ChromaSubSampling sampling, long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(size);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(rate);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioStreams);
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(codec);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.SubSampling.Should().Be(sampling);
-      videoStream.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(size);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(rate);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(audioStreams);
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(codec);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.SubSampling.Should().Be(sampling);
+        videoStream.StreamSize.Should().Be(streamSize);
     }
 
     [Theory]
     [InlineData("./Data/RTL_7_Darts_WK_2014-2013-12-23_1_h263.3gp")]
     public void LoadSimpleVideo(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(1371743L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(310275);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.TaggedDate.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.H263);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().NotBeEmpty();
-      videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
-      videoStream.StreamSize.Should().Be(1305431L);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(1371743L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(310275);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.Tags.EncodedDate.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.TaggedDate.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.H263);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().NotBeEmpty();
+        videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
+        videoStream.StreamSize.Should().Be(1305431L);
     }
 
 #if DEBUG
@@ -128,128 +128,128 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../HD/[Kametsu] Princess Principal Picture Drama - 01 (BD 1080p Hi10 FLAC) [BBF1B4CE].mkv")]
     public void LoadVideoWithAttachments(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(20105030);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(4180953);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Tags.EncodedDate.Should().BeNull();
-      _mediaInfoWrapper.Tags.TaggedDate.Should().BeNull();
-      _mediaInfoWrapper.IsStreamable.Should().BeTrue();
-      _mediaInfoWrapper.WritingApplication.Should().Be("Lavf58.77.100");
-      _mediaInfoWrapper.WritingLibrary.Should().Be("Lavf58.77.100");
-      _mediaInfoWrapper.Attachments.Should().Be("Amaranth-Italic.otf / Amaranth-Regular.otf");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
-      _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().NotBeEmpty();
-      videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
-      videoStream.StreamSize.Should().Be(116137489L);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(20105030);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(4180953);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Tags.EncodedDate.Should().BeNull();
+        _mediaInfoWrapper.Tags.TaggedDate.Should().BeNull();
+        _mediaInfoWrapper.IsStreamable.Should().BeTrue();
+        _mediaInfoWrapper.WritingApplication.Should().Be("Lavf58.77.100");
+        _mediaInfoWrapper.WritingLibrary.Should().Be("Lavf58.77.100");
+        _mediaInfoWrapper.Attachments.Should().Be("Amaranth-Italic.otf / Amaranth-Regular.otf");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
+        _mediaInfoWrapper.AudioStreams[0].Tags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().NotBeEmpty();
+        videoStream.Tags.EncodedLibrary.Should().NotBeNullOrEmpty();
+        videoStream.StreamSize.Should().Be(116137489L);
     }
 
     [Theory]
     [InlineData("./Data/Test_H264_Atmos.m2ts")]
     public void LoadVideoWithDolbyAtmos(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(503808L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(24000000);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
-      var atmosStream = _mediaInfoWrapper.AudioStreams[0];
-      atmosStream.Codec.Should().Be(AudioCodec.TruehdAtmos, "First audio channel is Dolby TrueHD with Atmos");
-      var dolbyAtmosStream = _mediaInfoWrapper.AudioStreams[1];
-      dolbyAtmosStream.Codec.Should().Be(AudioCodec.Eac3Atmos, "First audio channel is Dolby Atmos");
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().BeEmpty();
-      _mediaInfoWrapper.AudioStreams[1].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[1].Tags.GeneralTags.Should().BeEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.ColorSpace.Should().Be(ColorSpace.BT709);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().BeEmpty();
-      videoStream.StreamSize.Should().Be(0L);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(503808L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(24000000);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(2);
+        var atmosStream = _mediaInfoWrapper.AudioStreams[0];
+        atmosStream.Codec.Should().Be(AudioCodec.TruehdAtmos, "First audio channel is Dolby TrueHD with Atmos");
+        var dolbyAtmosStream = _mediaInfoWrapper.AudioStreams[1];
+        dolbyAtmosStream.Codec.Should().Be(AudioCodec.Eac3Atmos, "First audio channel is Dolby Atmos");
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper.AudioStreams[1].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[1].Tags.GeneralTags.Should().BeEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.ColorSpace.Should().Be(ColorSpace.BT709);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().BeEmpty();
+        videoStream.StreamSize.Should().Be(0L);
     }
 
     [Theory]
     [InlineData("./Data/Test_H264_Ac3.m2ts")]
     public void LoadVideoWithDolbyDigital(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(86016L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var ac3 = _mediaInfoWrapper.AudioStreams[0];
-      ac3.Codec.Should().Be(AudioCodec.Ac3);
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().BeEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().BeEmpty();
-      videoStream.StreamSize.Should().Be(0L);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(86016L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var ac3 = _mediaInfoWrapper.AudioStreams[0];
+        ac3.Codec.Should().Be(AudioCodec.Ac3);
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.AudioStreams[0].Tags.GeneralTags.Should().BeEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().BeEmpty();
+        videoStream.StreamSize.Should().Be(0L);
     }
 
     [Theory]
     [InlineData("./Data/Test_H264.m2ts")]
     public void LoadVideoWithoutAudio(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(18432L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(5000000);
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Should().BeEmpty();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var videoStream = _mediaInfoWrapper.VideoStreams[0];
-      videoStream.Hdr.Should().Be(Hdr.None);
-      videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
-      videoStream.Standard.Should().Be(VideoStandard.NTSC);
-      videoStream.ColorSpace.Should().Be(ColorSpace.BT709);
-      videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      videoStream.Tags.GeneralTags.Should().NotBeNull();
-      videoStream.Tags.GeneralTags.Should().BeEmpty();
-      videoStream.StreamSize.Should().Be(625625L);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(18432L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(5000000);
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Should().BeEmpty();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var videoStream = _mediaInfoWrapper.VideoStreams[0];
+        videoStream.Hdr.Should().Be(Hdr.None);
+        videoStream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+        videoStream.Standard.Should().Be(VideoStandard.NTSC);
+        videoStream.ColorSpace.Should().Be(ColorSpace.BT709);
+        videoStream.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        videoStream.Tags.GeneralTags.Should().NotBeNull();
+        videoStream.Tags.GeneralTags.Should().BeEmpty();
+        videoStream.StreamSize.Should().Be(625625L);
     }
 
 #if DEBUG
@@ -260,29 +260,29 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("//192.168.50.31/Video_O/2016 DOLBY ATMOS DEMO DISC/BDMV/index.bdmv")]
     public void LoadBluRayWithMenuAndDolbyAtmos(string fileName)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.Size.Should().Be(24716230397L);
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.VideoRate.Should().Be(32173617);
-      _mediaInfoWrapper.IsBluRay.Should().BeTrue("Is BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(22);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var atmos = _mediaInfoWrapper.AudioStreams[0];
-      atmos.Codec.Should().Be(AudioCodec.TruehdAtmos);
-      atmos.Channel.Should().Be(8);
-      var video = _mediaInfoWrapper.VideoStreams[0];
-      video.Hdr.Should().Be(Hdr.None);
-      video.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
-      video.ColorSpace.Should().Be(ColorSpace.BT709);
-      video.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
-      video.StreamSize.Should().Be(423954426L);
-      _mediaInfoWrapper.MenuStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
-      _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.Size.Should().Be(24716230397L);
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.VideoRate.Should().Be(32173617);
+        _mediaInfoWrapper.IsBluRay.Should().BeTrue("Is BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(22);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var atmos = _mediaInfoWrapper.AudioStreams[0];
+        atmos.Codec.Should().Be(AudioCodec.TruehdAtmos);
+        atmos.Channel.Should().Be(8);
+        var video = _mediaInfoWrapper.VideoStreams[0];
+        video.Hdr.Should().Be(Hdr.None);
+        video.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc);
+        video.ColorSpace.Should().Be(ColorSpace.BT709);
+        video.SubSampling.Should().Be(ChromaSubSampling.Sampling420);
+        video.StreamSize.Should().Be(423954426L);
+        _mediaInfoWrapper.MenuStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.Tags.GeneralTags.Should().NotBeNull();
+        _mediaInfoWrapper.Tags.GeneralTags.Should().BeEmpty();
     }
 
 #if DEBUG
@@ -314,24 +314,24 @@ namespace MediaInfo.Wrapper.Tests
         int channels,
         long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var audio = _mediaInfoWrapper.AudioStreams[0];
-      audio.Codec.Should().Be(audioCodec);
-      audio.Channel.Should().Be(channels);
-      var video = _mediaInfoWrapper.VideoStreams[0];
-      video.Hdr.Should().Be(hdr);
-      video.Codec.Should().Be(videoCodec);
-      video.ColorSpace.Should().Be(colorSpace);
-      video.SubSampling.Should().Be(subSampling);
-      video.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var audio = _mediaInfoWrapper.AudioStreams[0];
+        audio.Codec.Should().Be(audioCodec);
+        audio.Channel.Should().Be(channels);
+        var video = _mediaInfoWrapper.VideoStreams[0];
+        video.Hdr.Should().Be(hdr);
+        video.Codec.Should().Be(videoCodec);
+        video.ColorSpace.Should().Be(colorSpace);
+        video.SubSampling.Should().Be(subSampling);
+        video.StreamSize.Should().Be(streamSize);
     }
 
 #if DEBUG
@@ -350,20 +350,20 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../UHD/4k_Rec709_ProResHQ.mov", VideoCodec.ProRes, 3072, ColorSpace.Generic, ChromaSubSampling.Sampling422, 16300923221L)]
     public void LoadUhdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling subSampling, long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
-      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
-      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
-      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var video = _mediaInfoWrapper.VideoStreams[0];
-      video.Height.Should().Be(height);
-      video.Codec.Should().Be(videoCodec);
-      video.ColorSpace.Should().Be(colorSpace);
-      video.SubSampling.Should().Be(subSampling);
-      video.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+        _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+        _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream is progressive");
+        _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream is not 3D");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var video = _mediaInfoWrapper.VideoStreams[0];
+        video.Height.Should().Be(height);
+        video.Codec.Should().Be(videoCodec);
+        video.ColorSpace.Should().Be(colorSpace);
+        video.SubSampling.Should().Be(subSampling);
+        video.StreamSize.Should().Be(streamSize);
     }
 
 #if DEBUG
@@ -378,17 +378,17 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../3D/small-00000.ssif", VideoCodec.Mpeg4IsoAvc, Hdr.None, ColorSpace.Generic, StereoMode.Stereo, ChromaSubSampling.Sampling420, 1963071L)]
     public void Load3dDemo(string fileName, VideoCodec videoCodec, Hdr hdr, ColorSpace colorSpace, StereoMode stereoMode, ChromaSubSampling subSampling, long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.Is3D.Should().BeTrue("Video stream is 3D");
-      var video = _mediaInfoWrapper.VideoStreams[0];
-      video.Hdr.Should().Be(hdr);
-      video.Codec.Should().Be(videoCodec);
-      video.Stereoscopic.Should().Be(stereoMode);
-      video.ColorSpace.Should().Be(colorSpace);
-      video.SubSampling.Should().Be(subSampling);
-      video.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.Is3D.Should().BeTrue("Video stream is 3D");
+        var video = _mediaInfoWrapper.VideoStreams[0];
+        video.Hdr.Should().Be(hdr);
+        video.Codec.Should().Be(videoCodec);
+        video.Stereoscopic.Should().Be(stereoMode);
+        video.ColorSpace.Should().Be(colorSpace);
+        video.SubSampling.Should().Be(subSampling);
+        video.StreamSize.Should().Be(streamSize);
     }
 
 #if DEBUG
@@ -426,16 +426,15 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../HD/VC-1_29.970_sample.mkv", VideoCodec.Vc1, 1080, ColorSpace.Generic, ChromaSubSampling.Sampling420, 105596312L)]
     public void LoadHdDemo(string fileName, VideoCodec videoCodec, int height, ColorSpace colorSpace, ChromaSubSampling chromaSubSampling, long streamSize)
     {
-      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
-      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
-      _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
-      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
-      var video = _mediaInfoWrapper.VideoStreams[0];
-      video.Height.Should().Be(height);
-      video.Codec.Should().Be(videoCodec);
-      video.ColorSpace.Should().Be(colorSpace);
-      video.SubSampling.Should().Be(chromaSubSampling);
-      video.StreamSize.Should().Be(streamSize);
+        _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+        _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+        _mediaInfoWrapper.HasVideo.Should().BeTrue("Video stream must be detected");
+        _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+        var video = _mediaInfoWrapper.VideoStreams[0];
+        video.Height.Should().Be(height);
+        video.Codec.Should().Be(videoCodec);
+        video.ColorSpace.Should().Be(colorSpace);
+        video.SubSampling.Should().Be(chromaSubSampling);
+        video.StreamSize.Should().Be(streamSize);
     }
-  }
 }

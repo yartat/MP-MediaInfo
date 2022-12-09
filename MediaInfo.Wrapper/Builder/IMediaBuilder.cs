@@ -8,18 +8,17 @@
 
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes media builder interface
+/// </summary>
+/// <typeparam name="TStream">The type of the stream.</typeparam>
+internal interface IMediaBuilder<out TStream> where TStream : MediaStream
 {
-  /// <summary>
-  /// Describes media builder interface
-  /// </summary>
-  /// <typeparam name="TStream">The type of the stream.</typeparam>
-  internal interface IMediaBuilder<out TStream> where TStream : MediaStream
-  {
     /// <summary>
     /// Builds media stream.
     /// </summary>
     /// <returns></returns>
     TStream Build();
-  }
 }

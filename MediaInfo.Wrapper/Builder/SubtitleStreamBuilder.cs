@@ -9,16 +9,16 @@
 using System.Collections.Generic;
 using MediaInfo.Model;
 
-namespace MediaInfo.Builder
+namespace MediaInfo.Builder;
+
+/// <summary>
+/// Describes base methods to build subtitle stream.
+/// </summary>
+internal class SubtitleStreamBuilder : LanguageMediaStreamBuilder<SubtitleStream>
 {
-  /// <summary>
-  /// Describes base methods to build subtitle stream.
-  /// </summary>
-  internal class SubtitleStreamBuilder : LanguageMediaStreamBuilder<SubtitleStream>
-  {
     #region match dictionary
 
-    private static readonly Dictionary<string, SubtitleCodec> SubtitleCodecs = new Dictionary<string, SubtitleCodec>
+    private static readonly Dictionary<string, SubtitleCodec> SubtitleCodecs = new()
     {
         { "S_ASS", SubtitleCodec.Ass },
         { "S_IMAGE/BMP", SubtitleCodec.ImageBmp },
@@ -56,15 +56,12 @@ namespace MediaInfo.Builder
     /// <inheritdoc />
     public override SubtitleStream Build()
     {
-      var result = base.Build();
-      result.Format = Get((int)NativeMethods.Text.Text_Format, InfoKind.Text);
-      result.Codec = Get<SubtitleCodec>((int)NativeMethods.Text.Text_CodecID, InfoKind.Text, TryGetCodec);
-      return result;
+        var result = base.Build();
+        result.Format = Get((int)NativeMethods.Text.Text_Format, InfoKind.Text);
+        result.Codec = Get<SubtitleCodec>((int)NativeMethods.Text.Text_CodecID, InfoKind.Text, TryGetCodec);
+        return result;
     }
 
-    private static bool TryGetCodec(string source, out SubtitleCodec result)
-    {
-      return SubtitleCodecs.TryGetValue(source.ToUpper(), out result);
-    }
-  }
+    private static bool TryGetCodec(string source, out SubtitleCodec result) =>
+        SubtitleCodecs.TryGetValue(source.ToUpper(), out result);
 }

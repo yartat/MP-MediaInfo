@@ -9,21 +9,21 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MediaInfo
+namespace MediaInfo;
+
+/// <summary>
+/// Describes methods to work with unmanaged Global memory block
+/// </summary>
+/// <seealso cref="IDisposable" />
+public class GlobalMemory : IDisposable
 {
-  /// <summary>
-  /// Describes methods to work with unmanaged Global memory block
-  /// </summary>
-  /// <seealso cref="IDisposable" />
-  public class GlobalMemory : IDisposable
-  {
     /// <summary>
     /// Initializes a new instance of the <see cref="GlobalMemory"/> class.
     /// </summary>
     /// <param name="handle">The handle.</param>
     private GlobalMemory(IntPtr handle)
     {
-      Handle = handle;
+        Handle = handle;
     }
 
     /// <summary>
@@ -31,24 +31,19 @@ namespace MediaInfo
     /// </summary>
     ~GlobalMemory()
     {
-      Dispose(false);
+        Dispose(false);
     }
 
     /// <summary>
-    /// Gets the handle.
+    /// The handle of the memory allocation.
     /// </summary>
-    /// <value>
-    /// The handle.
-    /// </value>
     public IntPtr Handle { get; private set; }
 
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
+    /// <inheritdoc/>
     public void Dispose()
     {
-      Dispose(true);
-      GC.SuppressFinalize(this);
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -56,18 +51,15 @@ namespace MediaInfo
     /// </summary>
     /// <param name="source">The source.</param>
     /// <returns></returns>
-    public static GlobalMemory StringToGlobalAnsi(string source)
-    {
-      return new GlobalMemory(Marshal.StringToHGlobalAnsi(source));
-    }
+    public static GlobalMemory StringToGlobalAnsi(string source) =>
+        new(Marshal.StringToHGlobalAnsi(source));
 
     private void Dispose(bool _)
     {
-      if (Handle != IntPtr.Zero)
-      {
-        Marshal.FreeHGlobal(Handle);
-        Handle = IntPtr.Zero;
-      }
+        if (Handle != IntPtr.Zero)
+        {
+            Marshal.FreeHGlobal(Handle);
+            Handle = IntPtr.Zero;
+        }
     }
-  }
 }

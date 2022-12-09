@@ -8,90 +8,89 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Provides properties and overridden methods for the analyze audio stream
+/// and contains information about audio stream.
+/// </summary>
+/// <seealso cref="LanguageMediaStream" />
+public class AudioStream : LanguageMediaStream
 {
-    /// <summary>
-    /// Provides properties and overridden methods for the analyze audio stream
-    /// and contains information about audio stream.
-    /// </summary>
-    /// <seealso cref="LanguageMediaStream" />
-    public class AudioStream : LanguageMediaStream
-  {
     #region matching dictionaries
 
-    private static readonly Dictionary<AudioCodec, string> CodecFrendlyNames = new Dictionary<AudioCodec, string>
+    private static readonly Dictionary<AudioCodec, string> CodecFrendlyNames = new()
     {
-      { AudioCodec.Undefined, "" },
-      { AudioCodec.MpegLayer1, "MPEG Layer 1" },
-      { AudioCodec.MpegLayer2, "MPEG Layer 2" },
-      { AudioCodec.MpegLayer3, "MPEG Layer 3" },
-      { AudioCodec.PcmIntBig, "PCM" },
-      { AudioCodec.PcmIntLit, "PCM" },
-      { AudioCodec.PcmFloatIeee, "PCM" },
-      { AudioCodec.Ac3, "Dolby Digital" },
-      { AudioCodec.Ac3Atmos, "Dolby Atmos" },
-      { AudioCodec.Ac3Bsid9, "DolbyNet" },
-      { AudioCodec.Ac3Bsid10, "DolbyNet" },
-      { AudioCodec.Dts, "DTS" },
-      { AudioCodec.DtsHd, "DTS-HD" },
-      { AudioCodec.Eac3, "Dolby Digital Plus" },
-      { AudioCodec.Eac3Atmos, "Dolby Atmos" },
-      { AudioCodec.Flac, "FLAC" },
-      { AudioCodec.Opus, "OPUS" },
-      { AudioCodec.Tta1, "True Audio" },
-      { AudioCodec.Vorbis, "Vorbis" },
-      { AudioCodec.WavPack4, "WavPack" },
-      { AudioCodec.WavPack, "WavPack" },
-      { AudioCodec.Wave, "Wave" },
-      { AudioCodec.Wave64, "Wave" },
-      { AudioCodec.Real14_4, "Real Audio" },
-      { AudioCodec.Real28_8, "Real Audio" },
-      { AudioCodec.RealCook, "Real Audio" },
-      { AudioCodec.RealSipr, "Real Audio" },
-      { AudioCodec.RealRalf, "Real Audio" },
-      { AudioCodec.RealAtrc, "Real Audio" },
-      { AudioCodec.Truehd, "Dolby TrueHD" },
-      { AudioCodec.TruehdAtmos, "Dolby TrueHD Atmos" },
-      { AudioCodec.Mlp, "Meridian Lossless" },
-      { AudioCodec.Aac, "AAC" },
-      { AudioCodec.AacMpeg2Main, "AAC" },
-      { AudioCodec.AacMpeg2Lc, "AAC" },
-      { AudioCodec.AacMpeg2LcSbr, "AAC" },
-      { AudioCodec.AacMpeg2Ssr, "AAC" },
-      { AudioCodec.AacMpeg4Main, "AAC" },
-      { AudioCodec.AacMpeg4Lc, "AAC" },
-      { AudioCodec.AacMpeg4LcSbr, "AAC" },
-      { AudioCodec.AacMpeg4LcSbrPs, "AAC" },
-      { AudioCodec.AacMpeg4Ssr, "AAC" },
-      { AudioCodec.AacMpeg4Ltp, "AAC" },
-      { AudioCodec.Alac, "Apple Lossless" },
-      { AudioCodec.Ape, "Monkey's Audio" },
-      { AudioCodec.Wma1, "Windows Audio" },
-      { AudioCodec.Wma2, "Windows Audio" },
-      { AudioCodec.WmaPro, "Windows Audio Pro" },
-      { AudioCodec.Adpcm, "ADPCM" },
-      { AudioCodec.Amr, "Adaptive Multi-Rate" },
-      { AudioCodec.Atrac1, "SDSS" },
-      { AudioCodec.Atrac3, "ATRAC3" },
-      { AudioCodec.Atrac3Plus, "ATRAC3plus" },
-      { AudioCodec.AtracLossless, "ATRAC Advanced Lossless" },
-      { AudioCodec.Atrac9, "ATRAC9" },
+        { AudioCodec.Undefined, "" },
+        { AudioCodec.MpegLayer1, "MPEG Layer 1" },
+        { AudioCodec.MpegLayer2, "MPEG Layer 2" },
+        { AudioCodec.MpegLayer3, "MPEG Layer 3" },
+        { AudioCodec.PcmIntBig, "PCM" },
+        { AudioCodec.PcmIntLit, "PCM" },
+        { AudioCodec.PcmFloatIeee, "PCM" },
+        { AudioCodec.Ac3, "Dolby Digital" },
+        { AudioCodec.Ac3Atmos, "Dolby Atmos" },
+        { AudioCodec.Ac3Bsid9, "DolbyNet" },
+        { AudioCodec.Ac3Bsid10, "DolbyNet" },
+        { AudioCodec.Dts, "DTS" },
+        { AudioCodec.DtsHd, "DTS-HD" },
+        { AudioCodec.Eac3, "Dolby Digital Plus" },
+        { AudioCodec.Eac3Atmos, "Dolby Atmos" },
+        { AudioCodec.Flac, "FLAC" },
+        { AudioCodec.Opus, "OPUS" },
+        { AudioCodec.Tta1, "True Audio" },
+        { AudioCodec.Vorbis, "Vorbis" },
+        { AudioCodec.WavPack4, "WavPack" },
+        { AudioCodec.WavPack, "WavPack" },
+        { AudioCodec.Wave, "Wave" },
+        { AudioCodec.Wave64, "Wave" },
+        { AudioCodec.Real14_4, "Real Audio" },
+        { AudioCodec.Real28_8, "Real Audio" },
+        { AudioCodec.RealCook, "Real Audio" },
+        { AudioCodec.RealSipr, "Real Audio" },
+        { AudioCodec.RealRalf, "Real Audio" },
+        { AudioCodec.RealAtrc, "Real Audio" },
+        { AudioCodec.Truehd, "Dolby TrueHD" },
+        { AudioCodec.TruehdAtmos, "Dolby TrueHD Atmos" },
+        { AudioCodec.Mlp, "Meridian Lossless" },
+        { AudioCodec.Aac, "AAC" },
+        { AudioCodec.AacMpeg2Main, "AAC" },
+        { AudioCodec.AacMpeg2Lc, "AAC" },
+        { AudioCodec.AacMpeg2LcSbr, "AAC" },
+        { AudioCodec.AacMpeg2Ssr, "AAC" },
+        { AudioCodec.AacMpeg4Main, "AAC" },
+        { AudioCodec.AacMpeg4Lc, "AAC" },
+        { AudioCodec.AacMpeg4LcSbr, "AAC" },
+        { AudioCodec.AacMpeg4LcSbrPs, "AAC" },
+        { AudioCodec.AacMpeg4Ssr, "AAC" },
+        { AudioCodec.AacMpeg4Ltp, "AAC" },
+        { AudioCodec.Alac, "Apple Lossless" },
+        { AudioCodec.Ape, "Monkey's Audio" },
+        { AudioCodec.Wma1, "Windows Audio" },
+        { AudioCodec.Wma2, "Windows Audio" },
+        { AudioCodec.WmaPro, "Windows Audio Pro" },
+        { AudioCodec.Adpcm, "ADPCM" },
+        { AudioCodec.Amr, "Adaptive Multi-Rate" },
+        { AudioCodec.Atrac1, "SDSS" },
+        { AudioCodec.Atrac3, "ATRAC3" },
+        { AudioCodec.Atrac3Plus, "ATRAC3plus" },
+        { AudioCodec.AtracLossless, "ATRAC Advanced Lossless" },
+        { AudioCodec.Atrac9, "ATRAC9" },
     };
 
-    private static readonly Dictionary<int, string> Channels = new Dictionary<int, string>
+    private static readonly Dictionary<int, string> Channels = new()
     {
-      { 1, "Mono" },
-      { 2, "Stereo" },
-      { 3, "2.1" },
-      { 4, "4.0" },
-      { 5, "5.0" },
-      { 6, "5.1" },
-      { 7, "6.1" },
-      { 8, "7.1" },
-      { 9, "7.2" },
-      { 10, "7.2.1" },
+        { 1, "Mono" },
+        { 2, "Stereo" },
+        { 3, "2.1" },
+        { 4, "4.0" },
+        { 5, "5.0" },
+        { 6, "5.1" },
+        { 7, "6.1" },
+        { 8, "7.1" },
+        { 9, "7.2" },
+        { 10, "7.2.1" },
     };
 
     #endregion
@@ -103,115 +102,75 @@ namespace MediaInfo.Model
     protected override StreamKind StreamKind => StreamKind.Audio;
 
     /// <summary>
-    /// Gets the audio codec.
-    /// </summary>
-    /// <value>
     /// The audio codec.
-    /// </value>
+    /// </summary>
     public AudioCodec Codec { get; set; }
 
     /// <summary>
-    /// Gets the codec friendly name.
-    /// </summary>
-    /// <value>
     /// The codec friendly name.
-    /// </value>
+    /// </summary>
     public string CodecFriendly
     {
-      get => CodecFrendlyNames.TryGetValue(Codec, out var result) ? result : string.Empty;
+        get => CodecFrendlyNames.TryGetValue(Codec, out var result) ? result : string.Empty;
     }
 
     /// <summary>
-    /// Gets the stream duration.
-    /// </summary>
-    /// <value>
     /// The stream duration.
-    /// </value>
+    /// </summary>
     public TimeSpan Duration { get; set; }
 
     /// <summary>
-    /// Gets the audio bitrate.
-    /// </summary>
-    /// <value>
     /// The audio bitrate.
-    /// </value>
+    /// </summary>
     public double Bitrate { get; set; }
 
     /// <summary>
-    /// Gets the audio channel amount.
-    /// </summary>
-    /// <value>
     /// The audio channel amount.
-    /// </value>
+    /// </summary>
     public int Channel { get; set; }
 
     /// <summary>
-    /// Gets the audio sampling rate.
-    /// </summary>
-    /// <value>
     /// The audio sampling rate.
-    /// </value>
+    /// </summary>
     public double SamplingRate { get; set; }
 
     /// <summary>
-    /// Gets the bit depth of stream.
-    /// </summary>
-    /// <value>
     /// The bit depth of stream.
-    /// </value>
+    /// </summary>
     public int BitDepth { get; set; }
 
     /// <summary>
-    /// Gets the bitrate mode of stream.
-    /// </summary>
-    /// <value>
     /// The bitrate mode of stream.
-    /// </value>
-    [DataMember(Name = "bitrateMode")]
+    /// </summary>
     public BitrateMode BitrateMode { get; set; }
 
     /// <summary>
-    /// Gets the audio format.
-    /// </summary>
-    /// <value>
     /// The audio format.
-    /// </value>
-    public string Format { get; set; }
+    /// </summary>
+    public string Format { get; set; } = default!;
 
     /// <summary>
-    /// Gets the audio codec name.
-    /// </summary>
-    /// <value>
     /// The audio codec name.
-    /// </value>
-    public string CodecName { get; set; }
+    /// </summary>
+    public string CodecName { get; set; } = default!;
 
     /// <summary>
-    /// Gets the audio codec description.
-    /// </summary>
-    /// <value>
     /// The audio codec description.
-    /// </value>
-    public string CodecDescription { get; set; }
+    /// </summary>
+    public string? CodecDescription { get; set; }
 
     /// <summary>
-    /// Gets the audio channels friendly.
-    /// </summary>
-    /// <value>
     /// The audio channels friendly.
-    /// </value>
+    /// </summary>
     public string AudioChannelsFriendly => ConvertAudioChannels(Channel);
 
     /// <summary>
-    /// Gets the stream tags.
-    /// </summary>
-    /// <value>
     /// The stream tags.
-    /// </value>
-    [DataMember(Name = "tags")]
+    /// </summary>
     public AudioTags Tags { get; internal set; } = new AudioTags();
 
     private static string ConvertAudioChannels(int channels) =>
-      Channels.TryGetValue(channels, out var result) ? result : "Unknown";
-  }
+        Channels.TryGetValue(channels, out var result) ?
+            result :
+            "Unknown";
 }

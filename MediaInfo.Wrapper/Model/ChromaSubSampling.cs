@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes video chroma sub sampling
+/// </summary>
+public enum ChromaSubSampling
 {
-  /// <summary>
-  /// Describes video chroma sub sampling
-  /// </summary>
-  public enum ChromaSubSampling
-  {
     /// <summary>
     /// 3:3:2
     /// </summary>
@@ -62,5 +62,4 @@ namespace MediaInfo.Model
     /// 8:8:8
     /// </summary>
     Sampling888
-  }
 }

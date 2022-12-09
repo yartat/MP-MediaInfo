@@ -6,15 +6,13 @@
 
 #endregion
 
-using System.Runtime.Serialization;
+namespace MediaInfo.Model;
 
-namespace MediaInfo.Model
+/// <summary>
+/// Defines constants for different kind of audio codecs.
+/// </summary>
+public enum AudioCodec
 {
-  /// <summary>
-  /// Defines constants for different kind of audio codecs.
-  /// </summary>
-  public enum AudioCodec
-  {
     /// <summary>
     /// The undefined audio codec
     /// </summary>
@@ -416,5 +414,4 @@ namespace MediaInfo.Model
     /// Dolby ED2
     /// </summary>
     DolbyEd2
-  }
 }

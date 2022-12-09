@@ -6,14 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
-{
-    /// <summary>
-    /// Defines constants for different kind of subtitles.
-    /// </summary>
-    public enum SubtitleCodec
-  {
+namespace MediaInfo.Model;
 
+/// <summary>
+/// Defines constants for different kind of subtitles.
+/// </summary>
+public enum SubtitleCodec
+{
     /// <summary>
     /// The undefined type.
     /// </summary>
@@ -78,5 +77,4 @@ namespace MediaInfo.Model
     /// The HDMV Text Subtitle Format subtitles
     /// </summary>
     HdmvTextst
-  }
 }

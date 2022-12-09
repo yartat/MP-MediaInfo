@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes 3D stereo mode
+/// </summary>
+public enum StereoMode
 {
-  /// <summary>
-  /// Describes 3D stereo mode
-  /// </summary>
-  public enum StereoMode
-  {
     /// <summary>
     /// No 3D (mono)
     /// </summary>
@@ -92,5 +92,4 @@ namespace MediaInfo.Model
     /// The both eyes laced right eye is first
     /// </summary>
     BothEyesLacedRight
-  }
 }

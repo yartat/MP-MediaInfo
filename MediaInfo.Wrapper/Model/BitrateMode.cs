@@ -6,13 +6,13 @@
 
 #endregion
 
-namespace MediaInfo.Model
+namespace MediaInfo.Model;
+
+/// <summary>
+/// Describes bitrate possible modes
+/// </summary>
+public enum BitrateMode : byte
 {
-  /// <summary>
-  /// Describes bitrate possible modes
-  /// </summary>
-  public enum BitrateMode : byte
-  {
     /// <summary>
     /// Constant quality mode
     /// </summary>
@@ -27,5 +27,4 @@ namespace MediaInfo.Model
     /// Variable bitrate mode
     /// </summary>
     Vbr
-  }
 }

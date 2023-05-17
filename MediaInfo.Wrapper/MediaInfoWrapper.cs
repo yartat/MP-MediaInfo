@@ -782,6 +782,7 @@ namespace MediaInfo
       VideoCodec = BestVideoStream?.CodecName ?? string.Empty;
       VideoRate = (int?)BestVideoStream?.Bitrate ?? 0;
       VideoResolution = BestVideoStream?.Resolution ?? string.Empty;
+      VideoRotation = (int?)BestVideoStream?.Rotation ?? 0;
       Width = BestVideoStream?.Width ?? 0;
       Height = BestVideoStream?.Height ?? 0;
       IsInterlaced = BestVideoStream?.Interlaced ?? false;
@@ -1203,6 +1204,11 @@ namespace MediaInfo
     /// The media information text.
     /// </value>
     public string Text { get; private set; }
+
+        /// <summary>
+        /// Gets the video rotation
+        /// </summary>
+    public int VideoRotation { get; private set; }
   }
 
 #if NET40 || NET45

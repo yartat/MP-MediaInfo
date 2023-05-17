@@ -201,6 +201,11 @@ namespace MediaInfo.Model
     /// </value>
     public VideoTags Tags { get; internal set; } = new VideoTags();
 
+        /// <summary>
+        /// Gets the video rotation
+        /// </summary>
+    public double Rotation { get; set; }
+
     private string GetVideoResolution()
     {
       string result;

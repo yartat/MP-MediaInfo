@@ -390,6 +390,8 @@ namespace MediaInfo.Builder
       }
 
       result.Tags = new VideoTagBuilder(Info, StreamPosition).Build();
+            
+      result.Rotation = Get<double>((int)NativeMethods.Video.Video_Rotation, InfoKind.Text, TagBuilderHelper.TryGetDouble);
 
       return result;
     }

@@ -12,6 +12,7 @@
     <File Path="Directory.Build.targets" />
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="testEnvironments.json" />
   </Folder>
   <Folder Name="/Tools/">
     <Project Path="MediaInfo.TestFilesGenerator/MediaInfo.TestFilesGenerator.csproj" />

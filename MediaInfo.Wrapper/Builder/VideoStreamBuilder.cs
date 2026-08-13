@@ -183,6 +183,7 @@ namespace MediaInfo.Builder
       { "VP8", VideoCodec.Vp8 },
       { "V_VP9", VideoCodec.Vp9 },
       { "VP9", VideoCodec.Vp9 },
+      { "VP90", VideoCodec.Vp9 },
       { "AVC1", VideoCodec.Mpeg4IsoAvc },
       { "AVC", VideoCodec.Mpeg4IsoAvc },
       { "H264", VideoCodec.Mpeg4IsoAvc },
@@ -293,6 +294,7 @@ namespace MediaInfo.Builder
       { "AV01", VideoCodec.Av1 },
       { "AV1", VideoCodec.Av1 },
       { "AV2", VideoCodec.Av2 },
+      { "AV02", VideoCodec.Av2 },
       { "V_AV2", VideoCodec.Av2 },
       { "AVS3 VIDEO", VideoCodec.Avs3V },
       { "AVS3V", VideoCodec.Avs3V },
@@ -302,6 +304,7 @@ namespace MediaInfo.Builder
       { "H.266", VideoCodec.Vvc },
       { "H266", VideoCodec.Vvc },
       { "Default (H.263)", VideoCodec.H263 },
+      { "AVP1", VideoCodec.Avp },
     };
 
     private static readonly Dictionary<string, FrameRateMode> FrameRateModes = new(StringComparer.OrdinalIgnoreCase)

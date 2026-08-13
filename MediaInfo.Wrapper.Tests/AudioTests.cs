@@ -78,6 +78,30 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
+    [InlineData("../../../../../MP-MediaInfo.Samples/Audio/Sample-FLAC-File 忍者ツナ.flac", 2, 24, 48000.0, AudioCodec.Flac)]
+    public void LoadUnicodeFileName(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+      _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream does not exist");
+      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream does not exist");
+      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+      var audio = _mediaInfoWrapper.AudioStreams[0];
+      audio.Codec.Should().Be(codec);
+      audio.Channel.Should().Be(channels);
+      audio.BitDepth.Should().Be(bitDepth);
+      audio.SamplingRate.Should().Be(samplingRate);
+    }
+
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_04_stereo.mqa.flac", 2, 24, 44100.0, AudioCodec.Flac)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_mch-96k-24b_04.flac", 6, 24, 96000.0, AudioCodec.Flac)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_stereo-44k-16b_04.flac", 2, 16, 44100.0, AudioCodec.Flac)]

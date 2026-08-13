@@ -350,5 +350,10 @@ namespace MediaInfo.Model
     /// HuffYUV
     /// </summary>
     HuffYUV,
+
+    /// <summary>
+    /// Advanced Professional Video
+    /// </summary>
+    Avp
   }
 }

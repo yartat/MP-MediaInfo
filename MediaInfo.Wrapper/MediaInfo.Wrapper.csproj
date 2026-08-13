@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net4.0;net4.5</TargetFrameworks>
+    <TargetFrameworks>net4.0;net4.5;net481</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
     <Version>$(MediaInfoVersion)</Version>
     <AssemblyVersion>$(MediaInfoFileVersion)</AssemblyVersion>
@@ -35,16 +35,13 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net4.0'">
-    <PackageReference Include="microsoft.netframework.referenceassemblies.net40" Version="1.0.3" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net4.5'">
-    <PackageReference Include="microsoft.netframework.referenceassemblies.net45" Version="1.0.3" PrivateAssets="All" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net4.5' or '$(TargetFramework)' == 'net481'">
     <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="microsoft.netframework.referenceassemblies.net45" Version="1.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(GitHub)" PrivateAssets="All" />
     <PackageReference Include="MediaInfo.Native" Version="$(Native)" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />

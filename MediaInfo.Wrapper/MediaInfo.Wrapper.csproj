@@ -19,7 +19,6 @@
     <PackageIcon>$(PackageIconValue)</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>$(PackageDescription)</Description>
-    <PackageReleaseNotes>$(PackageNotes)</PackageReleaseNotes>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.xml</DocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -28,6 +27,12 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The asynchronous analysis pipeline targets .NET only. It uses Span<T>, IAsyncEnumerable<T> and
+         Stream.ReadAsync(Memory<byte>, ...), none of which exist on net4.0. -->
+    <Compile Remove="Analysis\**\*.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
@@ -50,7 +55,7 @@
   <ItemGroup>
     <None Include="images/$(PackageIconValue)" Pack="true" PackagePath="" />
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\docs\nuget\MediaInfo.Wrapper.md" Pack="true" PackagePath="README.md" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@
   "profiles": {
     "SelfHost": {
       "commandName": "Project",
-      "launchUrl": "swagger",
+      "launchUrl": "scalar",
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_URLS": "http://0.0.0.0:5000",
@@ -13,7 +13,7 @@
     "ApiSample": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "scalar",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -22,7 +22,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/scalar",
       "publishAllPorts": true,
       "useSSL": true
     }

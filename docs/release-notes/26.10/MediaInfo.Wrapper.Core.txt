@@ -1,0 +1,36 @@
+MediaInfo.Wrapper.Core 26.10.0
+
+MediaInfoLib 26.10, through MediaInfo.Core.Native 26.10.0. Targets netstandard2.1, net8.0, net10.0 (.NET 6 dropped). Previous release: 26.1.0.
+
+ADDED
+
+- IMediaInfoAnalyzer: AnalyzeAsync for files, URLs, streams and discs; AnalyzeFolderAsync.
+- DVD and Blu-ray titles and chapters from the navigation tables.
+- MediaInfoAnalyzerBuilder: validation, caching, timeout, retry, concurrency limit, external subtitles.
+- AddMediaInfoAnalyzer for dependency injection.
+- AsLegacy() for code written against MediaInfoWrapper.
+- AudioStream.DynamicObjects, SubtitleStream.MaxCharactersPerLine.
+- VideoStream.Rotation, ScanType, DisplayAspectRatio.
+- More audio, subtitle, video and HDR format identifiers.
+- P/Invoke declarations for the remaining MediaInfoLib exports.
+
+CHANGED
+
+- DTS:X reports 12 channels (7.1.4) instead of 8; its objects are in DynamicObjects.
+- Five-channel Opus is 5.0, not 4.1.
+- MP3 duration and bit rate are more accurate with encoder delay or a Xing header.
+- MediaInfoList.Open honours InfoFileOptions.
+- MediaInfoWrapper is obsolete.
+
+FIXED
+
+- Heap corruption: strings owned by the native library were freed by the runtime.
+- Unicode file names on Linux and macOS.
+- DVD and Blu-ray folder detection on case-sensitive file systems.
+
+LIMITATIONS
+
+- Analyzing a file or a URL cannot be cancelled while the native library opens it.
+
+Guide: https://github.com/yartat/MP-MediaInfo/blob/master/docs/async-api.md
+Release notes: https://github.com/yartat/MP-MediaInfo/blob/master/docs/release-notes/26.10.0.md

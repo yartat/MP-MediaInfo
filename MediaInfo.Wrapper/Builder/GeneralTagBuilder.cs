@@ -38,7 +38,7 @@ namespace MediaInfo.Builder
   /// <typeparam name="T">The type of tag object to build. Must inherit from BaseTags and have a parameterless constructor.</typeparam>
   /// <param name="mediaInfo">The MediaInfo instance used to retrieve metadata from the media stream. Cannot be null.</param>
   /// <param name="streamPosition">The zero-based index of the stream within the media file for which tags are to be extracted.</param>
-  internal class GeneralTagBuilder<T>(MediaInfo mediaInfo, int streamPosition) where T : BaseTags, new()
+  internal class GeneralTagBuilder<T>(IMediaInfoReader mediaInfo, int streamPosition) where T : BaseTags, new()
   {
     #region Tag items
 
@@ -147,7 +147,7 @@ namespace MediaInfo.Builder
     /// <summary>
     /// Gets the media information. The <c>MediaInfo</c> instance is used to retrieve tag values.
     /// </summary>
-    protected MediaInfo MediaInfo { get; } = mediaInfo ?? throw new ArgumentNullException(nameof(mediaInfo));
+    protected IMediaInfoReader MediaInfo { get; } = mediaInfo ?? throw new ArgumentNullException(nameof(mediaInfo));
 
     /// <summary>
     /// Stream position to get tags for. For example, if the media file contains 2 audio streams and the <c>streamPosition</c> is set to 1,

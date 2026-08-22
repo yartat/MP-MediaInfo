@@ -20,7 +20,7 @@ namespace MediaInfo.Builder
   /// </remarks>
   /// <param name="mediaInfo">The media information source from which video stream data is retrieved. Cannot be null.</param>
   /// <param name="streamPosition">The zero-based index of the video stream to process within the media source. Must be non-negative.</param>
-  internal class VideoTagBuilder(MediaInfo mediaInfo, int streamPosition) : GeneralTagBuilder<VideoTags>(mediaInfo, streamPosition)
+  internal class VideoTagBuilder(IMediaInfoReader mediaInfo, int streamPosition) : GeneralTagBuilder<VideoTags>(mediaInfo, streamPosition)
   {
     #region Tag items
 

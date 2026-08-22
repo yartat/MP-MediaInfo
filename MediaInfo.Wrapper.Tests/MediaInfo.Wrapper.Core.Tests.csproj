@@ -3,6 +3,8 @@
   <PropertyGroup>    
     <TargetFramework>net10.0</TargetFramework>    
     <IsPackable>false</IsPackable>
+    <!-- This suite exists to test MediaInfoWrapper, so its deprecation is not news here. -->
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

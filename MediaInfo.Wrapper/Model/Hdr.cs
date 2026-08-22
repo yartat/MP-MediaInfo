@@ -56,6 +56,11 @@ namespace MediaInfo.Model
     /// <summary>
     /// HDR Vivid dynamic HDR format.
     /// </summary>
-    HdrVivid
+    HdrVivid,
+
+    /// <summary>
+    /// HDR10+ Profile A combined with HLG transfer characteristics.
+    /// </summary>
+    HLGPlus
   }
 }

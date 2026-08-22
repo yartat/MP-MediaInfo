@@ -7,7 +7,7 @@
 #endregion
 
 using Mapster;
-using MediaInfo;
+using MediaInfo.Analysis.Results;
 using System;
 
 namespace ApiSample.Infrastructure;
@@ -16,7 +16,9 @@ internal class MapperRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<MediaInfoWrapper, Models.MediaInfo>()
-            .Map(dest => dest.Duration, src => TimeSpan.FromSeconds(src.Duration));
+        // LegacyResultAdapter presents the immutable analysis result under the same property names the wrapper
+        // used, so migrating the API meant changing where the object comes from, not this mapping.
+        config.NewConfig<LegacyResultAdapter, Models.MediaInfo>()
+            .Map(dest => dest.Duration, src => TimeSpan.FromMilliseconds(src.Duration));
     }
 }

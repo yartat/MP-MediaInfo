@@ -25,7 +25,7 @@ public class ChapterStream : MediaStream
     /// <example>11.3</example>
     [DataMember(Name = "offset")]
     [JsonPropertyName("offset")]
-    public double Offset { get; }
+    public double Offset { get; set; }
 
     /// <summary>
     /// A chapter description.
@@ -33,5 +33,5 @@ public class ChapterStream : MediaStream
     /// <example>Chapter description</example>
     [DataMember(Name = "description")]
     [JsonPropertyName("description")]
-    public string? Description { get; }
+    public string? Description { get; set; }
 }

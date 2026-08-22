@@ -451,6 +451,16 @@ namespace MediaInfo.Model
     /// <summary>
     /// aptX100 low-latency audio codec family.
     /// </summary>
-    Aptx100
+    Aptx100,
+
+    /// <summary>
+    /// Enhanced Variable Rate Codec, used in CDMA telephony and 3GP files.
+    /// </summary>
+    Evrc,
+
+    /// <summary>
+    /// Immersive Audio Model and Formats (IAMF).
+    /// </summary>
+    Iamf
   }
 }

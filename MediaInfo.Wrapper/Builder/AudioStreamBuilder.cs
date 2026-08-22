@@ -172,6 +172,10 @@ namespace MediaInfo.Builder
       { "Dolby E", AudioCodec.DolbyE },
       { "Dolby E-8", AudioCodec.DolbyE },
       { "DTS-UHD", AudioCodec.DtsUhd },
+      { "Nellymoser", AudioCodec.Nellymoser },
+      { "EVRC", AudioCodec.Evrc },
+      { "IAMF", AudioCodec.Iamf },
+      { "WMA Pro", AudioCodec.WmaPro },
     };
 
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new(StringComparer.OrdinalIgnoreCase)

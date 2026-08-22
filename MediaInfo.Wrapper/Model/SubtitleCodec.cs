@@ -97,6 +97,41 @@ namespace MediaInfo.Model
     /// <summary>
     /// The WebVTT subtitle format.
     /// </summary>
-    WebVtt
+    WebVtt,
+
+    /// <summary>
+    /// The DVB Subtitle format.
+    /// </summary>
+    DvbSubtitle,
+
+    /// <summary>
+    /// The Kate (Karaoke And Text Encapsulation) subtitle format.
+    /// </summary>
+    Kate,
+
+    /// <summary>
+    /// EIA-608 closed captions.
+    /// </summary>
+    Eia608,
+
+    /// <summary>
+    /// EIA-708 closed captions.
+    /// </summary>
+    Eia708,
+
+    /// <summary>
+    /// The Apple text (QuickTime) subtitle format.
+    /// </summary>
+    AppleText,
+
+    /// <summary>
+    /// The 3GPP/QuickTime Timed Text subtitle format (tx3g).
+    /// </summary>
+    TimedText,
+
+    /// <summary>
+    /// The DivX Subtitle format (AVI).
+    /// </summary>
+    DivxSubtitle
   }
 }

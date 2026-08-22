@@ -41,8 +41,23 @@ namespace MediaInfo.Builder
         { "S_UTF8", SubtitleCodec.Utf8 },
         { "S_VOBSUB", SubtitleCodec.Vobsub },
         { "S_HDMV/PGS", SubtitleCodec.HdmvPgs },
+        { "PGS", SubtitleCodec.HdmvPgs },
         { "S_HDMV/TEXTST", SubtitleCodec.HdmvTextst },
-        { "WEBVTT", SubtitleCodec.WebVtt }
+        { "WEBVTT", SubtitleCodec.WebVtt },
+        { "S_DVBSUB", SubtitleCodec.DvbSubtitle },
+        { "DVB SUBTITLE", SubtitleCodec.DvbSubtitle },
+        { "S_KATE", SubtitleCodec.Kate },
+        { "KATE", SubtitleCodec.Kate },
+        { "C608", SubtitleCodec.Eia608 },
+        { "EIA-608", SubtitleCodec.Eia608 },
+        { "C708", SubtitleCodec.Eia708 },
+        { "EIA-708", SubtitleCodec.Eia708 },
+        { "APPLE TEXT", SubtitleCodec.AppleText },
+        { "TX3G", SubtitleCodec.TimedText },
+        { "TIMED TEXT", SubtitleCodec.TimedText },
+        { "DXSB", SubtitleCodec.DivxSubtitle },
+        { "DIVX SUBTITLE", SubtitleCodec.DivxSubtitle },
+        { "VOBSUB", SubtitleCodec.Vobsub }
     };
 
         #endregion

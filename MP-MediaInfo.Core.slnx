@@ -17,6 +17,8 @@
   <Folder Name="/Tools/">
     <Project Path="MediaInfo.TestFilesGenerator/MediaInfo.TestFilesGenerator.csproj" />
   </Folder>
+  <Project Path="MediaInfo.Analysis.Tests/MediaInfo.Analysis.Tests.csproj" />
+  <Project Path="MediaInfo.Analysis.Integration.Tests/MediaInfo.Analysis.Integration.Tests.csproj" />
   <Project Path="MediaInfo.Wrapper.Tests/MediaInfo.Wrapper.Core.Tests.csproj" />
   <Project Path="MediaInfo.Wrapper/MediaInfo.Wrapper.Core.csproj" />
 </Solution>

@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>MediaInfo.Analysis.Integration.Tests</RootNamespace>
+    <!-- Directory.Build.targets only exempts projects whose name ends in ".Tests" from the documentation file,
+         and this one does, so nothing extra is needed here. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The media corpus is shared with the wrapper tests rather than duplicated, so that every sample stays
+         committed exactly once. -->
+    <Content Include="..\MediaInfo.Wrapper.Tests\Data\*.*"
+             Link="Data\%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest" />
+    <!-- A DVD sample is not committed. Drop a VIDEO_TS folder into MediaInfo.Wrapper.Tests\Data to enable the
+         end-to-end DVD tests, or point MP_MEDIAINFO_DVD_PATH at one. -->
+    <Content Include="..\MediaInfo.Wrapper.Tests\Data\VIDEO_TS\**\*.*"
+             Link="Data\VIDEO_TS\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
+
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdk)" />
+    <PackageReference Include="xunit" Version="$(xUnit)" />
+    <PackageReference Include="xunit.extensibility.execution" Version="$(xUnit)" />
+
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitRunner)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaInfo.Wrapper\MediaInfo.Wrapper.Core.csproj" />
+  </ItemGroup>
+
+</Project>

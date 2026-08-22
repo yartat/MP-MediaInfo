@@ -16,7 +16,7 @@ namespace MediaInfo.Builder
   /// <param name="info">The media information source containing metadata and stream details required to construct the chapter stream.</param>
   /// <param name="number">The stream number identifying the chapter stream within the media source.</param>
   /// <param name="position">The position of the stream within the media file, used to determine stream ordering or selection.</param>
-  internal class ChapterStreamBuilder(MediaInfo info, int number, int position) : MediaStreamBuilder<ChapterStream>(info, number, position)
+  internal class ChapterStreamBuilder(IMediaInfoReader info, int number, int position) : MediaStreamBuilder<ChapterStream>(info, number, position)
   {
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Menu;

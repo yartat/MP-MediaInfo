@@ -18,7 +18,7 @@ namespace MediaInfo.Builder
   /// <param name="info">The media information source containing metadata for the subtitle stream. Cannot be null.</param>
   /// <param name="number">The stream number within the media file used to identify the specific subtitle stream.</param>
   /// <param name="position">The position of the stream in the media file, used to determine stream ordering.</param>
-  internal class SubtitleStreamBuilder(MediaInfo info, int number, int position) : LanguageMediaStreamBuilder<SubtitleStream>(info, number, position)
+  internal class SubtitleStreamBuilder(IMediaInfoReader info, int number, int position) : LanguageMediaStreamBuilder<SubtitleStream>(info, number, position)
   {
     #region match dictionary
 

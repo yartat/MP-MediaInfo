@@ -27,7 +27,7 @@ namespace MediaInfo.Builder
     /// <param name="info">The media info object.</param>
     /// <param name="number">The stream number.</param>
     /// <param name="position">The stream position.</param>
-    protected LanguageMediaStreamBuilder(MediaInfo info, int number, int position)
+    protected LanguageMediaStreamBuilder(IMediaInfoReader info, int number, int position)
       : base(info, number, position)
     {
     }

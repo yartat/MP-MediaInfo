@@ -19,7 +19,7 @@ namespace MediaInfo.Builder
   /// collection if present.</remarks>
   /// <param name="mediaInfo">The media information source from which audio stream metadata is retrieved. Cannot be null.</param>
   /// <param name="streamPosition">The zero-based index of the audio stream to process within the media information.</param>
-  internal class AudioTagBuilder(MediaInfo mediaInfo, int streamPosition) : GeneralTagBuilder<AudioTags>(mediaInfo, streamPosition)
+  internal class AudioTagBuilder(IMediaInfoReader mediaInfo, int streamPosition) : GeneralTagBuilder<AudioTags>(mediaInfo, streamPosition)
   {
     #region Tag items
 

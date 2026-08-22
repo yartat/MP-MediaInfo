@@ -25,7 +25,7 @@ namespace MediaInfo.Builder
   /// <param name="number">The zero-based index of the video stream within the media source. Must be non-negative.</param>
   /// <param name="position">The position of the stream in the underlying data structure, used to identify and extract stream-specific
   /// information.</param>
-  internal class VideoStreamBuilder(MediaInfo info, int number, int position) : LanguageMediaStreamBuilder<VideoStream>(info, number, position)
+  internal class VideoStreamBuilder(IMediaInfoReader info, int number, int position) : LanguageMediaStreamBuilder<VideoStream>(info, number, position)
   {
     #region match dictionaries
 

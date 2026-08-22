@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -161,7 +161,7 @@ namespace MediaInfo
   /// All functions in this class will return empty string if library is not loaded successfully. So, you can check if library is loaded by checking if Inform() method returns empty string or not.
   /// </remarks>
   /// <seealso cref="IDisposable" />
-  public class MediaInfo : IDisposable
+  public class MediaInfo : IMediaInfoReader, IDisposable
   {
 #if NETFRAMEWORK
     private const string MediaInfoFileName = "MediaInfo.dll";

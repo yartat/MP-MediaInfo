@@ -24,7 +24,7 @@ namespace MediaInfo.Builder
   /// <param name="info">The media information source used to extract audio stream metadata. Cannot be null.</param>
   /// <param name="number">The zero-based index of the audio stream within the media container.</param>
   /// <param name="position">The position of the stream in the underlying media information structure.</param>
-  internal class AudioStreamBuilder(MediaInfo info, int number, int position) : LanguageMediaStreamBuilder<AudioStream>(info, number, position)
+  internal class AudioStreamBuilder(IMediaInfoReader info, int number, int position) : LanguageMediaStreamBuilder<AudioStream>(info, number, position)
   {
     #region matching dictionaries
 

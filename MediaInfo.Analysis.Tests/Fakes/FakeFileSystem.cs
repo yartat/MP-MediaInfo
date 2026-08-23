@@ -22,6 +22,7 @@ public sealed class FakeFileSystem : IFileSystem
 {
   private readonly Dictionary<string, long> _files = new(StringComparer.OrdinalIgnoreCase);
   private readonly HashSet<string> _directories = new(StringComparer.OrdinalIgnoreCase);
+  private readonly Dictionary<string, DateTimeOffset> _writeTimes = new(StringComparer.OrdinalIgnoreCase);
 
   /// <summary>Adds a file of the given size, creating every directory above it.</summary>
   public FakeFileSystem AddFile(string path, long size = 4096L)
@@ -93,6 +94,17 @@ public sealed class FakeFileSystem : IFileSystem
 
   /// <inheritdoc />
   public long GetFileLength(string path) => _files.TryGetValue(Normalize(path), out var size) ? size : 0L;
+
+  /// <summary>Sets the time a file or directory reports as its last write.</summary>
+  public FakeFileSystem SetLastWriteTimeUtc(string path, DateTimeOffset value)
+  {
+    _writeTimes[Normalize(path)] = value;
+    return this;
+  }
+
+  /// <inheritdoc />
+  public DateTimeOffset GetLastWriteTimeUtc(string path) =>
+    _writeTimes.TryGetValue(Normalize(path), out var value) ? value : DateTimeOffset.MinValue;
 
   /// <inheritdoc />
   public Stream OpenRead(string path) =>

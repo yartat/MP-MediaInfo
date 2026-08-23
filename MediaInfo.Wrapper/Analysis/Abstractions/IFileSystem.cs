@@ -6,6 +6,7 @@
 
 #endregion
 
+using System;
 using System.IO;
 
 namespace MediaInfo.Analysis.Abstractions;
@@ -55,6 +56,13 @@ public interface IFileSystem
   /// <param name="path">The path of the file.</param>
   /// <returns>Returns the size in bytes, or 0 when the file does not exist.</returns>
   long GetFileLength(string path);
+
+  /// <summary>
+  /// Gets the time the specified file or directory was last written to.
+  /// </summary>
+  /// <param name="path">The path of the file or directory.</param>
+  /// <returns>Returns the time in UTC, or <see cref="DateTimeOffset.MinValue"/> when it is not available.</returns>
+  DateTimeOffset GetLastWriteTimeUtc(string path);
 
   /// <summary>
   /// Opens the specified file for asynchronous reading.

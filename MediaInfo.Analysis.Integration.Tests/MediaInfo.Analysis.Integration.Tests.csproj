@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(Net10x)" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdk)" />
     <PackageReference Include="xunit" Version="$(xUnit)" />

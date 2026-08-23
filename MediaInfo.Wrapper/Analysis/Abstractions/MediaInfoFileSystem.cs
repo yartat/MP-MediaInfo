@@ -84,6 +84,26 @@ public sealed class MediaInfoFileSystem : IFileSystem
   }
 
   /// <inheritdoc />
+  public DateTimeOffset GetLastWriteTimeUtc(string path)
+  {
+    try
+    {
+      if (File.Exists(path))
+      {
+        return new DateTimeOffset(File.GetLastWriteTimeUtc(path), TimeSpan.Zero);
+      }
+
+      return Directory.Exists(path)
+        ? new DateTimeOffset(Directory.GetLastWriteTimeUtc(path), TimeSpan.Zero)
+        : DateTimeOffset.MinValue;
+    }
+    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+    {
+      return DateTimeOffset.MinValue;
+    }
+  }
+
+  /// <inheritdoc />
   public Stream OpenRead(string path) =>
     new FileStream(
       path,

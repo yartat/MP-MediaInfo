@@ -1,15 +1,14 @@
 # Async Media Analyzer — Design & Delivery Plan
 
-> Status: **phases 0–4 implemented** · Target: MP-MediaInfo v27 · Namespace: `MediaInfo.Analysis`
+> Status: **phases 0–5 implemented** · Target: MP-MediaInfo v27 · Namespace: `MediaInfo.Analysis`
 > Supersedes (without removing): `MediaInfo.MediaInfoWrapper`
 >
-> **Implemented:** adapters, result model, sources, file/stream/network strategies, disc structure readers and
-> DVD/Blu-ray strategies. 69 unit tests and 34 integration tests pass with nothing skipped — including the DVD path,
-> now covered against a real disc. The existing wrapper suite is unchanged (227 passed / 1 skipped, identical to
-> `HEAD` before the change).
-> **Not yet implemented:** decorators and the builder (phase 5), the legacy adapter (phase 6), samples and the
-> `[Obsolete]` marking (phase 7), binary IFO/MPLS parsers (phase 8). `MediaAnalysisResult.HasExternalSubtitles` is
-> therefore always `false` until the phase 5 decorator lands.
+> **Implemented:** adapters, result model, sources, file/stream/network strategies, disc structure readers,
+> DVD/Blu-ray strategies, the seven decorators, the builder and the container registration. 122 unit tests and 41
+> integration tests pass with nothing skipped — including the DVD path, covered against a real disc. The existing
+> wrapper suite is unchanged (227 passed / 1 skipped, identical to `HEAD` before the change).
+> **Not yet implemented:** the legacy adapter (phase 6), samples and the `[Obsolete]` marking (phase 7), binary
+> IFO/MPLS parsers (phase 8).
 
 ---
 
@@ -239,7 +238,7 @@ All implement `IMediaInfoAnalyzer` and wrap another `IMediaInfoAnalyzer`. Every 
 | `RetryingAnalyzer` | New. Transient network-source failures. |
 | `ThrottlingAnalyzer` | New. `SemaphoreSlim` bound — the native library plus buffered parsing is memory-hungry under parallel scans. |
 | `ExternalSubtitleAnalyzer` | The `CheckHasExternalSubtitles` scan, currently unconditional inside the ctor. |
-| `MetricsAnalyzer` *(optional)* | New. Timings/counters. |
+| ~~`MetricsAnalyzer`~~ | Dropped. `MediaAnalysisResult.Elapsed` already carries the timing and `LoggingAnalyzer` already records the outcome; a third place to look was not worth the surface. |
 
 **Recommended composition order** (outermost first) — configurable, but this is the default the builder emits:
 
@@ -555,7 +554,7 @@ Each phase is independently mergeable and independently verifiable.
 | **2** ✅ | Result model, `GeneralMediaInfo`, `DurationReader`, `MediaProbe`, `MediaStreamCollector` (existing builders retargeted to `IMediaInfoReader`), `IStreamSelectionStrategy` + default, highest-bitrate and preferred-language implementations. | Existing wrapper suite unchanged: 227 passed / 1 skipped, byte-identical to the pre-change baseline measured in a `HEAD` worktree. |
 | **3** ✅ | `IMediaSource` set, `SingleFileAnalysisStrategy`, `StreamAnalysisStrategy`, `NetworkStreamAnalysisStrategy`, `UnsupportedSourceStrategy`, `PriorityStrategySelector`, core `MediaInfoAnalyzer`. | Pump unit tests (seekable, forward-only, short reads, empty, cancellation, `leaveOpen`); integration tests compare stream analysis against file analysis on every corpus file. |
 | **4** ✅ | `IDiscStructureReader`, `DvdStructureReader`, `BluRayStructureReader`, `DvdAnalysisStrategy`, `BluRayAnalysisStrategy`, disc result records. | Fake-filesystem unit tests; a synthetic BDMV fixture built from the corpus `.m2ts` files is analyzed end to end by the real library. |
-| **5** | Eight decorators, `IAnalysisCache`, `MediaInfoAnalyzerBuilder`, `AddMediaInfoAnalyzer`. | Per-decorator unit tests + composition-order test. |
+| **5** ✅ | Seven decorators, `IAnalysisCache` with `MemoryAnalysisCache`, `MediaInfoAnalyzerBuilder`, `AddMediaInfoAnalyzer`. `MetricsAnalyzer` was dropped — it would duplicate `MediaAnalysisResult.Elapsed` and what a logger already records. | 53 new unit tests: each decorator in isolation, cache eviction and expiry, a composition-order test that walks the built chain, and container registration. Seven integration tests exercise the composed stack against real media. |
 | **6** | Full integration suite, leak guard on the new path, `LegacyResultAdapter`. | Whole suite green in Debug and Release; leak thresholds respected. |
 | **7** | Three samples, README section, `[Obsolete]` on `MediaInfoWrapper` (guarded `#if !NETFRAMEWORK`). | Samples build and run against `Data/`; ApiSample Swagger loads; net4.x builds warning-free. |
 | **8** *(optional)* | Stage B `IfoParser` / `MplsParser` readers. | Registration swap only; Stage A tests still pass; new parser unit tests against committed byte fixtures. |
@@ -572,7 +571,23 @@ The builders were therefore retargeted onto a new, smaller **`MediaInfo.IMediaIn
 legacy wrapper and the new pipeline can drive the same builders, and the builders remain testable without the native
 library.
 
-### 10.2 What the real disc taught us
+### 10.2 Phase 5 notes
+
+Two things the plan did not anticipate:
+
+* **`IFileSystem` gained a member.** A cache key that does not notice an edited file is worse than no cache, so
+  `DateTimeOffset GetLastWriteTimeUtc(string path)` was added to the interface. A file is keyed by path, size and
+  write time; a disc folder by path and its own write time, which is sound because disc content does not change.
+  A stream cannot be identified without consuming it and a network media has no cheap validator, so both bypass
+  the cache entirely, as does any failed analysis.
+* **The package gained a dependency.** `AddMediaInfoAnalyzer` needs
+  `Microsoft.Extensions.DependencyInjection.Abstractions`, which `Microsoft.Extensions.Logging.Abstractions` does
+  *not* bring in transitively. It is referenced only from `MediaInfo.Wrapper.Core.csproj`, so the .NET Framework
+  package is unaffected — its dependency group is still `MediaInfo.Native`, `System.Memory` and
+  `System.Runtime.InteropServices.RuntimeInformation`. This is exactly the situation open item 3 anticipated; if
+  more dependencies accumulate, the analysis layer should move to its own package.
+
+### 10.3 What the real disc taught us
 
 The first run against a real DVD — one title set, seven content VOBs, 7.47 GB of title over 8.01 GB of disc — corrected an
 assumption baked into the code comments. **MediaInfoLib recognises a `VTS_nn_*` sequence and reports the joined title**,
@@ -581,7 +596,7 @@ information file is still probed first, but the reason is that it is the navigat
 not that a VOB would answer differently. The comments in `DvdStructureReader` and `DiscAnalysisStrategy` and the
 integration assertion were corrected to say so.
 
-### 10.3 A defect found while implementing
+### 10.4 A defect found while implementing
 
 A transport stream parsed without seeking makes the library extrapolate a length that does not fit in a `TimeSpan`,
 which threw `OverflowException` out of `TimeSpan.FromMilliseconds`. `DurationReader` now treats any value that is not

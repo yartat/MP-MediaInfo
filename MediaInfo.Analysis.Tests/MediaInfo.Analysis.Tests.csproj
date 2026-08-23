@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqLib)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(Net10x)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(Net10x)" />
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdk)" />

@@ -361,7 +361,9 @@ namespace MediaInfo.Builder
         result.Bitrate = Get<double>((int)NativeMethods.Video.Video_BitRate_Maximum, InfoKind.Text, TagBuilderHelper.TryGetDouble);
       }
       result.AspectRatio = Get<AspectRatio>((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text, TryGetAspectRatio);
-      result.Interlaced = GetInterlaced(Get((int)NativeMethods.Video.Video_ScanType, InfoKind.Text));
+      result.DisplayAspectRatio = Get((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text);
+      result.ScanType = Get((int)NativeMethods.Video.Video_ScanType, InfoKind.Text);
+      result.Interlaced = GetInterlaced(result.ScanType);
       var multiViewCount = Get<int>((int)NativeMethods.Video.Video_MultiView_Count, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Stereoscopic = multiViewCount >= 2
                        ? Get<StereoMode>((int)NativeMethods.Video.Video_MultiView_Layout, InfoKind.Text, TryGetStereoscopic)

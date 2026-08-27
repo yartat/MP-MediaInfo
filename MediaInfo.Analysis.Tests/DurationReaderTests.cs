@@ -25,23 +25,36 @@ public class DurationReaderTests
   private const string Movie = @"D:\media\movie.mkv";
 
   [Fact]
-  public async Task Duration_IsTakenFromTheContainerWhenItKnowsIt()
-  {
-    var result = await Analyze(profile => profile
-      .WithStreams(StreamKind.Video, 1)
-      .SetIndexed(StreamKind.General, 0, (int)NativeMethods.General.General_Duration, "5400000"));
-
-    result.General.Duration.Should().Be(TimeSpan.FromMinutes(90));
-  }
-
-  [Fact]
-  public async Task Duration_FallsBackToTheVideoStreamWhenTheContainerDoesNotKnowIt()
+  public async Task Duration_IsTakenFromTheVideoStreamWhenItKnowsIt()
   {
     var result = await Analyze(profile => profile
       .WithStreams(StreamKind.Video, 1)
       .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_Duration, "1800000"));
 
     result.General.Duration.Should().Be(TimeSpan.FromMinutes(30));
+  }
+
+  [Fact]
+  public async Task Duration_PrefersTheVideoStreamOverTheContainer()
+  {
+    // A transport stream reports the span of the whole multiplex on the container, which is longer than the
+    // presentation. The wrapper always took the stream value, and the pipeline matches it.
+    var result = await Analyze(profile => profile
+      .WithStreams(StreamKind.Video, 1)
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_Duration, "1001")
+      .SetIndexed(StreamKind.General, 0, (int)NativeMethods.General.General_Duration, "1516"));
+
+    result.General.Duration.Should().Be(TimeSpan.FromMilliseconds(1001));
+  }
+
+  [Fact]
+  public async Task Duration_FallsBackToTheContainerWhenNoStreamKnowsIt()
+  {
+    var result = await Analyze(profile => profile
+      .WithStreams(StreamKind.Video, 1)
+      .SetIndexed(StreamKind.General, 0, (int)NativeMethods.General.General_Duration, "5400000"));
+
+    result.General.Duration.Should().Be(TimeSpan.FromMinutes(90));
   }
 
   [Fact]

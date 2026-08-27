@@ -15,10 +15,15 @@ namespace MediaInfo.Analysis.Pipeline;
 /// Reads the duration of an opened media.
 /// </summary>
 /// <remarks>
-/// The container is asked first, and the video and audio streams are consulted in turn when it does not know. A media
-/// whose length the library cannot determine, which happens when a transport stream is parsed without being able to
-/// seek, reports a duration that does not fit in a <see cref="TimeSpan"/>. Such a value is treated as unknown rather
-/// than being allowed to overflow.
+/// The video stream is asked first, then the audio stream, and the container last. That order is what the original
+/// wrapper used, and the parity tests hold the pipeline to it: for a transport stream the container reports the span
+/// of the whole multiplex, which is longer than the presentation the video stream describes. Falling back to the
+/// container is the one addition, and it covers a media whose streams declare no duration at all.
+/// <para>
+/// A media whose length the library cannot determine, which happens when a transport stream is parsed without being
+/// able to seek, reports a duration that does not fit in a <see cref="TimeSpan"/>. Such a value is treated as unknown
+/// rather than being allowed to overflow.
+/// </para>
 /// </remarks>
 internal static class DurationReader
 {
@@ -31,15 +36,15 @@ internal static class DurationReader
   /// <returns>Returns the duration, or <see cref="TimeSpan.Zero"/> when it could not be determined.</returns>
   public static TimeSpan Read(IMediaInfoReader reader)
   {
-    var milliseconds = ReadMilliseconds(reader, StreamKind.General, (int)NativeMethods.General.General_Duration);
+    var milliseconds = ReadMilliseconds(reader, StreamKind.Video, (int)NativeMethods.Video.Video_Duration);
     if (!IsUsable(milliseconds))
     {
-      milliseconds = ReadMilliseconds(reader, StreamKind.Video, (int)NativeMethods.Video.Video_Duration);
+      milliseconds = ReadMilliseconds(reader, StreamKind.Audio, (int)NativeMethods.Audio.Audio_Duration);
     }
 
     if (!IsUsable(milliseconds))
     {
-      milliseconds = ReadMilliseconds(reader, StreamKind.Audio, (int)NativeMethods.Audio.Audio_Duration);
+      milliseconds = ReadMilliseconds(reader, StreamKind.General, (int)NativeMethods.General.General_Duration);
     }
 
     return IsUsable(milliseconds) ? TimeSpan.FromMilliseconds(milliseconds) : TimeSpan.Zero;

@@ -246,6 +246,24 @@ public class VideoStream : LanguageMediaStream
   public string Resolution => GetVideoResolution();
 
   /// <summary>
+  /// Gets or sets the scan type of the video stream as the library reports it, for example <c>Progressive</c>,
+  /// <c>Interlaced</c> or <c>MBAFF</c>.
+  /// </summary>
+  /// <value>
+  /// The scan type of the video stream.
+  /// </value>
+  public string ScanType { get; set; } = default!;
+
+  /// <summary>
+  /// Gets or sets the display aspect ratio of the video stream as the library reports it, for example <c>16:9</c>
+  /// or <c>1.778</c>.
+  /// </summary>
+  /// <value>
+  /// The display aspect ratio of the video stream.
+  /// </value>
+  public string DisplayAspectRatio { get; set; } = default!;
+
+  /// <summary>
   /// Gets the video size.
   /// </summary>
   /// <value>

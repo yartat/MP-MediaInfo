@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.Analysis.Abstractions;
+using MediaInfo.Analysis.Discs;
 using MediaInfo.Analysis.Native;
 using MediaInfo.Analysis.Pipeline;
 using MediaInfo.Analysis.Results;
@@ -101,8 +102,19 @@ public sealed class MediaInfoAnalyzer : IMediaInfoAnalyzer
   public static IEnumerable<IMediaAnalysisStrategy> CreateDefaultStrategies(IFileSystem fileSystem) =>
   [
     new UnsupportedSourceStrategy(),
-    new DvdAnalysisStrategy(fileSystem),
-    new BluRayAnalysisStrategy(fileSystem),
+
+    // The navigation tables describe a disc far better than its folder layout does, but they have to be present
+    // and well formed. Pairing each parser with the folder reader means a disc is always described, as well as
+    // the disc allows.
+    new DvdAnalysisStrategy(
+      new FallbackDiscStructureReader(
+        new IfoDvdStructureReader(fileSystem),
+        new DvdStructureReader(fileSystem))),
+    new BluRayAnalysisStrategy(
+      new FallbackDiscStructureReader(
+        new MplsBluRayStructureReader(fileSystem),
+        new BluRayStructureReader(fileSystem))),
+
     new NetworkStreamAnalysisStrategy(),
     new SingleFileAnalysisStrategy(),
     new StreamAnalysisStrategy()

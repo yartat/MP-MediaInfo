@@ -1,14 +1,11 @@
 # Async Media Analyzer — Design & Delivery Plan
 
-> Status: **phases 0–5 implemented** · Target: MP-MediaInfo v27 · Namespace: `MediaInfo.Analysis`
+> Status: **complete — phases 0–8 implemented** · Target: MP-MediaInfo v27 · Namespace: `MediaInfo.Analysis`
 > Supersedes (without removing): `MediaInfo.MediaInfoWrapper`
 >
-> **Implemented:** adapters, result model, sources, file/stream/network strategies, disc structure readers,
-> DVD/Blu-ray strategies, the seven decorators, the builder and the container registration. 122 unit tests and 41
-> integration tests pass with nothing skipped — including the DVD path, covered against a real disc. The existing
-> wrapper suite is unchanged (227 passed / 1 skipped, identical to `HEAD` before the change).
-> **Not yet implemented:** the legacy adapter (phase 6), samples and the `[Obsolete]` marking (phase 7), binary
-> IFO/MPLS parsers (phase 8).
+> **All eight phases are implemented.** 156 unit tests and 74 integration tests pass with nothing skipped. The
+> existing wrapper suite is unchanged at 227 passed / 1 skipped, identical to `HEAD` before the change and verified
+> against a worktree at that commit.
 
 ---
 
@@ -555,9 +552,9 @@ Each phase is independently mergeable and independently verifiable.
 | **3** ✅ | `IMediaSource` set, `SingleFileAnalysisStrategy`, `StreamAnalysisStrategy`, `NetworkStreamAnalysisStrategy`, `UnsupportedSourceStrategy`, `PriorityStrategySelector`, core `MediaInfoAnalyzer`. | Pump unit tests (seekable, forward-only, short reads, empty, cancellation, `leaveOpen`); integration tests compare stream analysis against file analysis on every corpus file. |
 | **4** ✅ | `IDiscStructureReader`, `DvdStructureReader`, `BluRayStructureReader`, `DvdAnalysisStrategy`, `BluRayAnalysisStrategy`, disc result records. | Fake-filesystem unit tests; a synthetic BDMV fixture built from the corpus `.m2ts` files is analyzed end to end by the real library. |
 | **5** ✅ | Seven decorators, `IAnalysisCache` with `MemoryAnalysisCache`, `MediaInfoAnalyzerBuilder`, `AddMediaInfoAnalyzer`. `MetricsAnalyzer` was dropped — it would duplicate `MediaAnalysisResult.Elapsed` and what a logger already records. | 53 new unit tests: each decorator in isolation, cache eviction and expiry, a composition-order test that walks the built chain, and container registration. Seven integration tests exercise the composed stack against real media. |
-| **6** | Full integration suite, leak guard on the new path, `LegacyResultAdapter`. | Whole suite green in Debug and Release; leak thresholds respected. |
-| **7** | Three samples, README section, `[Obsolete]` on `MediaInfoWrapper` (guarded `#if !NETFRAMEWORK`). | Samples build and run against `Data/`; ApiSample Swagger loads; net4.x builds warning-free. |
-| **8** *(optional)* | Stage B `IfoParser` / `MplsParser` readers. | Registration swap only; Stage A tests still pass; new parser unit tests against committed byte fixtures. |
+| **6** ✅ | `LegacyResultAdapter`, the parity suite, leak guard on the new path. | Parity green over the whole corpus; it caught a duration-precedence divergence, see §10.5. |
+| **7** ✅ | `AnalyzeFolderAsync`, three samples, README section, guarded `[Obsolete]` on `MediaInfoWrapper`. | Samples build and run against the corpus and the real disc; net4.x builds warning-free. |
+| **8** ✅ | `IfoParser`, `MplsParser`, `IfoDvdStructureReader`, `MplsBluRayStructureReader`, `FallbackDiscStructureReader`. | 23 unit tests against tables the tests build byte for byte; on the real disc the parser agrees with the library to the millisecond. |
 
 ### 10.1 One deviation from the plan: `IMediaInfoReader`
 
@@ -571,7 +568,27 @@ The builders were therefore retargeted onto a new, smaller **`MediaInfo.IMediaIn
 legacy wrapper and the new pipeline can drive the same builders, and the builders remain testable without the native
 library.
 
-### 10.2 Phase 5 notes
+### 10.2 Phase 8: what the binary parsers bought
+
+Stage B was the largest risk in the plan and it paid off. Against the sample DVD:
+
+| | Folder reader (Stage A) | Navigation tables (Stage B) |
+|---|---|---|
+| Main title duration | 04:12:22.400 (probed) | 04:12:22.400 (parsed) |
+| Chapters | none | **78**, with start and duration |
+| Angles | assumed 1 | declared by the disc |
+| Time to describe a 7.5 GiB disc | ~240 ms, opens media | **~20 ms, opens nothing** |
+
+The two paths agree on the duration **to the millisecond** while deriving it in completely different ways — the parser
+decodes the BCD playback time out of the program chain table, the library derives it from the media. That agreement is
+the strongest evidence available that the parser is correct.
+
+`FallbackDiscStructureReader` is a third use of Decorator: it tries the parser and falls back to the folder reader
+when the tables are absent or malformed, so a disc is always described as well as the disc allows. The Blu-ray parser
+additionally solves something the folder reader structurally cannot — a feature assembled from several clips is one
+title, and the near-duplicate playlists that seamless branching leaves behind are dropped.
+
+### 10.3 Phase 5 notes
 
 Two things the plan did not anticipate:
 
@@ -587,7 +604,7 @@ Two things the plan did not anticipate:
   `System.Runtime.InteropServices.RuntimeInformation`. This is exactly the situation open item 3 anticipated; if
   more dependencies accumulate, the analysis layer should move to its own package.
 
-### 10.3 What the real disc taught us
+### 10.4 What the real disc taught us
 
 The first run against a real DVD — one title set, seven content VOBs, 7.47 GB of title over 8.01 GB of disc — corrected an
 assumption baked into the code comments. **MediaInfoLib recognises a `VTS_nn_*` sequence and reports the joined title**,
@@ -596,7 +613,16 @@ information file is still probed first, but the reason is that it is the navigat
 not that a VOB would answer differently. The comments in `DvdStructureReader` and `DiscAnalysisStrategy` and the
 integration assertion were corrected to say so.
 
-### 10.4 A defect found while implementing
+### 10.5 Defects the tests found
+
+**Duration precedence.** The parity suite compared every shared field over the whole corpus and found exactly one
+divergence: the wrapper takes the duration from the video stream and never consults the container, while
+`DurationReader` asked the container first. For a transport stream the container reports the span of the whole
+multiplex, so it read 1516 ms where the wrapper read 1001 ms. The order is now video, audio, container — the container
+kept only as a fallback, which is the one improvement over the wrapper, covering a media whose streams declare no
+duration at all.
+
+**TimeSpan overflow.**
 
 A transport stream parsed without seeking makes the library extrapolate a length that does not fit in a `TimeSpan`,
 which threw `OverflowException` out of `TimeSpan.FromMilliseconds`. `DurationReader` now treats any value that is not

@@ -23,6 +23,7 @@ public sealed class FakeFileSystem : IFileSystem
   private readonly Dictionary<string, long> _files = new(StringComparer.OrdinalIgnoreCase);
   private readonly HashSet<string> _directories = new(StringComparer.OrdinalIgnoreCase);
   private readonly Dictionary<string, DateTimeOffset> _writeTimes = new(StringComparer.OrdinalIgnoreCase);
+  private readonly Dictionary<string, byte[]> _contents = new(StringComparer.OrdinalIgnoreCase);
 
   /// <summary>Adds a file of the given size, creating every directory above it.</summary>
   public FakeFileSystem AddFile(string path, long size = 4096L)
@@ -106,9 +107,28 @@ public sealed class FakeFileSystem : IFileSystem
   public DateTimeOffset GetLastWriteTimeUtc(string path) =>
     _writeTimes.TryGetValue(Normalize(path), out var value) ? value : DateTimeOffset.MinValue;
 
+  /// <summary>Gives a file real content, so that a parser can be run against it.</summary>
+  public FakeFileSystem SetContent(string path, byte[] content)
+  {
+    var normalized = Normalize(path);
+    _contents[normalized] = content;
+    _files[normalized] = content.Length;
+    AddDirectory(Path.GetDirectoryName(normalized) ?? string.Empty);
+    return this;
+  }
+
   /// <inheritdoc />
-  public Stream OpenRead(string path) =>
-    FileExists(path) ? new MemoryStream(new byte[GetFileLength(path)]) : throw new FileNotFoundException(path);
+  public Stream OpenRead(string path)
+  {
+    if (!FileExists(path))
+    {
+      throw new FileNotFoundException(path);
+    }
+
+    return _contents.TryGetValue(Normalize(path), out var content)
+      ? new MemoryStream(content, writable: false)
+      : new MemoryStream(new byte[GetFileLength(path)], writable: false);
+  }
 
   private static string Normalize(string path) =>
     path

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>AnalyzerSample</RootNamespace>
+    <AssemblyName>AnalyzerSample</AssemblyName>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(Net10x)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(Net10x)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(Net10x)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MediaInfo.Wrapper\MediaInfo.Wrapper.Core.csproj" />
+  </ItemGroup>
+
+</Project>

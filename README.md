@@ -51,6 +51,137 @@ Install-Package MediaInfo.Wrapper -Version 26.1.0
 
 ## Usage
 
+> **New in 27.0 — the asynchronous analyzer.** `MediaInfoWrapper` does all its work in its constructor, so an analysis
+> cannot be awaited, cancelled or retried, and it describes a DVD or Blu-ray only as a flag and a folder size. It is
+> still supported and still works, but it is now marked obsolete on .NET. New code should use
+> [`IMediaInfoAnalyzer`](#asynchronous-analysis-net-60), described below. Everything after that section documents the
+> original wrapper, whose behaviour is unchanged.
+
+## Asynchronous analysis (.NET 6.0+)
+
+Available on `MediaInfo.Wrapper.Core` for `netstandard2.1`, `net6.0`, `net8.0` and `net10.0`. The .NET Framework
+package keeps the original wrapper only, because the pipeline needs `Span<T>` and `IAsyncEnumerable<T>`.
+
+```csharp
+using MediaInfo.Analysis;
+
+var analyzer = MediaInfoAnalyzer.CreateDefault();
+var result = await analyzer.AnalyzeAsync("path/to/media/file.mp4");
+
+if (result.Success)
+{
+    Console.WriteLine($"{result.General.Format}, {result.General.Duration}");
+    Console.WriteLine($"{result.BestVideoStream?.CodecName} {result.BestVideoStream?.Width}x{result.BestVideoStream?.Height}");
+}
+else
+{
+    // A failure says why, instead of leaving you to guess from an empty result.
+    Console.WriteLine($"{result.Failure!.Reason}: {result.Failure.Message}");
+}
+```
+
+The result is an immutable record, so it can be cached, shared between threads and compared without repeating the
+analysis. The same call accepts a file path, an `http`/`https` URL, or a folder holding a disc.
+
+### Streams and cancellation
+
+```csharp
+await using var stream = File.OpenRead("path/to/media/file.mkv");
+var result = await analyzer.AnalyzeAsync(stream, leaveOpen: true, cancellationToken);
+```
+
+The stream path is asynchronous end to end and observes cancellation between 64 KB blocks. Analyzing a **file** or a
+**URL** hands the path to the native library, which opens it with a blocking call: the token is honoured before that
+call and at the next await, but not during it.
+
+### DVD and Blu-ray
+
+```csharp
+var result = await analyzer.AnalyzeAsync(@"D:\Movies\SomeFilm\VIDEO_TS");
+
+if (result.Disc is DvdStructure dvd)
+{
+    Console.WriteLine($"{dvd.DvdTitles.Count} title set(s), {dvd.TotalSize:N0} bytes");
+    foreach (var title in dvd.DvdTitles)
+    {
+        Console.WriteLine($"VTS_{title.TitleSetNumber:00}: {title.Duration}, {title.VobFiles.Count} VOB(s)");
+    }
+}
+```
+
+The stream information describes the main title, while `result.Disc` carries every title on the disc. Passing the disc
+root, the `VIDEO_TS`/`BDMV` folder, or any `.IFO` inside it all resolve to the same disc.
+
+### Composing behaviour
+
+Every cross-cutting concern is opt-in and independent:
+
+```csharp
+var analyzer = MediaInfoAnalyzerBuilder.Create()
+    .WithValidation()                                  // reject bad input before opening anything
+    .WithCaching(TimeSpan.FromMinutes(10))             // reuse the result for an unchanged file or disc
+    .WithTimeout(TimeSpan.FromSeconds(30))             // total latency budget
+    .WithRetry(attempts: 3)                            // repeat only failures that may not persist
+    .WithConcurrencyLimit(Environment.ProcessorCount)  // bound how many native handles exist at once
+    .WithExternalSubtitles()                           // report .srt and friends sitting beside the media
+    .Build();
+```
+
+The order you request them in does not matter; the chain is always built so that logging sees rejections, a cache hit
+costs nothing, and the latency budget covers the wait for a free slot as well as the analysis itself.
+
+With dependency injection:
+
+```csharp
+services.AddMediaInfoAnalyzer(builder => builder
+    .WithCaching()
+    .WithConcurrencyLimit(4));
+```
+
+`IMediaInfoAnalyzer` is registered as a singleton and picks up a logger from the container when one is registered.
+
+### Scanning a folder
+
+```csharp
+await foreach (var result in analyzer.AnalyzeFolderAsync(@"D:\Movies", cancellationToken: token))
+{
+    Console.WriteLine($"{result.SourcePath}: {result.General.Duration}");
+}
+```
+
+Results arrive as they are ready. A subfolder holding `VIDEO_TS` or `BDMV` is reported as one disc rather than as its
+individual files, and a file that cannot be read is yielded as a failure instead of ending the scan.
+
+### Migrating from `MediaInfoWrapper`
+
+`AsLegacy()` presents the result through the same property names the wrapper used, so only the line that produces the
+object has to change:
+
+```csharp
+// var media = new MediaInfoWrapper(path);
+var media = (await analyzer.AnalyzeAsync(path)).AsLegacy();
+
+// Everything below is unchanged.
+if (media.Success)
+{
+    Console.WriteLine($"{media.VideoCodec} {media.Width}x{media.Height}, {media.AudioChannelsFriendly}");
+}
+```
+
+The values are identical, which the parity suite asserts file by file over the whole test corpus. `media.Duration` is
+still in milliseconds. The one intentional difference is a DVD: the wrapper read the stream details out of a `.BUP`
+navigation file, while the analyzer reads them out of the feature itself, so the codecs it reports are those of the
+media that actually plays.
+
+### Samples
+
+| Sample | Shows |
+| --- | --- |
+| `Samples/AnalyzerSample` | One media at a time: file, stream with a progress bar, disc, URL. DI wiring, cancellation, failure reporting. |
+| `Samples/BatchSample` | Walking a media library with `AnalyzeFolderAsync`, bounded concurrency, caching, CSV output. |
+| `Samples/ApiSample` | An ASP.NET Core API using the analyzer, including a `POST /media/disc` endpoint returning disc structure. |
+
+
 ### Basic Setup
 
 Add to usings:

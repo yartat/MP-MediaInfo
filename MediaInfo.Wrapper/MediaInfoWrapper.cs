@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -52,6 +52,13 @@ namespace MediaInfo
   /// and can be initialized with either a file path or a stream, making it suitable for a wide range of applications
   /// that require media information extraction.
   /// </remarks>
+#if !NETFRAMEWORK
+  [Obsolete(
+    "Use MediaInfo.Analysis.IMediaInfoAnalyzer, which is asynchronous, cancellable and describes DVD and Blu-ray " +
+    "structure. MediaAnalysisResult.AsLegacy() exposes these same properties over the new result. " +
+    "See docs/architecture/async-media-analyzer.md.",
+    error: false)]
+#endif
   public class MediaInfoWrapper
   {
 #region private vars

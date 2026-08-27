@@ -19,6 +19,9 @@ using Xunit.Abstractions;
 
 namespace MediaInfo.Analysis.Integration.Tests;
 
+// Comparing against the wrapper is the entire point of this file, so its deprecation is not news here.
+#pragma warning disable CS0618 // Type or member is obsolete
+
 /// <summary>
 /// Asserts that the new pipeline describes a media exactly as <see cref="MediaInfoWrapper"/> always did.
 /// </summary>
@@ -243,3 +246,5 @@ public class LegacyParityTests(ITestOutputHelper output)
     }
   }
 }
+
+#pragma warning restore CS0618

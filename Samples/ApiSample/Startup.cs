@@ -1,4 +1,4 @@
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 #region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
@@ -10,6 +10,7 @@ using System.Text.Json.Nodes;
 using System;
 using System.Text.Json.Serialization;
 using ApiSample.Infrastructure;
+using MediaInfo.Analysis;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Builder;
@@ -44,6 +45,15 @@ public static class Startup
         services
             .AddSingleton(config)
             .AddScoped<IMapper, ServiceMapper>();
+
+        // One analyzer for the whole application: it holds no per-request state, and the concurrency limit only
+        // means anything when every request shares it.
+        services.AddMediaInfoAnalyzer(builder => builder
+            .WithValidation()
+            .WithCaching(TimeSpan.FromMinutes(10))
+            .WithTimeout(TimeSpan.FromMinutes(2))
+            .WithConcurrencyLimit(Environment.ProcessorCount)
+            .WithExternalSubtitles());
 
         services
             .AddFilters()

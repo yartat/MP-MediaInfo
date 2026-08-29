@@ -31,7 +31,7 @@
 | Decision | Choice | Consequence |
 |---|---|---|
 | **Compatibility** | New API alongside legacy; `MediaInfoWrapper` marked `[Obsolete]` with a migration message. | No breaking change for current consumers. Deprecation signalled for a future major. |
-| **Target frameworks** | **.NET / Core only** — new code compiles for `netstandard2.1;net6.0;net8.0;net10.0` (i.e. `MediaInfo.Wrapper.Core.csproj` only). | Zero `#if` in the new layer. `Span<T>`, `ValueTask`, `IAsyncEnumerable<T>`, `Stream.ReadAsync(Memory<byte>, …)` and nullable reference types are all available on every target. |
+| **Target frameworks** | **.NET / Core only** — new code compiles for `netstandard2.1;net8.0;net10.0` (i.e. `MediaInfo.Wrapper.Core.csproj` only). .NET 6 was dropped once it left support; the two remaining releases are both LTS. | Zero `#if` in the new layer. `Span<T>`, `ValueTask`, `IAsyncEnumerable<T>`, `Stream.ReadAsync(Memory<byte>, …)` and nullable reference types are all available on every target. |
 | **Samples** | Console sample + batch folder-scan sample + `ApiSample` migration. | Three deliverables in `Samples/`. |
 
 ### 2.1 Two mechanical consequences of the TFM decision

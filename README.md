@@ -14,7 +14,7 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 * **Multi-Format Support**: Supports analysis of virtually all video and audio formats supported by MediaInfo (see [Supported Formats](#supported-formats))
 * **Stream Information**: Provides detailed access to individual video streams, audio streams, subtitle streams, chapters, and menu information
 * **Metadata Extraction**: Extract technical tags and general metadata from media files
-* **Cross-Platform**: Targets .NET Framework 4.0+, .NET Standard 2.1, .NET 6.0, .NET 8.0, and .NET 10.0
+* **Cross-Platform**: Targets .NET Framework 4.0+, .NET Standard 2.1, .NET 8.0, and .NET 10.0
 * **Optional Logging**: Built-in support for custom logging to track analysis operations
 
 ## Available packages
@@ -24,7 +24,6 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 | .NET Framework 4.0 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper) |
 | .NET Framework 4.5 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper) |
 | .NET Standard 2.1 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.Core.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
-| .NET 6.0 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.Core.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 | .NET 8.0 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.Core.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 | .NET 10.0 | [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Wrapper.Core.svg)](https://www.nuget.org/packages/MediaInfo.Wrapper.Core) |
 
@@ -32,7 +31,7 @@ MP-MediaInfo is .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaA
 
 Two packages are available:
 
-- **MediaInfo.Wrapper.Core** - For .NET Standard 2.1, .NET 6.0+. Recommended for modern applications, cross-platform projects, and ASP.NET Core services
+- **MediaInfo.Wrapper.Core** - For .NET Standard 2.1, .NET 8.0 and .NET 10.0. Recommended for modern applications, cross-platform projects, and ASP.NET Core services
 - **MediaInfo.Wrapper** - For .NET Framework 4.0+. Use this if you're on Windows only with .NET Framework
 
 Choose based on your target framework:
@@ -54,13 +53,13 @@ Install-Package MediaInfo.Wrapper -Version 26.1.0
 > **New in 27.0 — the asynchronous analyzer.** `MediaInfoWrapper` does all its work in its constructor, so an analysis
 > cannot be awaited, cancelled or retried, and it describes a DVD or Blu-ray only as a flag and a folder size. It is
 > still supported and still works, but it is now marked obsolete on .NET. New code should use
-> [`IMediaInfoAnalyzer`](#asynchronous-analysis-net-60), described below. Everything after that section documents the
+> [`IMediaInfoAnalyzer`](#asynchronous-analysis), described below. Everything after that section documents the
 > original wrapper, whose behaviour is unchanged.
 
-## Asynchronous analysis (.NET 6.0+)
+## Asynchronous analysis
 
-Available on `MediaInfo.Wrapper.Core` for `netstandard2.1`, `net6.0`, `net8.0` and `net10.0`. The .NET Framework
-package keeps the original wrapper only, because the pipeline needs `Span<T>` and `IAsyncEnumerable<T>`.
+Available on `MediaInfo.Wrapper.Core` for `netstandard2.1`, `net8.0` and `net10.0`. The .NET Framework package
+keeps the original wrapper only, because the pipeline needs `Span<T>` and `IAsyncEnumerable<T>`.
 
 ```csharp
 using MediaInfo.Analysis;
@@ -584,13 +583,6 @@ sudo pacman -S libcurl-gnutls libzen libmms libssh librtmp0
 ```
 
 ### Docker
-
-#### .NET 6.0
-
-```Dockerfile{:copy}
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
-RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
-```
 
 #### .NET 8.0
 

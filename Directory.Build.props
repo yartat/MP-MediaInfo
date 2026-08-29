@@ -4,22 +4,21 @@
   <PropertyGroup>
     <GitHub>8.0.0</GitHub>
     <CoreNative>26.1.0</CoreNative>
-    <Native>26.1.0</Native>
+    <Native>26.5.0</Native>
     <TestSdk>17.14.1</TestSdk>
     <MoqLib>4.20.72</MoqLib>
-    <Net6x>6.0.*</Net6x>
     <Net8x>8.0.*</Net8x>
     <Net10x>10.0.*</Net10x>
     <AzureContainer>1.23.0</AzureContainer>
-    <FluentAssertions>8.8.0</FluentAssertions>
+    <FluentAssertions>7.2.*</FluentAssertions>
     <MapsterLib>7.4.0</MapsterLib>
     <MapsterDILib>1.0.1</MapsterDILib>
     <xUnitRunner>3.1.5</xUnitRunner>
     <xUnit>2.9.1</xUnit>
     <Swashbuckle>10.1.4</Swashbuckle>
     <CsvHelper>33.1.0</CsvHelper>
-    <MediaInfoVersion>26.1.0</MediaInfoVersion>
-    <MediaInfoFileVersion>26.1.0.0</MediaInfoFileVersion>
+    <MediaInfoVersion>26.5.0</MediaInfoVersion>
+    <MediaInfoFileVersion>26.5.0.0</MediaInfoFileVersion>
     <PackageAuthor>yartat</PackageAuthor>
     <PackageCompany>Yaroslav Tatarenko</PackageCompany>
     <PackageRepository>https://github.com/yartat/MP-MediaInfo</PackageRepository>

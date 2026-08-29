@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;net10.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net8.0;net10.0</TargetFrameworks>
     <RootNamespace>MediaInfo</RootNamespace>
     <Version>$(MediaInfoVersion)</Version>
     <AssemblyVersion>$(MediaInfoFileVersion)</AssemblyVersion>
@@ -44,9 +44,9 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1' Or '$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Net6x)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(Net6x)" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Net8x)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(Net8x)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">

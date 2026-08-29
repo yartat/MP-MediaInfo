@@ -8,9 +8,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET5_0_OR_GREATER
 using MediaInfo.Marshalling;
-#endif
 #if NET7_0_OR_GREATER
 using System.Runtime.InteropServices.Marshalling;
 #endif
@@ -2141,28 +2139,18 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Info_Version")]
-    internal static extern IntPtr MediaInfo_Info_VersionPtr();
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_Info_Version() =>
-      Marshal.PtrToStringAnsi(MediaInfo_Info_VersionPtr()) ?? string.Empty;
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfo_Info_Version();
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfo_Info_Version();
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfo_Info_Version")]
-    internal static extern IntPtr MediaInfo_Info_VersionPtr();
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_Info_Version() =>
-      Marshal.PtrToStringAnsi(MediaInfo_Info_VersionPtr()) ?? string.Empty;
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfo_Info_Version();
 #endif
 #endif
 
@@ -2368,75 +2356,50 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Inform")]
-    internal static extern IntPtr MediaInfo_InformPtr(IntPtr handle, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_Inform(IntPtr handle, IntPtr reserved) =>
-      Marshal.PtrToStringUni(MediaInfo_InformPtr(handle, reserved)) ?? string.Empty;
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoA_Inform")]
-    internal static extern IntPtr MediaInfoA_InformPtr(IntPtr handle, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Inform(IntPtr handle, IntPtr reserved) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_InformPtr(handle, reserved)) ?? string.Empty;
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoA_Inform")]
-    internal static extern IntPtr MediaInfoA_InformPtr(IntPtr handle, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Inform(IntPtr handle, IntPtr reserved) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_InformPtr(handle, reserved)) ?? string.Empty;
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_GetI")]
-    internal static extern IntPtr MediaInfo_GetIPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_GetI(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_GetI(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringUni(MediaInfo_GetIPtr(handle, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfo_GetI(
       IntPtr handle,
       IntPtr streamKind,
@@ -2445,7 +2408,7 @@ namespace MediaInfo
       IntPtr kindOfInfo);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfo_GetI(
       IntPtr handle,
       IntPtr streamKind,
@@ -2456,28 +2419,18 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoA_GetI")]
-    internal static extern IntPtr MediaInfoA_GetIPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_GetI(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_GetI(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_GetIPtr(handle, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoA_GetI(
       IntPtr handle,
       IntPtr streamKind,
@@ -2485,52 +2438,31 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoA_GetI")]
-    internal static extern IntPtr MediaInfoA_GetIPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_GetI(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_GetI(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_GetIPtr(handle, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Get")]
-    internal static extern IntPtr MediaInfo_GetPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Get(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       [MarshalAs(UnmanagedType.LPWStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_Get(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPWStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringUni(MediaInfo_GetPtr(handle, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfo_Get(
       IntPtr handle,
       IntPtr streamKind,
@@ -2540,7 +2472,7 @@ namespace MediaInfo
       IntPtr kindOfSearch);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfo_Get(
       IntPtr handle,
       IntPtr streamKind,
@@ -2552,30 +2484,19 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoA_Get")]
-    internal static extern IntPtr MediaInfoA_GetPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Get(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Get(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_GetPtr(handle, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoA_Get(
       IntPtr handle,
       IntPtr streamKind,
@@ -2584,55 +2505,36 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoA_Get")]
-    internal static extern IntPtr MediaInfoA_GetPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Get(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Get(
-      IntPtr handle,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_GetPtr(handle, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfo_Option")]
-    internal static extern IntPtr MediaInfo_OptionPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfo_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPWStr)] string option,
-      [MarshalAs(UnmanagedType.LPWStr)] string value) =>
-      Marshal.PtrToStringUni(MediaInfo_OptionPtr(handle, option, value)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfo_Option(
       IntPtr handle,
       [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string option,
       [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string value);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfo_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string option,
@@ -2641,43 +2543,27 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoA_Option")]
-    internal static extern IntPtr MediaInfoA_OptionPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPStr)] string option,
-      [MarshalAs(UnmanagedType.LPStr)] string value) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_OptionPtr(handle, option, value)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoA_Option")]
-    internal static extern IntPtr MediaInfoA_OptionPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoA_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPStr)] string option,
-      [MarshalAs(UnmanagedType.LPStr)] string value) =>
-      Marshal.PtrToStringAnsi(MediaInfoA_OptionPtr(handle, option, value)) ?? string.Empty;
 #endif
 #endif
 
@@ -3026,77 +2912,51 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoList_Inform")]
-    internal static extern IntPtr MediaInfoList_InformPtr(IntPtr handle, IntPtr filePos, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved) =>
-      Marshal.PtrToStringUni(MediaInfoList_InformPtr(handle, filePos, reserved)) ?? string.Empty;
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoListA_Inform")]
-    internal static extern IntPtr MediaInfoListA_InformPtr(IntPtr handle, IntPtr filePos, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_InformPtr(handle, filePos, reserved)) ?? string.Empty;
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoListA_Inform")]
-    internal static extern IntPtr MediaInfoListA_InformPtr(IntPtr handle, IntPtr filePos, IntPtr reserved);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_InformPtr(handle, filePos, reserved)) ?? string.Empty;
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoList_GetI")]
-    internal static extern IntPtr MediaInfoList_GetIPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_GetI(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoList_GetI(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringUni(MediaInfoList_GetIPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfoList_GetI(
       IntPtr handle,
       IntPtr filePos,
@@ -3106,7 +2966,7 @@ namespace MediaInfo
       IntPtr kindOfInfo);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfoList_GetI(
       IntPtr handle,
       IntPtr filePos,
@@ -3118,30 +2978,19 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoListA_GetI")]
-    internal static extern IntPtr MediaInfoListA_GetIPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_GetI(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_GetI(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_GetIPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoListA_GetI(
       IntPtr handle,
       IntPtr filePos,
@@ -3150,32 +2999,22 @@ namespace MediaInfo
       IntPtr parameter,
       IntPtr kindOfInfo);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoListA_GetI")]
-    internal static extern IntPtr MediaInfoListA_GetIPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_GetI(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_GetI(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      IntPtr parameter,
-      IntPtr kindOfInfo) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_GetIPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo)) ?? string.Empty;
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoList_Get")]
-    internal static extern IntPtr MediaInfoList_GetPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
@@ -3183,23 +3022,10 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPWStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoList_Get(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPWStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringUni(MediaInfoList_GetPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfoList_Get(
       IntPtr handle,
       IntPtr filePos,
@@ -3210,7 +3036,7 @@ namespace MediaInfo
       IntPtr kindOfSearch);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfoList_Get(
       IntPtr handle,
       IntPtr filePos,
@@ -3223,8 +3049,9 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoListA_Get")]
-    internal static extern IntPtr MediaInfoListA_GetPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
@@ -3232,23 +3059,10 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Get(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_GetPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoListA_Get(
       IntPtr handle,
       IntPtr filePos,
@@ -3258,8 +3072,9 @@ namespace MediaInfo
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoListA_Get")]
-    internal static extern IntPtr MediaInfoListA_GetPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
@@ -3267,48 +3082,27 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Get(
-      IntPtr handle,
-      IntPtr filePos,
-      IntPtr streamKind,
-      IntPtr streamNumber,
-      [MarshalAs(UnmanagedType.LPStr)] string parameter,
-      IntPtr kindOfInfo,
-      IntPtr kindOfSearch) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_GetPtr(handle, filePos, streamKind, streamNumber, parameter, kindOfInfo, kindOfSearch)) ?? string.Empty;
 #endif
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoList_Option")]
-    internal static extern IntPtr MediaInfoList_OptionPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoList_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPWStr)] string option,
-      [MarshalAs(UnmanagedType.LPWStr)] string value) =>
-      Marshal.PtrToStringUni(MediaInfoList_OptionPtr(handle, option, value)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalUsing(typeof(UnicodeWCharStringMarshaller))]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
     internal static partial string MediaInfoList_Option(
       IntPtr handle,
       [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string option,
       [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string value);
 #else
     [DllImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
     internal static extern string MediaInfoList_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string option,
@@ -3317,43 +3111,27 @@ namespace MediaInfo
 #endif
 
 #if NETFRAMEWORK
-    [DllImport("MediaInfo.dll", EntryPoint = "MediaInfoListA_Option")]
-    internal static extern IntPtr MediaInfoListA_OptionPtr(
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPStr)] string option,
-      [MarshalAs(UnmanagedType.LPStr)] string value) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_OptionPtr(handle, option, value)) ?? string.Empty;
 #else
 #if NET7_0_OR_GREATER
     [LibraryImport("libmediainfo")]
-    [return: MarshalAs(UnmanagedType.LPStr)]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
     internal static partial string MediaInfoListA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
 #else
-    [DllImport("libmediainfo", EntryPoint = "MediaInfoListA_Option")]
-    internal static extern IntPtr MediaInfoListA_OptionPtr(
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
-
-    // The library owns the returned buffer and does not allocate it with CoTaskMemAlloc, so the string
-    // is copied out of the pointer. Marshalling it as a returned string instead makes the runtime free
-    // that buffer with CoTaskMemFree, which corrupts the process heap.
-    internal static string MediaInfoListA_Option(
-      IntPtr handle,
-      [MarshalAs(UnmanagedType.LPStr)] string option,
-      [MarshalAs(UnmanagedType.LPStr)] string value) =>
-      Marshal.PtrToStringAnsi(MediaInfoListA_OptionPtr(handle, option, value)) ?? string.Empty;
 #endif
 #endif
 

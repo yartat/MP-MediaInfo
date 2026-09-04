@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.Analysis;
+using MediaInfo.Analysis.Rtsp;
 using MediaInfo.Analysis.Results;
 using MediaInfo.Analysis.Sources;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +60,8 @@ internal static class Program
       .WithCaching(TimeSpan.FromMinutes(5))
       .WithTimeout(TimeSpan.FromMinutes(2))
       .WithExternalSubtitles()
+      // Teaches the analyzer to speak RTSP, which the native library cannot open on its own.
+      .WithRtsp(rtsp => rtsp.CaptureDuration = TimeSpan.FromSeconds(4))
       .UseProgress(new ConsoleProgress()));
 
     await using var provider = services.BuildServiceProvider();
@@ -68,7 +71,7 @@ internal static class Program
     {
       var result = command switch
       {
-        "file" or "disc" or "url" => await analyzer.AnalyzeAsync(target, cancellation.Token),
+        "file" or "disc" or "url" or "rtsp" => await analyzer.AnalyzeAsync(target, cancellation.Token),
         "strm" => await AnalyzeAsStreamAsync(analyzer, target, cancellation.Token),
         _ => null
       };
@@ -116,6 +119,7 @@ internal static class Program
     Console.WriteLine("  AnalyzerSample strm <path>            the same file, read as a stream, with progress");
     Console.WriteLine("  AnalyzerSample disc <VIDEO_TS|BDMV>   a DVD or Blu-ray folder");
     Console.WriteLine("  AnalyzerSample url  <http-url>        a media served over http");
+    Console.WriteLine("  AnalyzerSample rtsp <rtsp-url>        a live stream served over rtsp");
     Console.WriteLine();
     Console.WriteLine("  --verbose                             log what the pipeline does");
   }

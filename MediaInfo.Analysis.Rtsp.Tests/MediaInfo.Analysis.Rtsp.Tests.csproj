@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>MediaInfo.Analysis.Rtsp.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
+
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(TestSdk)" />
+    <PackageReference Include="xunit" Version="$(xUnit)" />
+    <PackageReference Include="xunit.extensibility.execution" Version="$(xUnit)" />
+
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitRunner)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MediaInfo.Analysis.Rtsp\MediaInfo.Analysis.Rtsp.csproj" />
+  </ItemGroup>
+
+</Project>

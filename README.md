@@ -139,6 +139,40 @@ services.AddMediaInfoAnalyzer(builder => builder
 
 `IMediaInfoAnalyzer` is registered as a singleton and picks up a logger from the container when one is registered.
 
+### RTSP streams
+
+The native library cannot open an `rtsp://` location, so an RTSP source is declined by default. The
+`MediaInfo.Analysis.Rtsp` package teaches the analyzer to speak the protocol itself, with no third party client:
+
+```csharp
+using MediaInfo.Analysis.Rtsp;
+
+var analyzer = MediaInfoAnalyzerBuilder.Create()
+    .WithRtsp(rtsp => rtsp.CaptureDuration = TimeSpan.FromSeconds(3))
+    .Build();
+
+var result = await analyzer.AnalyzeAsync("rtsp://camera.local/stream1");
+Console.WriteLine(result.BestVideoStream?.CodecName);   // AVC High@L4.1
+Console.WriteLine(result.BestVideoStream?.Width);       // 1920
+```
+
+It describes the session, plays the video track for a bounded window, rebuilds the elementary stream the RTP packets
+carried and hands that to the ordinary stream analysis. The video is therefore described as fully as a file is,
+because the same parser reads the same bitstream.
+
+| | |
+| --- | --- |
+| Video | H.264, rebuilt from single, aggregated and fragmented packets (RFC 6184) and read by the library |
+| Audio | Taken from the session description: encoding, sample rate and channel count. The track is not played |
+| Transport | RTP interleaved on the RTSP connection, so no second port has to be opened |
+| Authentication | Basic and Digest, from `RtspAnalysisOptions.Credentials` or from the URL itself |
+| Bounded by | `CaptureDuration`, `MaximumCaptureBytes` and `SufficientFrameCount`, whichever comes first |
+
+`Duration` and `Size` are reported as zero: a live stream has no length, and how much of it the capture happened to
+take says nothing about the stream. Cancellation is observed between packets.
+
+Only H.264 video is rebuilt today. A stream whose video track is anything else is declined with a message saying so.
+
 ### Scanning a folder
 
 ```csharp

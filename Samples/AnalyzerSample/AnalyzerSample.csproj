@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MediaInfo.Wrapper\MediaInfo.Wrapper.Core.csproj" />
+    <ProjectReference Include="..\..\MediaInfo.Analysis.Rtsp\MediaInfo.Analysis.Rtsp.csproj" />
   </ItemGroup>
 
 </Project>

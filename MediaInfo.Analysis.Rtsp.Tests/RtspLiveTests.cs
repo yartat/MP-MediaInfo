@@ -108,7 +108,9 @@ public class RtspLiveTests(ITestOutputHelper output)
     result.SourcePath.Should().Be(LiveStream.Url);
 
     var stream = result.VideoStreams.Should().ContainSingle().Subject;
-    stream.Codec.Should().Be(VideoCodec.Mpeg4IsoAvc, "the rebuilt elementary stream is read by the same parser a file is");
+    stream.Codec.Should().BeOneOf(
+      [VideoCodec.Mpeg4IsoAvc, VideoCodec.MpeghIsoHevc],
+      "the rebuilt elementary stream is read by the same parser a file is, whichever of the two it carries");
     stream.Width.Should().BeGreaterThan(0);
     stream.Height.Should().BeGreaterThan(0);
     stream.FrameRate.Should().BeGreaterThan(0);
@@ -147,16 +149,19 @@ public class RtspLiveTests(ITestOutputHelper output)
   [RtspFact]
   public async Task Analyze_StopsEarlyOnceItHasSeenEnoughFrames()
   {
-    var quick = await CreateAnalyzer(o => o.SufficientFrameCount = 5).AnalyzeAsync(LiveStream.Url);
-    var thorough = await CreateAnalyzer(o => o.SufficientFrameCount = 0).AnalyzeAsync(LiveStream.Url);
+    // One capture, compared against its own window rather than against a second capture: a stream that is
+    // published on demand does not always have a publisher ready for a connection that arrives right after a
+    // teardown, and that has nothing to do with what this test is about.
+    var result = await CreateAnalyzer(o => o.SufficientFrameCount = 5).AnalyzeAsync(LiveStream.Url);
 
-    output.WriteLine($"five frames: {quick.Elapsed.TotalMilliseconds:N0} ms, whole window: {thorough.Elapsed.TotalMilliseconds:N0} ms");
+    output.WriteLine($"five frames in {result.Elapsed.TotalMilliseconds:N0} ms of a 5,000 ms window");
 
     using var _ = new AssertionScope();
 
-    quick.Success.Should().BeTrue(quick.Failure?.ToString() ?? string.Empty);
-    thorough.Success.Should().BeTrue(thorough.Failure?.ToString() ?? string.Empty);
-    quick.Elapsed.Should().BeLessThan(thorough.Elapsed, "a frame budget is what ends the capture first");
+    result.Success.Should().BeTrue(result.Failure?.ToString() ?? string.Empty);
+    result.Elapsed.Should().BeLessThan(
+      TimeSpan.FromSeconds(4),
+      "a five frame budget ends the capture well before the window does");
   }
 
   [RtspFact]

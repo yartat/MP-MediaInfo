@@ -461,6 +461,41 @@ namespace MediaInfo.Model
     /// <summary>
     /// Immersive Audio Model and Formats (IAMF).
     /// </summary>
-    Iamf
+    Iamf,
+
+    /// <summary>
+    /// G.711 companded PCM with the A-law curve, used by European telephony and by most IP cameras.
+    /// </summary>
+    PcmALaw,
+
+    /// <summary>
+    /// G.711 companded PCM with the mu-law curve, used by North American and Japanese telephony.
+    /// </summary>
+    PcmMuLaw,
+
+    /// <summary>
+    /// G.722 wideband speech codec.
+    /// </summary>
+    G_722,
+
+    /// <summary>
+    /// G.726 adaptive differential PCM speech codec.
+    /// </summary>
+    G_726,
+
+    /// <summary>
+    /// G.729 low bitrate speech codec.
+    /// </summary>
+    G_729,
+
+    /// <summary>
+    /// GSM full rate speech codec.
+    /// </summary>
+    Gsm,
+
+    /// <summary>
+    /// Speex speech codec.
+    /// </summary>
+    Speex
   }
 }

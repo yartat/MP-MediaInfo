@@ -144,14 +144,10 @@ internal static class RtspStreamCapture
     RtspAnalysisOptions options,
     CancellationToken cancellationToken)
   {
-    var depacketizer = new H264Depacketizer();
-    var isH264 = string.Equals(capture.VideoEncoding, "H264", StringComparison.OrdinalIgnoreCase);
-
-    if (!isH264)
-    {
-      throw new RtspProtocolException(
-        $"The video track is {capture.VideoEncoding ?? "of an unnamed encoding"}, and only H264 is rebuilt today.");
-    }
+    var depacketizer = CreateDepacketizer(capture.VideoEncoding)
+      ?? throw new RtspProtocolException(
+        $"The video track is {capture.VideoEncoding ?? "of an unnamed encoding"}, " +
+        "and only H264 and H265 are rebuilt today.");
 
     // The session usually carries the parameter sets, so the stream starts with what decodes it even when the
     // capture happens to begin between key frames.
@@ -232,35 +228,61 @@ internal static class RtspStreamCapture
     }
   }
 
+  /// <summary>
+  /// Creates the depacketizer that rebuilds the given encoding, or nothing when it is one we do not rebuild.
+  /// </summary>
+  internal static VideoDepacketizer? CreateDepacketizer(string? encoding) =>
+    encoding?.ToUpperInvariant() switch
+    {
+      "H264" => new H264Depacketizer(),
+      "H265" or "HEVC" => new H265Depacketizer(),
+      _ => null
+    };
+
+  /// <summary>
+  /// Reads the parameter sets the session carries, so that the stream can start with what decodes it.
+  /// </summary>
+  /// <remarks>
+  /// H.264 lists them all under one parameter, while H.265 gives each kind its own. Either way a parameter may hold
+  /// several sets separated by commas, and an entry that is not valid base64 is skipped rather than failing the lot.
+  /// </remarks>
   internal static IEnumerable<byte[]> ParameterSetsOf(SdpMedia video)
   {
-    var sets = video.GetFormatParameter("sprop-parameter-sets");
-    if (string.IsNullOrEmpty(sets))
-    {
-      yield break;
-    }
+    var encoding = video.PrimaryRtpMap?.Encoding?.ToUpperInvariant();
+    var parameters = encoding is "H265" or "HEVC"
+      ? new[] { "sprop-vps", "sprop-sps", "sprop-pps" }
+      : ["sprop-parameter-sets"];
 
-    foreach (var encoded in sets!.Split(','))
+    foreach (var parameter in parameters)
     {
-      var trimmed = encoded.Trim();
-      if (trimmed.Length == 0)
+      var sets = video.GetFormatParameter(parameter);
+      if (string.IsNullOrEmpty(sets))
       {
         continue;
       }
 
-      byte[] decoded;
-      try
+      foreach (var encoded in sets!.Split(','))
       {
-        decoded = Convert.FromBase64String(trimmed);
-      }
-      catch (FormatException)
-      {
-        continue;
-      }
+        var trimmed = encoded.Trim();
+        if (trimmed.Length == 0)
+        {
+          continue;
+        }
 
-      if (decoded.Length > 0)
-      {
-        yield return decoded;
+        byte[] decoded;
+        try
+        {
+          decoded = Convert.FromBase64String(trimmed);
+        }
+        catch (FormatException)
+        {
+          continue;
+        }
+
+        if (decoded.Length > 0)
+        {
+          yield return decoded;
+        }
       }
     }
   }

@@ -162,7 +162,7 @@ because the same parser reads the same bitstream.
 
 | | |
 | --- | --- |
-| Video | H.264, rebuilt from single, aggregated and fragmented packets (RFC 6184) and read by the library |
+| Video | H.264 (RFC 6184) and H.265 (RFC 7798), rebuilt from single, aggregated and fragmented packets and read by the library |
 | Audio | Taken from the session description: encoding, sample rate and channel count. The track is not played |
 | Transport | RTP interleaved on the RTSP connection, so no second port has to be opened |
 | Authentication | Basic and Digest, from `RtspAnalysisOptions.Credentials` or from the URL itself |
@@ -171,7 +171,9 @@ because the same parser reads the same bitstream.
 `Duration` and `Size` are reported as zero: a live stream has no length, and how much of it the capture happened to
 take says nothing about the stream. Cancellation is observed between packets.
 
-Only H.264 video is rebuilt today. A stream whose video track is anything else is declined with a message saying so.
+A stream whose video track is neither H.264 nor H.265 is declined with a message saying so. Decoding order numbers
+are not read, which only matters for a sender that interleaves units, and no sender does that in answer to a plain
+play request.
 
 ### Scanning a folder
 

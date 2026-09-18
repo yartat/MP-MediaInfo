@@ -1,17 +1,20 @@
 #region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
 
 using System;
 using System.CommandLine;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using MediaToolkitNet.Abstractions;
+using MediaToolkitNet.FFmpeg;
+using MediaToolkitNet.FFmpeg.Native;
+using MediaToolkitNet.Interop;
 
 namespace MediaInfo.TestFilesGenerator;
 
@@ -40,8 +43,10 @@ internal static class Program
     var ffmpegPath = new Option<string>("--ffmpeg", "-f")
     {
       AllowMultipleArgumentsPerToken = false,
-      Description = "Path to ffmpeg binary including ffmpeg executable (default: ffmpeg, i.e. must be in PATH)",
-      DefaultValueFactory = (r) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg")
+      Description = "Folder holding the FFmpeg shared libraries, e.g. avcodec-63.dll or libavcodec.so.61. " +
+                    "Windows x64 gets them from the FFmpeg.GPL package by default; every other system is " +
+                    "expected to have FFmpeg installed",
+      DefaultValueFactory = (r) => string.Empty
     };
     var parallelism = new Option<int>("--parallelism", "-p")
     {
@@ -77,21 +82,16 @@ internal static class Program
     Console.WriteLine($"  Output      : {outputDirValue}");
     Console.WriteLine($"  Seed        : {seedValue}");
     Console.WriteLine($"  Count       : {countValue}");
-    Console.WriteLine($"  FFmpeg      : {ffmpegPathValue}");
     Console.WriteLine($"  Parallelism : {parallelismValue}");
     Console.WriteLine();
     Console.ForegroundColor = previousForegroundColor;
 
-    if (!CheckFfmpeg(ffmpegPathValue!))
+    if (!LoadFfmpeg(ffmpegPathValue!, previousForegroundColor))
     {
-      Console.ForegroundColor = ConsoleColor.Red;
-      Console.Error.WriteLine("ERROR: FFmpeg not found or not executable.");
-      Console.Error.WriteLine("       Install FFmpeg and add it to PATH, or pass the full path as argument --ffmpeg.");
-      Console.ForegroundColor = previousForegroundColor;
       return 1;
     }
 
-    await new FileGenerator(outputDirValue!, ffmpegPathValue!, seedValue, parallelismValue)
+    await new FileGenerator(outputDirValue!, seedValue, parallelismValue)
       .Generate(countValue);
 
     return 0;
@@ -99,29 +99,73 @@ internal static class Program
 
   #region Helpers
 
-  private static bool CheckFfmpeg(string ffmpegPath)
+  /// <summary>
+  /// Loads FFmpeg and reports which one answered.
+  /// </summary>
+  /// <param name="directory">Where to look first, or empty for the system search path.</param>
+  /// <param name="previousForegroundColor">The console colour to restore.</param>
+  /// <returns>Returns <see langword="true"/> when the libraries are usable.</returns>
+  private static bool LoadFfmpeg(string directory, ConsoleColor previousForegroundColor)
   {
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+      if (!Directory.Exists(directory))
+      {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine($"ERROR: {directory} does not exist.");
+        Console.ForegroundColor = previousForegroundColor;
+        return false;
+      }
+
+      NativeSearchPaths.Prepend(directory);
+
+      // A Windows FFmpeg release keeps its DLLs in bin/ beside include/ and lib/,
+      // so the folder someone names is as often the parent as it is the one.
+      var nested = Path.Combine(directory, "bin");
+      if (Directory.Exists(nested))
+      {
+        NativeSearchPaths.Prepend(nested);
+      }
+    }
+
     try
     {
-      var psi = new ProcessStartInfo
-      {
-        FileName = ffmpegPath,
-        Arguments = "-version",
-        UseShellExecute = false,
-        CreateNoWindow = true,
-        RedirectStandardOutput = true,
-        RedirectStandardError  = true
-      };
-      
-      using var p = Process.Start(psi);
-      p?.WaitForExit(5_000);
-      return p?.ExitCode == 0;
+      FFmpegLibraries.EnsureLoaded();
+
+      // The recorder asks each encoder about one sample format after another
+      // until one is accepted, and FFmpeg writes out every refusal along the way.
+      // This tool reports its own failures, one line per file.
+      FFmpegBackend.SetLogLevel(AVConstants.LogFatal);
     }
-    catch
+    catch (MediaToolkitNetException ex)
     {
+      Console.ForegroundColor = ConsoleColor.Red;
+      Console.Error.WriteLine($"ERROR: {ex.Message}");
+      Console.Error.WriteLine($"       {WhereToGetFfmpeg()}");
+      Console.ForegroundColor = previousForegroundColor;
       return false;
     }
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine($"  FFmpeg      : {FFmpegLibraries.AvCodec.FileName}");
+    Console.WriteLine($"  Version     : {FFmpegLibraries.VersionString}");
+    Console.WriteLine($"  Series      : {FFmpegLibraries.Generation}");
+    Console.WriteLine();
+    Console.ForegroundColor = previousForegroundColor;
+    return true;
   }
+
+  /// <summary>
+  /// Says where the shared libraries are meant to come from on this platform.
+  /// </summary>
+  /// <returns>Returns the advice to print beside the failure.</returns>
+  private static string WhereToGetFfmpeg() =>
+    OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64
+      ? "The FFmpeg.GPL package supplies these on Windows x64, so check that the restore ran, " +
+        "or pass the folder holding a private build as --ffmpeg."
+      : "Install FFmpeg 7.x, 8.x or 9.x from the system package manager (apt install ffmpeg, " +
+        "dnf install ffmpeg, brew install ffmpeg), or pass the folder holding its shared " +
+        "libraries as --ffmpeg.";
 
   #endregion
 }

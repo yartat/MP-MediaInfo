@@ -1,7 +1,7 @@
 #region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
@@ -33,5 +33,40 @@ public enum AudioFormat
     /// <summary>
     /// Represents a WAV audio file format type.
     /// </summary>
-    Wav
+    Wav,
+
+    /// <summary>
+    /// Represents the Opus audio format.
+    /// </summary>
+    Opus,
+
+    /// <summary>
+    /// Represents the FLAC lossless audio format.
+    /// </summary>
+    Flac,
+
+    /// <summary>
+    /// Represents MPEG audio layer II.
+    /// </summary>
+    Mp2,
+
+    /// <summary>
+    /// Represents MPEG audio layer III.
+    /// </summary>
+    Mp3,
+
+    /// <summary>
+    /// Represents the Vorbis audio format.
+    /// </summary>
+    Vorbis,
+
+    /// <summary>
+    /// Represents the Dolby TrueHD lossless audio format.
+    /// </summary>
+    TrueHd,
+
+    /// <summary>
+    /// Represents RealAudio 1.0, which is 14.4 kbps of mono at 8 kHz.
+    /// </summary>
+    RealAudio
 }

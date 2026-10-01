@@ -104,6 +104,7 @@ namespace MediaInfo.Model
       { 8, "7.1" },
       { 9, "7.2" },
       { 10, "7.2.1" },
+      { 12, "7.1.4" },
     };
 
     #endregion
@@ -220,6 +221,14 @@ namespace MediaInfo.Model
     /// The audio channel amount.
     /// </value>
     public int Channel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of dynamic objects of object-based audio (Dolby Atmos, DTS:X).
+    /// </summary>
+    /// <value>
+    /// The number of dynamic objects, or 0 when the stream carries none or does not say.
+    /// </value>
+    public int DynamicObjects { get; set; }
 
     /// <summary>
     /// Gets or sets the audio sampling rate.

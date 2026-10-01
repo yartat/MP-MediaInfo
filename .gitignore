@@ -268,3 +268,6 @@ nuget.config
 .codegraph/
 testEnvironments.json
 
+
+# Local assistant instructions
+CLAUDE.md

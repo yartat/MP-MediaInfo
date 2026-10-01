@@ -80,7 +80,7 @@ public abstract class MediaStream
     /// </summary>
     [DataMember(Name = "kind")]
     [JsonPropertyName("kind")]
-    public MediaStreamKind Kind { get; }
+    public MediaStreamKind Kind { get; set; }
 
     /// <summary>
     /// A stream position.

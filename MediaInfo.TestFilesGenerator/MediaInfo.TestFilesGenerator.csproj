@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediaToolkitNet.FFmpeg" Version="0.1.2" />
+    <PackageReference Include="MediaToolkitNet.All" Version="$(MediaToolkitNet)" />
     <PackageReference Include="System.CommandLine" Version="2.0.5" />
   </ItemGroup>
 
@@ -32,7 +32,7 @@
     dnf or brew. The ffmpeg option still points at a private build anywhere.
   -->
   <ItemGroup Condition="'$(GeneratorRuntimeIdentifier)' == 'win-x64'">
-    <PackageReference Include="FFmpeg.GPL" Version="20260918.1.0" />
+    <PackageReference Include="FFmpeg.GPL" Version="$(FFmpeg)" />
   </ItemGroup>
 
 </Project>

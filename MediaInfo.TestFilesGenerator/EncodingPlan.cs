@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,46 +7,58 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using MediaInfo.TestFilesGenerator.Models;
 using MediaToolkitNet.Abstractions.Formats;
 using MediaToolkitNet.Abstractions.Recording;
+using MediaToolkitNet.Abstractions.Transcoding;
 using AudioFormat = MediaInfo.TestFilesGenerator.Models.AudioFormat;
-using ToolkitAudioFormat = MediaToolkitNet.Abstractions.Formats.AudioFormat;
 
 namespace MediaInfo.TestFilesGenerator;
 
 /// <summary>
-/// Turns one set of <see cref="AudioParameters"/> into what the recorder needs:
-/// the format of the samples that will be pushed in, and how to encode them.
+/// Turns one set of <see cref="AudioParameters"/> into a transcoding job: the
+/// silent master in, one Matroska audio file out.
 /// </summary>
 internal static class EncodingPlan
 {
   /// <summary>
-  /// Builds the plan for one file.
+  /// Builds the job for one file.
   /// </summary>
   /// <param name="p">The parameters that were generated for it.</param>
-  /// <returns>Returns the source format and the encoder settings.</returns>
-  public static (ToolkitAudioFormat Format, AudioEncodingSettings Settings) For(AudioParameters p)
+  /// <param name="source">The silent master to cut it from.</param>
+  /// <param name="output">The file to write.</param>
+  /// <returns>Returns the request.</returns>
+  /// <remarks>
+  /// The request holds only what every backend understands, so any of them can
+  /// run it. FLAC's compression level is the one parameter left out: libavcodec
+  /// and GStreamer name it differently and it has no common setting, so it stays
+  /// in the manifest but the encoder's default is used.
+  /// </remarks>
+  public static TranscodeRequest For(AudioParameters p, string source, string output)
   {
-    // Silence is pushed as interleaved 16-bit, and the recorder converts it to
-    // whatever the encoder actually takes.
-    var format = new ToolkitAudioFormat(
-      (int)p.SampleRate,
-      p.Channels,
-      SampleFormat.S16,
-      LayoutFor(p.Format, p.Channels));
-
-    var settings = new AudioEncodingSettings(format, CodecFor(p), BitrateFor(p))
+    // Rate, channel count and layout are stated rather than inherited, because
+    // the master is mono at 48 kHz and every file is something else. The
+    // transcoder resamples and remixes to them before the encoder sees a sample.
+    var settings = new AudioOutputSettings(CodecFor(p))
     {
+      SampleRate = (int)p.SampleRate,
+      Channels = p.Channels,
+      ChannelMask = LayoutFor(p.Format, p.Channels),
       SampleFormat = PinnedFormatFor(p),
-      Options = OptionsFor(p),
+      Quality = QualityFor(p),
+      BitrateBitsPerSecond = BitrateFor(p),
     };
 
-    return QualityFor(p) is { } quality
-      ? (format, settings with { Quality = quality })
-      : (format, settings);
+    return new TranscodeRequest(output)
+    {
+      Inputs = [source],
+      Container = MediaContainer.Matroska,
+      Streams = [OutputStream.Audio(StreamSource.First(MediaStreamKind.Audio), settings)],
+
+      // The master is as long as the longest file; each is cut from its start.
+      End = TimeSpan.FromSeconds(p.DurationSeconds),
+      CopyChapters = false,
+    };
   }
 
   private static MediaCodec CodecFor(AudioParameters p) =>
@@ -88,7 +100,7 @@ internal static class EncodingPlan
   private static double? QualityFor(AudioParameters p) =>
     p.Format switch
     {
-      // Lossless: the compression level travels as an option instead.
+      // Lossless: nothing to ask for.
       AudioFormat.Flac or AudioFormat.TrueHd => null,
 
       // The native AAC encoder wants a fraction of the way up its own scale.
@@ -111,20 +123,14 @@ internal static class EncodingPlan
       _ => null,
     };
 
-  private static IReadOnlyDictionary<string, string>? OptionsFor(AudioParameters p) =>
-    p.Format == AudioFormat.Flac
-      ? new Dictionary<string, string> { ["compression_level"] = p.VbrQuality.ToString(CultureInfo.InvariantCulture) }
-      : null;
-
   /// <summary>
   /// Chooses where the speakers are.
   /// </summary>
   /// <remarks>
   /// A channel count alone does not say: four channels are quad as often as they
-  /// are 3.1. The FFmpeg command line used to pick a layout and then quietly
-  /// convert it to one the encoder accepted; asking the library directly means
-  /// naming a layout the encoder takes. The DCA encoder takes only the side
-  /// arrangements, which is why DTS differs here.
+  /// are 3.1. The layout named here is the one the remix aims at, so it has to be
+  /// one the encoder takes: the DCA and TrueHD encoders take only the side
+  /// arrangements, which is why those two differ.
   /// </remarks>
   private static ulong LayoutFor(AudioFormat format, int channels) =>
     format switch

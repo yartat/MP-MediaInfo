@@ -295,6 +295,8 @@ namespace MediaInfo.Builder
       result.TimeCodeSource = Get((int)NativeMethods.Audio.Audio_TimeCode_Source, InfoKind.Text);
       result.Bitrate = Get<double>((int)NativeMethods.Audio.Audio_BitRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.Channel = Get<int>((int)NativeMethods.Audio.Audio_Channel_s_, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+
+      result.DynamicObjects = Get<int>("NumberOfDynamicObjects", TagBuilderHelper.TryGetInt, x => ExtractInfo(x ?? string.Empty, 0)!);
       result.SamplingRate = Get<double>((int)NativeMethods.Audio.Audio_SamplingRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.BitDepth = Get<int>((int)NativeMethods.Audio.Audio_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
       result.BitrateMode = Get<BitrateMode>((int)NativeMethods.Audio.Audio_BitRate_Mode, InfoKind.Text, TagBuilderHelper.TryGetBitrateMode, x => ExtractInfo(x, baseIndex));

@@ -12,6 +12,32 @@ using System.Collections.Generic;
 namespace ApiSample.Models;
 
 /// <summary>
+/// Describes one chapter of a disc title.
+/// </summary>
+public class DiscChapterInfo
+{
+    /// <summary>
+    /// Gets or sets the ordinal of the chapter within the title, starting at one.
+    /// </summary>
+    public int Number { get; set; }
+
+    /// <summary>
+    /// Gets or sets the offset of the chapter from the start of the title.
+    /// </summary>
+    public TimeSpan Start { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration of the chapter.
+    /// </summary>
+    public TimeSpan Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the chapter, when the disc declares one.
+    /// </summary>
+    public string? Name { get; set; }
+}
+
+/// <summary>
 /// Describes one playable title of an optical disc.
 /// </summary>
 public class DiscTitleInfo
@@ -40,6 +66,12 @@ public class DiscTitleInfo
     /// Gets or sets the number of media files that make up the title.
     /// </summary>
     public int FileCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chapters of the title. A DVD declares these in its
+    /// navigation tables; a Blu-ray playlist carries none that this API reads.
+    /// </summary>
+    public IList<DiscChapterInfo>? Chapters { get; set; }
 }
 
 /// <summary>

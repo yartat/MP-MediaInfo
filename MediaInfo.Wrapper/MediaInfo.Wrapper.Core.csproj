@@ -19,7 +19,6 @@
     <PackageIcon>$(PackageIconValue)</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>$(PackageDescription)</Description>
-    <PackageReleaseNotes>$(PackageNotes)</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -69,7 +68,7 @@
     <Compile Remove="ILogger.cs" />
     <Compile Remove="Extensions\LogExtensions.cs" />
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\docs\nuget\MediaInfo.Wrapper.Core.md" Pack="true" PackagePath="README.md" />
   </ItemGroup>
 
 </Project>

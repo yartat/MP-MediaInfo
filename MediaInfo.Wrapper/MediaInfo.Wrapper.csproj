@@ -19,7 +19,6 @@
     <PackageIcon>$(PackageIconValue)</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>$(PackageDescription)</Description>
-    <PackageReleaseNotes>$(PackageNotes)</PackageReleaseNotes>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MediaInfo.Wrapper.xml</DocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -56,7 +55,7 @@
   <ItemGroup>
     <None Include="images/$(PackageIconValue)" Pack="true" PackagePath="" />
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\docs\nuget\MediaInfo.Wrapper.md" Pack="true" PackagePath="README.md" />
   </ItemGroup>
 
 </Project>

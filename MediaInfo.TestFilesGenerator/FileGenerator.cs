@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,31 +7,36 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.TestFilesGenerator.Models;
-using MediaToolkitNet.FFmpeg;
-using ToolkitAudioFormat = MediaToolkitNet.Abstractions.Formats.AudioFormat;
+using MediaToolkitNet.Abstractions.Transcoding;
 
 namespace MediaInfo.TestFilesGenerator;
 
 /// <summary>
 /// Pre-generates all <see cref="AudioParameters"/> with a seeded RNG for
-/// reproducibility, then encodes the MKA files in parallel through
-/// MediaToolkit.NET.
+/// reproducibility, then transcodes the MKA files in parallel through
+/// MediaToolkit.NET, from one silent master.
 /// </summary>
 /// <param name="outputDir">The directory to write generated files to.</param>
 /// <param name="seed">The seed for the random parameter generator.</param>
-/// <param name="parallelism">The number of files to encode at once.</param>
-internal sealed class FileGenerator(string outputDir, int seed, int parallelism)
+/// <param name="parallelism">The number of files to transcode at once.</param>
+/// <param name="transcoderFor">Picks the transcoder that runs a request.</param>
+internal sealed class FileGenerator(
+  string outputDir,
+  int seed,
+  int parallelism,
+  Func<TranscodeRequest, IMediaTranscoder> transcoderFor)
 {
   private readonly string _outputDir = outputDir;
   private readonly ParameterGenerator _paramGen = new ParameterGenerator(seed);
   private readonly int _parallelism = parallelism;
+  private readonly Func<TranscodeRequest, IMediaTranscoder> _transcoderFor = transcoderFor;
 
   private int _succeeded;
   private int _failed;
@@ -53,26 +58,28 @@ internal sealed class FileGenerator(string outputDir, int seed, int parallelism)
     // by index.
     items.Sort((left, right) => Cost(right).CompareTo(Cost(left)));
 
+    // Step 2 — the one input every file is cut from
+    using var master = SourceMaster.Create(items.Count == 0 ? 1 : items.Max(x => x.Params.DurationSeconds));
+
     Console.WriteLine($"Starting parallel generation with {_parallelism} worker(s)...");
     Console.WriteLine();
 
-    // Step 2 — manifest array (pre-allocated, each slot written by a single thread)
+    // Step 3 — manifest array (pre-allocated, each slot written by a single worker)
     var manifest = new string[count + 1];
     manifest[0] = "Index,Format,Channels,BitDepth,Bitrate,BitrateMode," +
                   "SampleRate,Duration,VbrQuality,FileName,Status";
 
     var wallClock = Stopwatch.StartNew();
 
-    // Step 3 — encode in parallel and fill manifest
-    // Using Parallel.ForEach to control the degree of parallelism and ensure thread-safe updates to counters and manifest
-    Parallel.ForEach(
-      // One item at a time. The default partitioner hands out growing chunks,
-      // which is right when items cost the same and wrong when they do not.
-      Partitioner.Create(items, EnumerablePartitionerOptions.NoBuffering),
+    // Step 4 — transcode in parallel and fill the manifest. ForEachAsync takes
+    // the items from one shared enumerator, one at a time and in order, which is
+    // what keeps the longest-first order above.
+    await Parallel.ForEachAsync(
+      items,
       new ParallelOptions { MaxDegreeOfParallelism = _parallelism },
-      item =>
+      async (item, cancellation) =>
       {
-        var failure = Encode(item.Params, item.FilePath);
+        var failure = await Transcode(item, master.Path, cancellation);
         var isOk = failure is null;
         var total = isOk
           ? Interlocked.Increment(ref _succeeded)
@@ -93,16 +100,13 @@ internal sealed class FileGenerator(string outputDir, int seed, int parallelism)
       });
 
     wallClock.Stop();
-    await WriteManifest(manifest, wallClock.Elapsed);
-  }
 
-  private async Task WriteManifest(string[] manifest, TimeSpan elapsed)
-  {
+    // Step 5 — write manifest
     var manifestPath = Path.Combine(_outputDir, "manifest.csv");
     await File.WriteAllLinesAsync(manifestPath, manifest);
 
     Console.WriteLine();
-    Console.WriteLine($"Finished in {elapsed:hh\\:mm\\:ss}");
+    Console.WriteLine($"Finished in {wallClock.Elapsed:hh\\:mm\\:ss}");
     Console.WriteLine($"  OK     : {_succeeded}");
     Console.WriteLine($"  FAILED : {_failed}");
     Console.WriteLine($"  Manifest: {manifestPath}");
@@ -123,75 +127,45 @@ internal sealed class FileGenerator(string outputDir, int seed, int parallelism)
   }
 
   /// <summary>
-  /// Encodes one file.
+  /// Transcodes one file.
   /// </summary>
-  /// <param name="p">The parameters to encode with.</param>
-  /// <param name="outputPath">The file to write.</param>
+  /// <param name="item">The file to make.</param>
+  /// <param name="source">The silent master.</param>
+  /// <param name="cancellation">Stops the job.</param>
   /// <returns>Returns <see langword="null"/> on success, or why it failed.</returns>
-  private static string? Encode(AudioParameters p, string outputPath)
+  /// <remarks>
+  /// A request a transcoder cannot carry out is refused before anything is
+  /// written, and one that fails part way is deleted by the transcoder, so a
+  /// failed file never looks like a good one. A file the transcoder did make, but
+  /// not as asked, is deleted here: the manifest states every parameter of every
+  /// file, and a file that differs from its line is worse than none.
+  /// </remarks>
+  private async Task<string?> Transcode(GenerationItem item, string source, CancellationToken cancellation)
   {
     try
     {
-      var (format, settings) = EncodingPlan.For(p);
+      var request = EncodingPlan.For(item.Params, source, item.FilePath);
+      var result = await _transcoderFor(request).RunAsync(request, cancellation: cancellation);
 
-      using (var recorder = new FFmpegRecorder(outputPath))
+      if (result.Warnings.Count > 0)
       {
-        var stream = recorder.AddAudioStream(settings);
-        recorder.Start();
-        WriteSilence(recorder, stream, format, p.DurationSeconds);
-        recorder.Stop();
+        Delete(item.FilePath);
+        return $"made, but not as asked: {string.Join("; ", result.Warnings.Select(w => w.Message))}";
       }
 
-      return File.Exists(outputPath) ? null : "the encoder wrote no file";
+      return File.Exists(item.FilePath) ? null : "the transcoder wrote no file";
     }
-    catch (Exception ex)
+    catch (Exception ex) when (ex is not OperationCanceledException)
     {
-      Cleanup(outputPath);
       return ex.Message;
     }
   }
 
-  /// <summary>
-  /// Pushes silence for the requested number of seconds.
-  /// </summary>
-  /// <remarks>
-  /// Silence keeps the generator fast and is all these files are for: MediaInfo
-  /// reads headers, not waveforms. The buffer stays zero throughout, and the
-  /// recorder converts it to whatever the encoder takes — including the 0x80 that
-  /// silence is in unsigned eight bit.
-  /// </remarks>
-  private static unsafe void WriteSilence(
-    FFmpegRecorder recorder, int stream, ToolkitAudioFormat format, int seconds)
-  {
-    const int block = 4096;
-    var buffer = new byte[block * format.Channels * 2];
-    var remaining = (long)format.SampleRate * seconds;
-    var written = 0L;
-
-    while (remaining > 0)
-    {
-      var take = (int)Math.Min(block, remaining);
-      fixed (byte* data = buffer)
-      {
-        recorder.WriteAudio(
-          stream, new MediaToolkitNet.Abstractions.Frames.AudioFrame(
-            format, format.DurationOf(written), take, data));
-      }
-
-      written += take;
-      remaining -= take;
-    }
-  }
-
-  private static void Cleanup(string outputPath)
+  private static void Delete(string path)
   {
     try
     {
-      // A half written file would be indistinguishable from a good one later.
-      if (File.Exists(outputPath))
-      {
-        File.Delete(outputPath);
-      }
+      File.Delete(path);
     }
     catch (IOException)
     {

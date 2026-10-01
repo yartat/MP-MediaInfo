@@ -34,4 +34,12 @@ public class SubtitleStream : LanguageMediaStream
     [DataMember(Name = "codec")]
     [JsonPropertyName("codec")]
     public SubtitleCodec Codec { get; set; }
+
+    /// <summary>
+    /// The maximum count of characters per line; 0 when the format does not report it.
+    /// </summary>
+    /// <example>32</example>
+    [DataMember(Name = "maxCharactersPerLine")]
+    [JsonPropertyName("maxCharactersPerLine")]
+    public int MaxCharactersPerLine { get; set; }
 }

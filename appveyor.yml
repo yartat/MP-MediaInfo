@@ -1,4 +1,4 @@
-version: '26.1.{build}'
+version: '26.10.{build}'
 
 image: Visual Studio 2022
 configuration: Release

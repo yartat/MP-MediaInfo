@@ -82,6 +82,7 @@ namespace MediaInfo.Builder
       result.TimeCodeDropFrame = Get<bool>((int)NativeMethods.Text.Text_TimeCode_DropFrame, InfoKind.Text, TagBuilderHelper.TryGetBool);
       result.TimeCodeSettings = Get((int)NativeMethods.Text.Text_TimeCode_Settings, InfoKind.Text);
       result.TimeCodeSource = Get((int)NativeMethods.Text.Text_TimeCode_Source, InfoKind.Text);
+      result.MaxCharactersPerLine = Get<int>((int)NativeMethods.Text.Text_Lines_MaxCharacterCount, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Codec = Get<SubtitleCodec>((int)NativeMethods.Text.Text_CodecID, InfoKind.Text, TryGetCodec);
       if (result.Codec == SubtitleCodec.Undefined)
       {

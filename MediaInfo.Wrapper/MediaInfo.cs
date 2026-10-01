@@ -261,7 +261,7 @@ namespace MediaInfo
       {
         Handle = NativeMethods.MediaInfo_New();
       }
-      catch (Exception e)
+      catch
       {
         Handle = IntPtr.Zero;
       }
@@ -586,6 +586,10 @@ namespace MediaInfo
     /// <returns>
     /// Returns the file position in case library loaded successfully; elsewhere will return -1.
     /// </returns>
+    /// <remarks>
+    /// The native library honours <paramref name="options"/> from 26.10; 26.05 and earlier ignore them and treat
+    /// every call as <see cref="InfoFileOptions.Nothing"/>.
+    /// </remarks>
     public int Open(string fileName, InfoFileOptions options) =>
       _useAnsiStrings ?
         (int)NativeMethods.MediaInfoListA_Open(_handle, fileName, (IntPtr)options) :

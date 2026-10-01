@@ -106,7 +106,22 @@ public class MediaController : ControllerBase
                     Duration = x.Duration,
                     Size = x.Size,
                     PrimaryFile = x.PrimaryFile,
-                    FileCount = x.Files.Count
+                    FileCount = x.Files.Count,
+
+                    // Only a DVD title carries them: the chapters come out of the
+                    // navigation tables, and a Blu-ray playlist has no equivalent
+                    // that this API reads.
+                    Chapters = x is DvdTitle dvd
+                        ? dvd.Chapters
+                            .Select(c => new DiscChapterInfo
+                            {
+                                Number = c.Number,
+                                Start = c.Start,
+                                Duration = c.Duration,
+                                Name = c.Name
+                            })
+                            .ToList()
+                        : null
                 })
                 .ToList()
         };

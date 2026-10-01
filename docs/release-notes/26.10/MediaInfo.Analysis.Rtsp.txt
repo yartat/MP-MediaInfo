@@ -1,0 +1,16 @@
+MediaInfo.Analysis.Rtsp 26.10.0 - first release
+
+Analysis of rtsp:// sources for MediaInfo.Wrapper.Core 26.10.0. Targets netstandard2.1, net8.0, net10.0.
+
+- MediaInfoAnalyzerBuilder.WithRtsp(...) enables rtsp:// sources.
+- Video: H.264 and H.265. Audio: described from the session description, not played.
+- Basic and Digest authentication; RTP over the RTSP connection.
+- Capture limited by CaptureDuration, MaximumCaptureBytes and SufficientFrameCount.
+
+LIMITATIONS
+
+- Other video codecs are declined with a message.
+- Duration and Size are 0.
+
+Guide: https://github.com/yartat/MP-MediaInfo/blob/master/docs/async-api.md#rtsp
+Release notes: https://github.com/yartat/MP-MediaInfo/blob/master/docs/release-notes/26.10.0.md

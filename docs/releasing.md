@@ -34,6 +34,5 @@ To build and verify a release without publishing, run **Release** from the Actio
 
 | Setting | Purpose |
 | --- | --- |
-| Variable `NUGET_USER` | nuget.org user for trusted publishing; configure the repository and `release.yml` as a trusted publisher on nuget.org |
-| Secret `NUGET_API_KEY` | API key, used when `NUGET_USER` is not set |
+| Secret `NUGET_USER` | nuget.org user for trusted publishing; `release.yml` is configured on nuget.org as a trusted publisher |
 | Environment `nuget` | Publishing runs in it; add required reviewers to approve each release |

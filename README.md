@@ -3,8 +3,7 @@
 .NET wrapper for [MediaArea MediaInfo](https://github.com/MediaArea/MediaInfo). It uses the native packages [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Native.svg)](https://www.nuget.org/packages/MediaInfo.Native) and [![NuGet Badge](https://img.shields.io/nuget/v/MediaInfo.Core.Native.svg)](https://www.nuget.org/packages/MediaInfo.Core.Native).
 
 [![License](https://img.shields.io/badge/License-BSD_2--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
-![Build Core](https://github.com/yartat/MP-MediaInfo/actions/workflows/mp-mediainfo-core.yml/badge.svg)
-![Build](https://github.com/yartat/MP-MediaInfo/actions/workflows/mp-mediainfo.yml/badge.svg)
+[![CI](https://github.com/yartat/MP-MediaInfo/actions/workflows/ci.yml/badge.svg)](https://github.com/yartat/MP-MediaInfo/actions/workflows/ci.yml)
 
 ## Packages
 
@@ -94,6 +93,7 @@ var media = new MediaInfoWrapper("path/to/media/file.mp4", new ConsoleLogger());
 
 - [26.10.0](docs/release-notes/26.10.0.md)
 - [All releases](https://github.com/yartat/MP-MediaInfo/releases)
+- [Releasing](docs/releasing.md)
 
 ## Demo application
 

@@ -25,7 +25,7 @@ namespace MediaInfo.Builder
   /// <param name="number">The zero-based index of the video stream within the media source. Must be non-negative.</param>
   /// <param name="position">The position of the stream in the underlying data structure, used to identify and extract stream-specific
   /// information.</param>
-  internal class VideoStreamBuilder(MediaInfo info, int number, int position) : LanguageMediaStreamBuilder<VideoStream>(info, number, position)
+  internal class VideoStreamBuilder(IMediaInfoReader info, int number, int position) : LanguageMediaStreamBuilder<VideoStream>(info, number, position)
   {
     #region match dictionaries
 
@@ -124,14 +124,24 @@ namespace MediaInfo.Builder
     private static readonly Dictionary<string, Hdr> HdrFormats = new(StringComparer.OrdinalIgnoreCase)
     {
       { "Dolby Vision", Hdr.DolbyVision },
+      { "Dolby Vision Metadata", Hdr.DolbyVision },
+      { "SMPTE ST 2094-10", Hdr.DolbyVision },
       { "HDR10", Hdr.HDR10 },
       { "PQ", Hdr.HDR10 },
       { "SMPTE ST 2086", Hdr.HDR10 },
       { "HDR10 Plus", Hdr.HDR10Plus },
       { "HDR10+", Hdr.HDR10Plus },
+      { "SMPTE ST 2094 App 4", Hdr.HDR10Plus },
+      { "HDR10+ Profile A", Hdr.HDR10Plus },
+      { "HDR10+ Profile B", Hdr.HDR10Plus },
       { "SL-HDR", Hdr.SLHDR1 },
+      { "SL-HDR1", Hdr.SLHDR1 },
+      { "SL-HDR2", Hdr.SLHDR2 },
+      { "SL-HDR3", Hdr.SLHDR3 },
       { "HLG", Hdr.HLG },
+      { "HLG+", Hdr.HLGPlus },
       { "HDR Vivid", Hdr.HdrVivid },
+      { "HDR Vivid Metadata", Hdr.HdrVivid },
       { "T/UWA 005 (HDR Vivid)", Hdr.HdrVivid },
     };
 
@@ -183,6 +193,7 @@ namespace MediaInfo.Builder
       { "VP8", VideoCodec.Vp8 },
       { "V_VP9", VideoCodec.Vp9 },
       { "VP9", VideoCodec.Vp9 },
+      { "VP90", VideoCodec.Vp9 },
       { "AVC1", VideoCodec.Mpeg4IsoAvc },
       { "AVC", VideoCodec.Mpeg4IsoAvc },
       { "H264", VideoCodec.Mpeg4IsoAvc },
@@ -292,16 +303,32 @@ namespace MediaInfo.Builder
       { "HEVC", VideoCodec.MpeghIsoHevc },
       { "AV01", VideoCodec.Av1 },
       { "AV1", VideoCodec.Av1 },
+      { "V_AV1", VideoCodec.Av1 },
       { "AV2", VideoCodec.Av2 },
+      { "AV02", VideoCodec.Av2 },
       { "V_AV2", VideoCodec.Av2 },
+      { "AVS VIDEO", VideoCodec.AvsV },
+      { "AVS2 VIDEO", VideoCodec.Avs2V },
       { "AVS3 VIDEO", VideoCodec.Avs3V },
       { "AVS3V", VideoCodec.Avs3V },
       { "JPEG", VideoCodec.Mjpg },
+      { "JPEG 2000", VideoCodec.Jpeg2000 },
       { "VVC", VideoCodec.Vvc },
       { "V_MPEGI/ISO/VVC", VideoCodec.Vvc },
       { "H.266", VideoCodec.Vvc },
       { "H266", VideoCodec.Vvc },
+      { "VVC1", VideoCodec.Vvc },
+      { "VVI1", VideoCodec.Vvc },
       { "Default (H.263)", VideoCodec.H263 },
+      { "APV", VideoCodec.Avp },
+      { "VC-3", VideoCodec.Vc3 },
+      { "CINEPAK", VideoCodec.Cinepak },
+      { "HVC1", VideoCodec.MpeghIsoHevc },
+      { "HEV1", VideoCodec.MpeghIsoHevc },
+      { "H265", VideoCodec.MpeghIsoHevc },
+      { "H.265", VideoCodec.MpeghIsoHevc },
+      { "VP80", VideoCodec.Vp8 },
+      { "V_FFV1", VideoCodec.Ffv1 },
     };
 
     private static readonly Dictionary<string, FrameRateMode> FrameRateModes = new(StringComparer.OrdinalIgnoreCase)
@@ -334,7 +361,9 @@ namespace MediaInfo.Builder
         result.Bitrate = Get<double>((int)NativeMethods.Video.Video_BitRate_Maximum, InfoKind.Text, TagBuilderHelper.TryGetDouble);
       }
       result.AspectRatio = Get<AspectRatio>((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text, TryGetAspectRatio);
-      result.Interlaced = GetInterlaced(Get((int)NativeMethods.Video.Video_ScanType, InfoKind.Text));
+      result.DisplayAspectRatio = Get((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text);
+      result.ScanType = Get((int)NativeMethods.Video.Video_ScanType, InfoKind.Text);
+      result.Interlaced = GetInterlaced(result.ScanType);
       var multiViewCount = Get<int>((int)NativeMethods.Video.Video_MultiView_Count, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Stereoscopic = multiViewCount >= 2
                        ? Get<StereoMode>((int)NativeMethods.Video.Video_MultiView_Layout, InfoKind.Text, TryGetStereoscopic)

@@ -1,17 +1,23 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
 
 using System;
 using System.CommandLine;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using MediaToolkitNet;
+using MediaToolkitNet.Abstractions;
+using MediaToolkitNet.Abstractions.Transcoding;
+using MediaToolkitNet.FFmpeg;
+using MediaToolkitNet.FFmpeg.Native;
+using MediaToolkitNet.Interop;
 
 namespace MediaInfo.TestFilesGenerator;
 
@@ -40,8 +46,10 @@ internal static class Program
     var ffmpegPath = new Option<string>("--ffmpeg", "-f")
     {
       AllowMultipleArgumentsPerToken = false,
-      Description = "Path to ffmpeg binary including ffmpeg executable (default: ffmpeg, i.e. must be in PATH)",
-      DefaultValueFactory = (r) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg")
+      Description = "Folder holding the FFmpeg shared libraries, e.g. avcodec-63.dll or libavcodec.so.61. " +
+                    "Windows x64 gets them from the FFmpeg.GPL package by default; every other system is " +
+                    "expected to have FFmpeg installed",
+      DefaultValueFactory = (r) => string.Empty
     };
     var parallelism = new Option<int>("--parallelism", "-p")
     {
@@ -49,13 +57,21 @@ internal static class Program
       DefaultValueFactory = (r) => Environment.ProcessorCount,
       Description = "Number of parallel workers (default: CPU count)"
     };
+    var backend = new Option<string>("--backend", "-b")
+    {
+      AllowMultipleArgumentsPerToken = false,
+      DefaultValueFactory = (r) => AutoBackend,
+      Description = "Transcoder to use: auto (the first that accepts each file) or the name of one " +
+                    "listed at start-up"
+    };
     var rootCommand = new RootCommand("MKA Test File Generator")
     {
       outputDir,
       seed,
       count,
       ffmpegPath,
-      parallelism
+      parallelism,
+      backend
     };
 
     var parseResult = rootCommand.Parse(args);
@@ -70,6 +86,7 @@ internal static class Program
     var parallelismValue = parseResult.GetValue<int>(parallelism);
     var seedValue = parseResult.GetValue<int>(seed);
     var countValue = parseResult.GetValue<int>(count);
+    var backendValue = parseResult.GetValue<string>(backend)!;
 
     Console.WriteLine();
     var previousForegroundColor = Console.ForegroundColor;
@@ -77,21 +94,23 @@ internal static class Program
     Console.WriteLine($"  Output      : {outputDirValue}");
     Console.WriteLine($"  Seed        : {seedValue}");
     Console.WriteLine($"  Count       : {countValue}");
-    Console.WriteLine($"  FFmpeg      : {ffmpegPathValue}");
     Console.WriteLine($"  Parallelism : {parallelismValue}");
+    Console.WriteLine($"  Backend     : {backendValue}");
     Console.WriteLine();
     Console.ForegroundColor = previousForegroundColor;
 
-    if (!CheckFfmpeg(ffmpegPathValue!))
+    if (!PrepareFfmpeg(ffmpegPathValue!, previousForegroundColor))
     {
-      Console.ForegroundColor = ConsoleColor.Red;
-      Console.Error.WriteLine("ERROR: FFmpeg not found or not executable.");
-      Console.Error.WriteLine("       Install FFmpeg and add it to PATH, or pass the full path as argument --ffmpeg.");
-      Console.ForegroundColor = previousForegroundColor;
       return 1;
     }
 
-    await new FileGenerator(outputDirValue!, ffmpegPathValue!, seedValue, parallelismValue)
+    var transcoderFor = ChooseTranscoder(backendValue, previousForegroundColor);
+    if (transcoderFor is null)
+    {
+      return 1;
+    }
+
+    await new FileGenerator(outputDirValue!, seedValue, parallelismValue, transcoderFor)
       .Generate(countValue);
 
     return 0;
@@ -99,29 +118,128 @@ internal static class Program
 
   #region Helpers
 
-  private static bool CheckFfmpeg(string ffmpegPath)
+  private const string AutoBackend = "auto";
+
+  /// <summary>
+  /// Picks what runs each request, and reports which transcoders this machine has.
+  /// </summary>
+  /// <param name="name">The backend asked for, or <c>auto</c>.</param>
+  /// <param name="previousForegroundColor">The console colour to restore.</param>
+  /// <returns>Returns the choice, or <see langword="null"/> when nothing here can transcode.</returns>
+  /// <remarks>
+  /// With <c>auto</c> each file goes to the first backend that accepts it, which
+  /// on most machines is FFmpeg for every one. Naming a backend sends every file
+  /// there, and a file it cannot make is reported as failed, with its reasons.
+  /// </remarks>
+  private static Func<TranscodeRequest, IMediaTranscoder>? ChooseTranscoder(
+    string name, ConsoleColor previousForegroundColor)
   {
-    try
+    var transcoders = MediaToolkitNetBackends.Registered
+      .Where(b => (b.Capabilities & BackendCapabilities.Transcoding) != 0)
+      .ToList();
+
+    Console.WriteLine("  Transcoders :");
+    foreach (var candidate in transcoders)
     {
-      var psi = new ProcessStartInfo
+      var state = candidate.IsAvailable ? candidate.NativeVersion ?? "available" : "not available";
+      Console.WriteLine($"    {candidate.Name,-10} {state}");
+    }
+
+    Console.WriteLine();
+
+    if (name == AutoBackend)
+    {
+      if (transcoders.Any(b => b.IsAvailable))
       {
-        FileName = ffmpegPath,
-        Arguments = "-version",
-        UseShellExecute = false,
-        CreateNoWindow = true,
-        RedirectStandardOutput = true,
-        RedirectStandardError  = true
-      };
-      
-      using var p = Process.Start(psi);
-      p?.WaitForExit(5_000);
-      return p?.ExitCode == 0;
+        return MediaToolkitNetBackends.CreateTranscoder;
+      }
+
+      Fail("no backend on this system can transcode.", previousForegroundColor);
+      return null;
     }
-    catch
+
+    var chosen = transcoders.FirstOrDefault(b => string.Equals(b.Name, name, StringComparison.OrdinalIgnoreCase));
+    if (chosen is not { IsAvailable: true })
     {
-      return false;
+      Fail($"the {name} backend is not available here.", previousForegroundColor);
+      return null;
     }
+
+    return _ => chosen.CreateTranscoder();
   }
+
+  private static void Fail(string message, ConsoleColor previousForegroundColor)
+  {
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.Error.WriteLine($"ERROR: {message}");
+    Console.Error.WriteLine($"       {WhereToGetFfmpeg()}");
+    Console.ForegroundColor = previousForegroundColor;
+  }
+
+  /// <summary>
+  /// Points the loader at a private FFmpeg build when one was named, and reports
+  /// which FFmpeg answered.
+  /// </summary>
+  /// <param name="directory">Where to look first, or empty for the system search path.</param>
+  /// <param name="previousForegroundColor">The console colour to restore.</param>
+  /// <returns>Returns <see langword="false"/> only when the folder named does not exist.</returns>
+  /// <remarks>
+  /// FFmpeg is not required: without it GStreamer or mpv can still transcode the
+  /// formats they know. Its absence is reported with the transcoders, not here.
+  /// </remarks>
+  private static bool PrepareFfmpeg(string directory, ConsoleColor previousForegroundColor)
+  {
+    if (!string.IsNullOrWhiteSpace(directory))
+    {
+      if (!Directory.Exists(directory))
+      {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine($"ERROR: {directory} does not exist.");
+        Console.ForegroundColor = previousForegroundColor;
+        return false;
+      }
+
+      NativeSearchPaths.Prepend(directory);
+
+      // A Windows FFmpeg release keeps its DLLs in bin/ beside include/ and lib/,
+      // so the folder someone names is as often the parent as it is the one.
+      var nested = Path.Combine(directory, "bin");
+      if (Directory.Exists(nested))
+      {
+        NativeSearchPaths.Prepend(nested);
+      }
+    }
+
+    if (!FFmpegLibraries.IsAvailable)
+    {
+      return true;
+    }
+
+    // Encoders are asked about one sample format after another until one is
+    // accepted, and FFmpeg writes out every refusal along the way. This tool
+    // reports its own failures, one line per file.
+    FFmpegBackend.SetLogLevel(AVConstants.LogFatal);
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine($"  FFmpeg      : {FFmpegLibraries.AvCodec.FileName}");
+    Console.WriteLine($"  Version     : {FFmpegLibraries.VersionString}");
+    Console.WriteLine($"  Series      : {FFmpegLibraries.Generation}");
+    Console.WriteLine();
+    Console.ForegroundColor = previousForegroundColor;
+    return true;
+  }
+
+  /// <summary>
+  /// Says where the shared libraries are meant to come from on this platform.
+  /// </summary>
+  /// <returns>Returns the advice to print beside the failure.</returns>
+  private static string WhereToGetFfmpeg() =>
+    OperatingSystem.IsWindows() && RuntimeInformation.ProcessArchitecture == Architecture.X64
+      ? "The FFmpeg.GPL package supplies these on Windows x64, so check that the restore ran, " +
+        "or pass the folder holding a private build as --ffmpeg."
+      : "Install FFmpeg 7.x, 8.x or 9.x from the system package manager (apt install ffmpeg, " +
+        "dnf install ffmpeg, brew install ffmpeg), or pass the folder holding its shared " +
+        "libraries as --ffmpeg. GStreamer or mpv can stand in for the formats they encode.";
 
   #endregion
 }

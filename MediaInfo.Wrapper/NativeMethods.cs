@@ -1,13 +1,17 @@
 ﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
 
 using System;
 using System.Runtime.InteropServices;
+using MediaInfo.Marshalling;
+#if NET7_0_OR_GREATER
+using System.Runtime.InteropServices.Marshalling;
+#endif
 
 namespace MediaInfo
 {
@@ -21,7 +25,7 @@ namespace MediaInfo
   }
 #endif
 
-    internal static class NativeMethods
+    internal static partial class NativeMethods
   {
     #region Native enumerations and structures
 
@@ -1220,7 +1224,7 @@ namespace MediaInfo
       Audio_Tagged_Date,
       Audio_Encryption,
     }
-    
+
     //---------------------------------------------------------------------------
     internal enum Text
     {
@@ -2043,9 +2047,19 @@ namespace MediaInfo
       LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000,
     }
 
-    #endregion
+        #endregion
 
 #if NETFRAMEWORK
+    public enum DriveType : uint
+    {
+        Unknown = 0,
+        NoRootDirectory = 1,
+        Removable = 2,
+        Fixed = 3,
+        Remote = 4,
+        CDROM = 5,
+        RAMDisk = 6,
+    };
 
     [DllImport("kernel32.dll", SetLastError = true)]
     internal static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, LoadLibraryFlags dwFlags);
@@ -2054,299 +2068,953 @@ namespace MediaInfo
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool FreeLibrary(IntPtr hModule);
 
-    [DllImport("kernel32.dll")]
-    internal static extern long GetDriveType(string driveLetter);
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern DriveType GetDriveType(string driveLetter);
 
 #endif
 
-    //Import of DLL functions. DO NOT USE until you know what you do (MediaInfo DLL do NOT use CoTaskMemAlloc to allocate memory)
+        //Import of DLL functions. DO NOT USE until you know what you do (MediaInfo DLL do NOT use CoTaskMemAlloc to allocate memory)
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfo_New();
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_New();
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_New();
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern void MediaInfo_Delete(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial void MediaInfo_Delete(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern void MediaInfo_Delete(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_New_Quick(
+      [MarshalAs(UnmanagedType.LPWStr)] string file,
+      [MarshalAs(UnmanagedType.LPWStr)] string options);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_New_Quick(
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string file,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string options);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_New_Quick(
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string file,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string options);
 #endif
-    internal static extern IntPtr MediaInfo_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPWStr)] string fileName);
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string file,
+      [MarshalAs(UnmanagedType.LPStr)] string options);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string file,
+      [MarshalAs(UnmanagedType.LPStr)] string options);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string file,
+      [MarshalAs(UnmanagedType.LPStr)] string options);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfo_Info_Version();
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfo_Info_Version();
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfo_Info_Version();
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Open(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string fileName);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string fileName);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string fileName);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern IntPtr MediaInfoA_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string fileName);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string fileName);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Open(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string fileName);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Init(IntPtr handle, long fileSize, long fileOffset);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open_Buffer_Init(IntPtr handle, long fileSize, long fileOffset);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open_Buffer_Init(IntPtr handle, long fileSize, long fileOffset);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoA_Open(IntPtr handle, long fileSize, long fileOffset);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Open(IntPtr handle, long fileSize, long fileOffset);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Open(IntPtr handle, long fileSize, long fileOffset);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, IntPtr buffer, IntPtr bufferSize);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, IntPtr buffer, IntPtr bufferSize);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, IntPtr buffer, IntPtr bufferSize);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal unsafe static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, byte* buffer, IntPtr bufferSize);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal unsafe static partial IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, byte* buffer, IntPtr bufferSize);
+#else
+    [DllImport("libmediainfo")]
+    internal unsafe static extern IntPtr MediaInfo_Open_Buffer_Continue(IntPtr handle, byte* buffer, IntPtr bufferSize);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoA_Open_Buffer_Continue(
       IntPtr handle,
       long fileSize,
       byte[] buffer,
       IntPtr bufferSize);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Open_Buffer_Continue(
+      IntPtr handle,
+      long fileSize,
+      byte[] buffer,
+      IntPtr bufferSize);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Open_Buffer_Continue(
+      IntPtr handle,
+      long fileSize,
+      byte[] buffer,
+      IntPtr bufferSize);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern long MediaInfo_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial long MediaInfo_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern long MediaInfo_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern long MediaInfoA_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial long MediaInfoA_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern long MediaInfoA_Open_Buffer_Continue_GoTo_Get(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfo_Open_Buffer_Finalize(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open_Buffer_Finalize(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open_Buffer_Finalize(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoA_Open_Buffer_Finalize(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Open_Buffer_Finalize(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Open_Buffer_Finalize(IntPtr handle);
+#endif
+#endif
+
+    // Begin/End buffers are byte pointers regardless of char width, so no MediaInfoA_Open_Buffer variant is needed.
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Open_NextPacket(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Open_NextPacket(IntPtr handle);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Open_NextPacket(IntPtr handle);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern void MediaInfo_Close(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial void MediaInfo_Close(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern void MediaInfo_Close(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfo_Inform(IntPtr handle, IntPtr reserved);
 #endif
-    internal static extern IntPtr MediaInfo_Inform(IntPtr handle, IntPtr reserved);
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
 #endif
-    internal static extern IntPtr MediaInfoA_Inform(IntPtr handle, IntPtr reserved);
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfo_GetI(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_GetI(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-#if NETFRAMEWORK
-    [DllImport("MediaInfo.dll")]
 #else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoA_GetI(
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfo_GetI(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfo_GetI(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_GetI(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoA_GetI(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_GetI(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
 #endif
-    internal static extern IntPtr MediaInfo_Get(
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Get(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       [MarshalAs(UnmanagedType.LPWStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfo_Get(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfo_Get(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoA_Get(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Get(
       IntPtr handle,
       IntPtr streamKind,
       IntPtr streamNumber,
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoA_Get(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Get(
+      IntPtr handle,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfo_Option(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfo_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfo_Option(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string option,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string value);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfo_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string option,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string value);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoA_Option(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoA_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string option,
+      [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoA_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string option,
+      [MarshalAs(UnmanagedType.LPStr)] string value);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Output_Buffer_Get(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Output_Buffer_Get(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string value);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Output_Buffer_Get(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string value);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoA_Output_Buffer_Get(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Output_Buffer_Get(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Output_Buffer_Get(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string value);
+#endif
+#endif
+
+    // No string parameters, so no MediaInfoA_Output_Buffer_GetI variant is needed.
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Output_Buffer_GetI(IntPtr handle, IntPtr pos);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Output_Buffer_GetI(IntPtr handle, IntPtr pos);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Output_Buffer_GetI(IntPtr handle, IntPtr pos);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern IntPtr MediaInfo_State_Get(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_State_Get(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_State_Get(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfo_Count_Get(IntPtr handle, IntPtr streamKind, IntPtr streamNumber);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Count_Get(IntPtr handle, IntPtr streamKind, IntPtr streamNumber);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Count_Get(IntPtr handle, IntPtr streamKind, IntPtr streamNumber);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPWStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_SetI(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string oldParameter);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string oldParameter);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPWStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPWStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Set(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string parameter,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string parameter,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string oldParameter);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#endif
+#endif
+
+    // No string parameters, so no MediaInfoA_Save variant is needed.
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfo_Save(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfo_Save(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfo_Save(IntPtr handle);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern IntPtr MediaInfoList_New();
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_New();
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_New();
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern void MediaInfoList_Delete(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial void MediaInfoList_Delete(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern void MediaInfoList_Delete(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_New_Quick(
+      [MarshalAs(UnmanagedType.LPWStr)] string files,
+      [MarshalAs(UnmanagedType.LPWStr)] string config);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_New_Quick(
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string files,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string config);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_New_Quick(
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string files,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string config);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoListA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string files,
+      [MarshalAs(UnmanagedType.LPStr)] string config);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoListA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string files,
+      [MarshalAs(UnmanagedType.LPStr)] string config);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoListA_New_Quick(
+      [MarshalAs(UnmanagedType.LPStr)] string files,
+      [MarshalAs(UnmanagedType.LPStr)] string config);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern IntPtr MediaInfoList_Open(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPWStr)] string fileName,
       IntPtr options);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Open(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string fileName,
+      IntPtr options);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Open(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string fileName,
+      IntPtr options);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoListA_Open(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string fileName,
       IntPtr options);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoListA_Open(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string fileName,
+      IntPtr options);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoListA_Open(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string fileName,
+      IntPtr options);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
 #else
     [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Open_Buffer(IntPtr handle, IntPtr begin, IntPtr beginSize, IntPtr end, IntPtr endSize);
 #endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
     internal static extern void MediaInfoList_Close(IntPtr handle, IntPtr filePos);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial void MediaInfoList_Close(IntPtr handle, IntPtr filePos);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern void MediaInfoList_Close(IntPtr handle, IntPtr filePos);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #endif
-    internal static extern IntPtr MediaInfoList_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
 #endif
-    internal static extern IntPtr MediaInfoListA_Inform(IntPtr handle, IntPtr filePos, IntPtr reserved);
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoList_GetI(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_GetI(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
-
-#if NETFRAMEWORK
-    [DllImport("MediaInfo.dll")]
 #else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoListA_GetI(
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfoList_GetI(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber,
       IntPtr parameter,
       IntPtr kindOfInfo);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfoList_GetI(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_GetI(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoListA_GetI(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
 #else
     [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_GetI(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      IntPtr kindOfInfo);
 #endif
-    internal static extern IntPtr MediaInfoList_Get(
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
@@ -2354,13 +3022,36 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPWStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfoList_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfoList_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoListA_Get(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
@@ -2368,43 +3059,281 @@ namespace MediaInfo
       [MarshalAs(UnmanagedType.LPStr)] string parameter,
       IntPtr kindOfInfo,
       IntPtr kindOfSearch);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoListA_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      IntPtr kindOfInfo,
+      IntPtr kindOfSearch);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoList_Option(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedUnicodeStringMarshaller))]
+    internal static extern string MediaInfoList_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPWStr)] string option,
       [MarshalAs(UnmanagedType.LPWStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static partial string MediaInfoList_Option(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string option,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string value);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedWCharTStringMarshaller))]
+    internal static extern string MediaInfoList_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string option,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string value);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
-    internal static extern IntPtr MediaInfoListA_Option(
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Option(
       IntPtr handle,
       [MarshalAs(UnmanagedType.LPStr)] string option,
       [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    [return: MarshalUsing(typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static partial string MediaInfoListA_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string option,
+      [MarshalAs(UnmanagedType.LPStr)] string value);
+#else
+    [DllImport("libmediainfo")]
+    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(NativeOwnedAnsiStringMarshaller))]
+    internal static extern string MediaInfoListA_Option(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string option,
+      [MarshalAs(UnmanagedType.LPStr)] string value);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoList_State_Get(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_State_Get(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_State_Get(IntPtr handle);
+#endif
+#endif
 
 #if NETFRAMEWORK
     [DllImport("MediaInfo.dll")]
-#else
-    [DllImport("libmediainfo")]
-#endif
     internal static extern IntPtr MediaInfoList_Count_Get(
       IntPtr handle,
       IntPtr filePos,
       IntPtr streamKind,
       IntPtr streamNumber);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Count_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Count_Get(
+      IntPtr handle,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_Count_Get_Files(IntPtr handle);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Count_Get_Files(IntPtr handle);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Count_Get_Files(IntPtr handle);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPWStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_SetI(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string oldParameter);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoListA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoListA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoListA_SetI(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      IntPtr parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPWStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPWStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPWStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Set(
+      IntPtr handle,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string parameter,
+      [MarshalUsing(typeof(UnicodeWCharStringMarshaller))] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string parameter,
+      [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(WCharTStringMarshaller))] string oldParameter);
+#endif
+#endif
+
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoListA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoListA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoListA_Set(
+      IntPtr handle,
+      [MarshalAs(UnmanagedType.LPStr)] string toSet,
+      IntPtr filePos,
+      IntPtr streamKind,
+      IntPtr streamNumber,
+      [MarshalAs(UnmanagedType.LPStr)] string parameter,
+      [MarshalAs(UnmanagedType.LPStr)] string oldParameter);
+#endif
+#endif
+
+    // No string parameters, so no MediaInfoListA_Save variant is needed.
+#if NETFRAMEWORK
+    [DllImport("MediaInfo.dll")]
+    internal static extern IntPtr MediaInfoList_Save(IntPtr handle, IntPtr filePos);
+#else
+#if NET7_0_OR_GREATER
+    [LibraryImport("libmediainfo")]
+    internal static partial IntPtr MediaInfoList_Save(IntPtr handle, IntPtr filePos);
+#else
+    [DllImport("libmediainfo")]
+    internal static extern IntPtr MediaInfoList_Save(IntPtr handle, IntPtr filePos);
+#endif
+#endif
   }
 }

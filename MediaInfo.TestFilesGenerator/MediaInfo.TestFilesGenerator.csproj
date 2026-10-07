@@ -5,13 +5,34 @@
     <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>MediaInfo.TestFilesGenerator</AssemblyName>
     <RootNamespace>MediaInfo.TestFilesGenerator</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Version>$(MediaInfoVersion)</Version>
     <AssemblyVersion>$(MediaInfoFileVersion)</AssemblyVersion>
     <FileVersion>$(MediaInfoFileVersion)</FileVersion>
   </PropertyGroup>
 
+  <!--
+    Which runtime this will actually run on: the one that was asked for, or the
+    one the SDK is running as.
+  -->
+  <PropertyGroup>
+    <GeneratorRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</GeneratorRuntimeIdentifier>
+    <GeneratorRuntimeIdentifier Condition="'$(GeneratorRuntimeIdentifier)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</GeneratorRuntimeIdentifier>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="MediaToolkitNet.All" Version="$(MediaToolkitNet)" />
     <PackageReference Include="System.CommandLine" Version="2.0.5" />
+  </ItemGroup>
+
+  <!--
+    On Windows x64 the FFmpeg shared libraries come from a package, so the
+    generator works on a checkout with nothing installed. Everywhere else FFmpeg
+    is expected to be on the system already, which is how it arrives from apt,
+    dnf or brew. The ffmpeg option still points at a private build anywhere.
+  -->
+  <ItemGroup Condition="'$(GeneratorRuntimeIdentifier)' == 'win-x64'">
+    <PackageReference Include="FFmpeg.GPL" Version="$(FFmpeg)" />
   </ItemGroup>
 
 </Project>

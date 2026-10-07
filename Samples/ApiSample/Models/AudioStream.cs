@@ -61,6 +61,14 @@ public class AudioStream : LanguageMediaStream
     public int Channel { get; set; }
 
     /// <summary>
+    /// The number of dynamic objects of object-based audio (Dolby Atmos, DTS:X); 0 when there are none.
+    /// </summary>
+    /// <example>14</example>
+    [DataMember(Name = "dynamicObjects")]
+    [JsonPropertyName("dynamicObjects")]
+    public int DynamicObjects { get; set; }
+
+    /// <summary>
     /// The audio sampling rate.
     /// </summary>
     /// <example>44100</example>

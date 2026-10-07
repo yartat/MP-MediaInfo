@@ -5,17 +5,24 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Samples/">
+    <Project Path="Samples/AnalyzerSample/AnalyzerSample.csproj" />
     <Project Path="Samples/ApiSample/ApiSample.csproj" />
+    <Project Path="Samples/BatchSample/BatchSample.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="testEnvironments.json" />
   </Folder>
   <Folder Name="/Tools/">
     <Project Path="MediaInfo.TestFilesGenerator/MediaInfo.TestFilesGenerator.csproj" />
   </Folder>
+  <Project Path="MediaInfo.Analysis.Rtsp/MediaInfo.Analysis.Rtsp.csproj" />
+  <Project Path="MediaInfo.Analysis.Rtsp.Tests/MediaInfo.Analysis.Rtsp.Tests.csproj" />
+  <Project Path="MediaInfo.Analysis.Tests/MediaInfo.Analysis.Tests.csproj" />
+  <Project Path="MediaInfo.Analysis.Integration.Tests/MediaInfo.Analysis.Integration.Tests.csproj" />
   <Project Path="MediaInfo.Wrapper.Tests/MediaInfo.Wrapper.Core.Tests.csproj" />
   <Project Path="MediaInfo.Wrapper/MediaInfo.Wrapper.Core.csproj" />
 </Solution>

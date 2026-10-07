@@ -5,6 +5,15 @@
     <UserSecretsId>3ac0dbeb-4d8a-479e-b111-5efb8f1d0e6d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+
+    <!--
+      The OpenAPI document takes its summaries and descriptions from the XML
+      comments, which .NET 10 reads at compile time rather than from a file at
+      startup. CS1591 stays off: this is a sample, and not every member carries a
+      comment.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,10 +22,8 @@
 
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="$(AzureContainer)" />
 
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="$(Swashbuckle)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="$(Swashbuckle)" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="$(Swashbuckle)" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="$(Net10x)" />
+    <PackageReference Include="Scalar.AspNetCore" Version="$(Scalar)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +35,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 
 </Project>

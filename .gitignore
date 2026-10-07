@@ -263,3 +263,11 @@ Audio/
 Video/
 packages/
 nuget.config
+
+.claude/
+.codegraph/
+testEnvironments.json
+
+
+# Local assistant instructions
+CLAUDE.md

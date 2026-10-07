@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'release/**'
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: Release version. Empty builds a CI version.
+        type: string
+        required: false
+        default: ''
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-test:
+    name: Build, test, package
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: ./.github/scripts/resolve-version.ps1 -Requested $env:REQUESTED_VERSION
+
+      - name: Build and test (.NET Standard 2.1, .NET 8.0, .NET 10.0)
+        shell: pwsh
+        run: ./.github/scripts/build-test.ps1 -Solution MP-MediaInfo.Core.slnx -Version ${{ steps.version.outputs.version }}
+
+      - name: Build and test (.NET Framework)
+        if: ${{ !cancelled() }}
+        shell: pwsh
+        run: ./.github/scripts/build-test.ps1 -Solution MP-MediaInfo.slnx -Version ${{ steps.version.outputs.version }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: ignore
+
+      - name: Collect packages
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          Copy-Item MediaInfo.Wrapper/bin/Release/*.nupkg, MediaInfo.Wrapper/bin/Release/*.snupkg, `
+                    MediaInfo.Analysis.Rtsp/bin/Release/*.nupkg, MediaInfo.Analysis.Rtsp/bin/Release/*.snupkg artifacts
+
+      - name: Verify packages
+        shell: pwsh
+        run: |
+          $arguments = @{ Directory = 'artifacts'; Version = '${{ steps.version.outputs.version }}' }
+          if ('${{ steps.version.outputs.release }}' -eq 'true') { $arguments.RequireReleaseNotes = $true }
+          ./.github/scripts/verify-packages.ps1 @arguments
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts
+          if-no-files-found: error

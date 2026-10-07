@@ -108,6 +108,14 @@ namespace MediaInfo.Model
     /// </value>
     public SubtitleCodec Codec { get; set; }
 
+    /// <summary>
+    /// Gets or sets the maximum count of characters per line.
+    /// </summary>
+    /// <value>
+    /// The longest line, in characters, or 0 when the format does not report it (TTML, EIA-608/708 and PAC do).
+    /// </value>
+    public int MaxCharactersPerLine { get; set; }
+
     /// <inheritdoc />
     public override MediaStreamKind Kind => MediaStreamKind.Text;
 

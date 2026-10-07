@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -52,6 +52,13 @@ namespace MediaInfo
   /// and can be initialized with either a file path or a stream, making it suitable for a wide range of applications
   /// that require media information extraction.
   /// </remarks>
+#if !NETFRAMEWORK
+  [Obsolete(
+    "Use MediaInfo.Analysis.IMediaInfoAnalyzer, which is asynchronous, cancellable and describes DVD and Blu-ray " +
+    "structure. MediaAnalysisResult.AsLegacy() exposes these same properties over the new result. " +
+    "See docs/architecture/async-media-analyzer.md.",
+    error: false)]
+#endif
   public class MediaInfoWrapper
   {
 #region private vars
@@ -595,6 +602,17 @@ namespace MediaInfo
         Version = mediaInfo.Option("Info_Version");
         LogDebug(_logger, "MediaInfo library was loaded. (handle={handle}, version={version}", mediaInfo.Handle, Version);
       }
+
+#if !NETFRAMEWORK
+      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        // On Linux/macOS, MediaInfoLib converts the wchar_t path passed to Open() into a
+        // byte path via wcstombs(), which depends on the process' LC_CTYPE locale. .NET does
+        // not call setlocale() itself, so without this the conversion runs in the "C" locale
+        // and multi-byte (e.g. Unicode) file names fail to open.
+        mediaInfo.Option("setlocale_LC_CTYPE", "C.UTF-8");
+      }
+#endif
 
       var fileProcessingHandle = mediaInfo.Open(filePath);
       if (fileProcessingHandle == IntPtr.Zero)

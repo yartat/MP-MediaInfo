@@ -1,7 +1,7 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
@@ -10,27 +10,33 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.TestFilesGenerator.Models;
+using MediaToolkitNet.Abstractions.Transcoding;
 
 namespace MediaInfo.TestFilesGenerator;
 
 /// <summary>
 /// Pre-generates all <see cref="AudioParameters"/> with a seeded RNG for
-/// reproducibility, then runs FFmpeg in parallel to produce the MKA files.
+/// reproducibility, then transcodes the MKA files in parallel through
+/// MediaToolkit.NET, from one silent master.
 /// </summary>
-/// <param name="ffmpegPath">The path to the FFmpeg executable.</param>
 /// <param name="outputDir">The directory to write generated files to.</param>
 /// <param name="seed">The seed for the random parameter generator.</param>
-/// <param name="parallelism">The number of parallel FFmpeg processes to run.</param>
-internal sealed class FileGenerator(string outputDir, string ffmpegPath, int seed, int parallelism)
+/// <param name="parallelism">The number of files to transcode at once.</param>
+/// <param name="transcoderFor">Picks the transcoder that runs a request.</param>
+internal sealed class FileGenerator(
+  string outputDir,
+  int seed,
+  int parallelism,
+  Func<TranscodeRequest, IMediaTranscoder> transcoderFor)
 {
   private readonly string _outputDir = outputDir;
-  private readonly string _ffmpegPath = ffmpegPath;
   private readonly ParameterGenerator _paramGen = new ParameterGenerator(seed);
-  private readonly FfmpegCommandBuilder _cmdBuilder = new FfmpegCommandBuilder();
   private readonly int _parallelism = parallelism;
+  private readonly Func<TranscodeRequest, IMediaTranscoder> _transcoderFor = transcoderFor;
 
   private int _succeeded;
   private int _failed;
@@ -45,30 +51,46 @@ internal sealed class FileGenerator(string outputDir, string ffmpegPath, int see
     // Step 1 — pre-generate all parameters deterministically (single thread)
     var items = PreGenerate(count);
 
+    // Longest first. The work per file spans four orders of magnitude — a three
+    // second mono MP3 against thirty seconds of eight channel 96 kHz PCM — and a
+    // worker that picks the largest one up last holds up everybody who finished.
+    // The order files are written in does not reach the manifest, which is filled
+    // by index.
+    items.Sort((left, right) => Cost(right).CompareTo(Cost(left)));
+
+    // Step 2 — the one input every file is cut from
+    using var master = SourceMaster.Create(items.Count == 0 ? 1 : items.Max(x => x.Params.DurationSeconds));
+
     Console.WriteLine($"Starting parallel generation with {_parallelism} worker(s)...");
     Console.WriteLine();
 
-    // Step 2 — manifest array (pre-allocated, each slot written by a single thread)
+    // Step 3 — manifest array (pre-allocated, each slot written by a single worker)
     var manifest = new string[count + 1];
     manifest[0] = "Index,Format,Channels,BitDepth,Bitrate,BitrateMode," +
                   "SampleRate,Duration,VbrQuality,FileName,Status";
 
     var wallClock = Stopwatch.StartNew();
 
-    // Step 3 — run FFmpeg in parallel and fill manifest
-    // Using Parallel.ForEach to control the degree of parallelism and ensure thread-safe updates to counters and manifest
-    Parallel.ForEach(
+    // Step 4 — transcode in parallel and fill the manifest. ForEachAsync takes
+    // the items from one shared enumerator, one at a time and in order, which is
+    // what keeps the longest-first order above.
+    await Parallel.ForEachAsync(
       items,
       new ParallelOptions { MaxDegreeOfParallelism = _parallelism },
-      item =>
+      async (item, cancellation) =>
       {
-        var isOk = RunFfmpeg(item.Params, item.FilePath);
+        var failure = await Transcode(item, master.Path, cancellation);
+        var isOk = failure is null;
         var total = isOk
           ? Interlocked.Increment(ref _succeeded)
           : Interlocked.Increment(ref _failed);
 
         total = _succeeded + _failed;
         Console.WriteLine($"[{total,4}/{count}] {(isOk ? "OK    " : "FAILED")} {Path.GetFileName(item.FilePath)}");
+        if (failure is not null)
+        {
+          Console.Error.WriteLine($"         {failure}");
+        }
 
         manifest[item.Index + 1] = BuildManifestLine(
           item.Index,
@@ -79,9 +101,9 @@ internal sealed class FileGenerator(string outputDir, string ffmpegPath, int see
 
     wallClock.Stop();
 
-    // Step 3 — write manifest
+    // Step 5 — write manifest
     var manifestPath = Path.Combine(_outputDir, "manifest.csv");
-    File.WriteAllLines(manifestPath, manifest);
+    await File.WriteAllLinesAsync(manifestPath, manifest);
 
     Console.WriteLine();
     Console.WriteLine($"Finished in {wallClock.Elapsed:hh\\:mm\\:ss}");
@@ -104,64 +126,49 @@ internal sealed class FileGenerator(string outputDir, string ffmpegPath, int see
     return items;
   }
 
-  // FFmpeg invocation
-  private bool RunFfmpeg(AudioParameters p, string outputPath)
+  /// <summary>
+  /// Transcodes one file.
+  /// </summary>
+  /// <param name="item">The file to make.</param>
+  /// <param name="source">The silent master.</param>
+  /// <param name="cancellation">Stops the job.</param>
+  /// <returns>Returns <see langword="null"/> on success, or why it failed.</returns>
+  /// <remarks>
+  /// A request a transcoder cannot carry out is refused before anything is
+  /// written, and one that fails part way is deleted by the transcoder, so a
+  /// failed file never looks like a good one. A file the transcoder did make, but
+  /// not as asked, is deleted here: the manifest states every parameter of every
+  /// file, and a file that differs from its line is worse than none.
+  /// </remarks>
+  private async Task<string?> Transcode(GenerationItem item, string source, CancellationToken cancellation)
   {
-    var args = _cmdBuilder.BuildArguments(p, outputPath);
     try
     {
-      var psi = new ProcessStartInfo
-      {
-        FileName = _ffmpegPath,
-        Arguments = args,
-        UseShellExecute = false,
-        CreateNoWindow = true,
-        RedirectStandardOutput = true,
-        RedirectStandardError  = true
-      };
+      var request = EncodingPlan.For(item.Params, source, item.FilePath);
+      var result = await _transcoderFor(request).RunAsync(request, cancellation: cancellation);
 
-      using var proc = Process.Start(psi);
-      if (proc is null)
+      if (result.Warnings.Count > 0)
       {
-        return false;
+        Delete(item.FilePath);
+        return $"made, but not as asked: {string.Join("; ", result.Warnings.Select(w => w.Message))}";
       }
 
-      // Read both streams asynchronously to prevent deadlock
-      var readStdout = Task.Run(() =>
-      {
-        var output = proc.StandardOutput.ReadToEnd();
-#if TRACE_FFMPEG
-        if (!string.IsNullOrEmpty(output))
-        {
-          Console.Write(output);
-        }
-#endif
-      });
-      var readStderr = Task.Run(() =>
-      {
-        var output = proc.StandardError.ReadToEnd();
-#if TRACE_FFMPEG
-        if (!string.IsNullOrEmpty(output))
-        {
-          Console.Write(output);
-        }
-#endif
-      });
-
-      bool exited = proc.WaitForExit(60_000);
-      if (!exited)
-      {
-        proc.Kill();
-        return false;
-      }
-
-      Task.WaitAll(readStdout, readStderr);
-      return proc.ExitCode == 0 && File.Exists(outputPath);
+      return File.Exists(item.FilePath) ? null : "the transcoder wrote no file";
     }
-    catch (Exception ex)
+    catch (Exception ex) when (ex is not OperationCanceledException)
     {
-      Console.Error.WriteLine($"[ERROR] {Path.GetFileName(outputPath)}: {ex.Message}");
-      return false;
+      return ex.Message;
+    }
+  }
+
+  private static void Delete(string path)
+  {
+    try
+    {
+      File.Delete(path);
+    }
+    catch (IOException)
+    {
     }
   }
 
@@ -180,6 +187,13 @@ internal sealed class FileGenerator(string outputDir, string ffmpegPath, int see
     $"{index},{p.Format},{p.Channels},{p.BitDepth},{p.Bitrate}," +
     $"{p.BitrateMode},{p.SampleRate},{p.DurationSeconds},{p.VbrQuality}," +
     $"{fileName},{status}";
+
+  /// <summary>
+  /// Roughly how much work one file is: every encoder spends its time per sample,
+  /// and for the uncompressed ones the file size follows the same number.
+  /// </summary>
+  private static long Cost(GenerationItem item) =>
+    (long)item.Params.SampleRate * item.Params.Channels * item.Params.DurationSeconds;
 
   private record GenerationItem(int Index, AudioParameters Params, string FilePath);
 

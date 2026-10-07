@@ -36,7 +36,7 @@ namespace MediaInfo.Builder
     /// <param name="info">The media info object.</param>
     /// <param name="number">The stream number.</param>
     /// <param name="position">The stream position.</param>
-    protected MediaStreamBuilder(MediaInfo info, int number, int position)
+    protected MediaStreamBuilder(IMediaInfoReader info, int number, int position)
     {
       Info = info;
       StreamNumber = number;
@@ -81,7 +81,7 @@ namespace MediaInfo.Builder
     /// <value>
     /// The media info object.
     /// </value>
-    protected MediaInfo Info { get; }
+    protected IMediaInfoReader Info { get; }
 
     /// <inheritdoc />
     public virtual TStream Build()

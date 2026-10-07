@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>net4.8</TargetFramework>    
+    <TargetFramework>net481</TargetFramework>    
     <IsPackable>false</IsPackable>
+    <!-- This suite exists to test MediaInfoWrapper, so its deprecation is not news here. -->
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 

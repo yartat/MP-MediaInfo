@@ -74,9 +74,13 @@ namespace MediaInfo
       { ".AVI", true },
       { ".BDMV", true },
       { ".MPG", true },
+      { ".MPGV", true },
       { ".MPEG", true },
+      { ".M2G", true },
+      { ".EVO", true },
       { ".MP4", true },
       { ".DIVX", true },
+      { ".XVID", true },
       { ".OGM", true },
       { ".MKV", true },
       { ".WMV", true },
@@ -86,6 +90,12 @@ namespace MediaInfo
       { ".MOVIE", true },
       { ".MTS", true },
       { ".M2TS", true },
+      { ".M2T", true },
+      { ".M4T", true },
+      { ".M4TS", true },
+      { ".M4S", true },
+      { ".TP", true },
+      { ".TRP", true },
       { ".SBE", true },
       { ".DVR-MS", true },
       { ".TS", true },
@@ -94,7 +104,8 @@ namespace MediaInfo
       { ".FLV", true },
       { ".M4V", true },
       { ".3GP", true },
-      { ".WTV", true },
+      { ".3GPP", true },
+      { ".3GPP2", true },
       { ".OGV", true },
       { ".MK3D", true },
       { ".MPLS", true },
@@ -102,10 +113,21 @@ namespace MediaInfo
       { ".M1V", true },
       { ".M2V", true },
       { ".IFLV", true },
-      { ".3GPP", true },
       { ".MPV4", true },
+      { ".MQV", true },
       { ".HDMOV", true },
       { ".MP4V", true },
+      { ".APV", true },
+      { ".WTV", true },
+      { ".GVI", true },
+      { ".ASF", true },
+      { ".HEVC", true },
+      { ".AMV", true },
+      { ".BDAV", true },
+      { ".MPD", true },
+      { ".DV", true },
+      { ".VC1", true },
+      { ".AVC", true },
     };
 
     private static readonly Dictionary<string, bool> AudioExtensions = new(StringComparer.OrdinalIgnoreCase) 
@@ -131,7 +153,9 @@ namespace MediaInfo
       { ".OGG", true },
       { ".WAV", true },
       { ".MP2", true },
+      { ".MP2V", true },
       { ".MP1", true },
+      { ".MP1V", true },
       { ".AIFF", true },
       { ".M2A", true },
       { ".MPA", true },
@@ -404,7 +428,14 @@ namespace MediaInfo
 
       if (path!.IsDirectory())
       {
-        var files = Directory.GetFiles(path, "*" + pattern, SearchOption.AllDirectories);
+        var files = Directory.GetFiles(
+          path,
+          "*" + pattern,
+#if NETFRAMEWORK
+          SearchOption.AllDirectories);
+#else
+          new EnumerationOptions { IgnoreInaccessible = true, MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true });
+#endif
         if (files.Any())
         {
           pathToResult = files.First();

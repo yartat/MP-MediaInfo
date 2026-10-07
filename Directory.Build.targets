@@ -16,4 +16,20 @@
     <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
   </Target>
 
+  <!--
+    Release notes are a plain text file per package and release, docs/release-notes/<major.minor>/<PackageId>.txt.
+    nuget.org shows releaseNotes as text, so markdown would come out raw. The folder is keyed by major.minor because
+    CI stamps its own build number into the patch: 26.10.0 and 26.10.123 are the same release.
+    The version is read here rather than in a property group, because it is final only once the project is evaluated.
+  -->
+  <Target Name="ReadPackageReleaseNotes" BeforeTargets="GenerateNuspec" Condition="'$(IsPackable)' != 'false'">
+    <PropertyGroup>
+      <_ReleaseNotesRelease>$([System.Text.RegularExpressions.Regex]::Match('$(PackageVersion)', '^\d+\.\d+').Value)</_ReleaseNotesRelease>
+      <_ReleaseNotesFile>$(MSBuildThisFileDirectory)docs\release-notes\$(_ReleaseNotesRelease)\$(PackageId).txt</_ReleaseNotesFile>
+      <PackageReleaseNotes Condition="Exists('$(_ReleaseNotesFile)')">$([System.IO.File]::ReadAllText('$(_ReleaseNotesFile)'))</PackageReleaseNotes>
+      <PackageReleaseNotes Condition="!Exists('$(_ReleaseNotesFile)')">$(PackageProjectUrl)/releases</PackageReleaseNotes>
+    </PropertyGroup>
+    <Warning Condition="!Exists('$(_ReleaseNotesFile)')" Code="MPMI0001" Text="No release notes at $(_ReleaseNotesFile); the package links to the releases page instead." />
+  </Target>
+
 </Project>

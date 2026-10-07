@@ -337,6 +337,16 @@ namespace MediaInfo.Model
     Av2,
 
     /// <summary>
+    /// AVS video codec.
+    /// </summary>
+    AvsV,
+
+    /// <summary>
+    /// AVS2 video codec.
+    /// </summary>
+    Avs2V,
+
+    /// <summary>
     /// AVS3 video codec.
     /// </summary>
     Avs3V,
@@ -350,5 +360,25 @@ namespace MediaInfo.Model
     /// HuffYUV
     /// </summary>
     HuffYUV,
+
+    /// <summary>
+    /// Advanced Professional Video
+    /// </summary>
+    Avp,
+
+    /// <summary>
+    /// Avid DNxHD/DNxHR (VC-3).
+    /// </summary>
+    Vc3,
+
+    /// <summary>
+    /// Cinepak
+    /// </summary>
+    Cinepak,
+
+    /// <summary>
+    /// JPEG 2000
+    /// </summary>
+    Jpeg2000
   }
 }

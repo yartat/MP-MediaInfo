@@ -33,7 +33,7 @@ public class MenuStream : MediaStream
     /// </summary>
     [DataMember(Name = "chapters")]
     [JsonPropertyName("chapters")]
-    public ICollection<Chapter>? Chapters { get; }
+    public ICollection<Chapter>? Chapters { get; set; }
 }
 
 /// <summary>

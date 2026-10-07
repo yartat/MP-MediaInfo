@@ -78,6 +78,30 @@ namespace MediaInfo.Wrapper.Tests
 #else
     [Theory(Skip = "Test in development environment only")]
 #endif
+    [InlineData("../../../../../MP-MediaInfo.Samples/Audio/Sample-FLAC-File 忍者ツナ.flac", 2, 24, 48000.0, AudioCodec.Flac)]
+    public void LoadUnicodeFileName(string fileName, int channels, int bitDepth, double samplingRate, AudioCodec codec)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+      _mediaInfoWrapper.HasVideo.Should().BeFalse("Audio file");
+      _mediaInfoWrapper.IsBluRay.Should().BeFalse("Is not BluRay disk");
+      _mediaInfoWrapper.IsDvd.Should().BeFalse("Is not DVD disk");
+      _mediaInfoWrapper.IsInterlaced.Should().BeFalse("Video stream does not exist");
+      _mediaInfoWrapper.Is3D.Should().BeFalse("Video stream does not exist");
+      _mediaInfoWrapper.AudioStreams.Count.Should().Be(1);
+      _mediaInfoWrapper.Text.Should().NotBeNullOrEmpty();
+      var audio = _mediaInfoWrapper.AudioStreams[0];
+      audio.Codec.Should().Be(codec);
+      audio.Channel.Should().Be(channels);
+      audio.BitDepth.Should().Be(bitDepth);
+      audio.SamplingRate.Should().Be(samplingRate);
+    }
+
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_04_stereo.mqa.flac", 2, 24, 44100.0, AudioCodec.Flac)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_mch-96k-24b_04.flac", 6, 24, 96000.0, AudioCodec.Flac)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/2L-125_stereo-44k-16b_04.flac", 2, 16, 44100.0, AudioCodec.Flac)]
@@ -306,14 +330,14 @@ namespace MediaInfo.Wrapper.Tests
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dolby_truehd_channel_check_lossless-DWEU.mkv", 8, 0, 48000.0, AudioCodec.Truehd, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/Dredd – DTS Sound Check DTS-HD MA 7.1.m2ts", 8, 24, 48000.0, AudioCodec.DtsHdMa, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTS-HRA5.1_VC1-23.976.mkv", 6, 24, 96000.0, AudioCodec.DtsHdHra, 0, 1, 16961160L)]
-    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts-listen-x-long-lossless-(www.demolandia.net).mkv", 8, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
-    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts-sound-unbound-callout-11.1-lossless-(www.demolandia.net).mkv", 8, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
-    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTS-X Gravity.mkv", 8, 24, 48000.0, AudioCodec.DtsX, 0, 1, 67261000L)]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts-listen-x-long-lossless-(www.demolandia.net).mkv", 12, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts-sound-unbound-callout-11.1-lossless-(www.demolandia.net).mkv", 12, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTS-X Gravity.mkv", 12, 24, 48000.0, AudioCodec.DtsX, 0, 1, 67261000L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts_hd_master_audio_sound_check_7_1_lossless-DWEU.mkv", 6, 24, 48000.0, AudioCodec.DtsHdMa, 0, 1, 0L)]
-    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts_MA_all_around_us_lossless-DWEU.mkv", 8, 24, 48000.0, AudioCodec.DtsHdMaImax, 0, 1, 0L)]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts_MA_all_around_us_lossless-DWEU.mkv", 12, 24, 48000.0, AudioCodec.DtsHdMaImax, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts_orchestra_short_lossless-DWEU.mkv", 6, 24, 96000.0, AudioCodec.DtsHdHra, 0, 1, 6128804L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dtsac3audiosample.avi", 6, 16, 48000.0, AudioCodec.Dts, 0, 1, 299979392L)]
-    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTSX_Demo_2016.m2ts", 8, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTSX_Demo_2016.m2ts", 12, 24, 48000.0, AudioCodec.DtsX, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dvb-aac-latm.m2t", 2, 0, 48000.0, AudioCodec.AacMpeg4LcSbr, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/freetv_aac_latm.ts", 1, 0, 24000.0, AudioCodec.AacMpeg4Lc, 0, 1, 0L)]
     [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/hd_dts_hd_master_audio_sound_check_5_1_lossless.m2ts", 6, 24, 48000.0, AudioCodec.DtsHdMa, 0, 1, 0L)]
@@ -349,6 +373,23 @@ namespace MediaInfo.Wrapper.Tests
       audio.BitDepth.Should().Be(bitDepth);
       audio.SamplingRate.Should().Be(samplingRate);
       audio.StreamSize.Should().Be(streamSize);
+    }
+
+#if DEBUG
+    [Theory]
+#else
+    [Theory(Skip = "Test in development environment only")]
+#endif
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/Dolby ATMOS Helicopter.m2ts", 15, "7.1")]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dts_MA_all_around_us_lossless-DWEU.mkv", 1, "7.1.4")]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/DTS-X Gravity.mkv", 0, "7.1.4")]
+    [InlineData("../../../../../MP-MediaInfo.Samples/HD Audio/dolby_truehd_channel_check_lossless-DWEU.mkv", 0, "7.1")]
+    public void LoadObjectBasedAudio(string fileName, int dynamicObjects, string channelsFriendly)
+    {
+      _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);
+      _mediaInfoWrapper.Success.Should().BeTrue("InfoWrapper should be loaded");
+      _mediaInfoWrapper.AudioStreams[0].DynamicObjects.Should().Be(dynamicObjects);
+      _mediaInfoWrapper.AudioStreams[0].AudioChannelsFriendly.Should().Be(channelsFriendly);
     }
 
     [Theory]

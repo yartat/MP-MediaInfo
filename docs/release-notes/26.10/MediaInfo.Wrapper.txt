@@ -1,0 +1,24 @@
+MediaInfo.Wrapper 26.10.0
+
+MediaInfoLib 26.10, through MediaInfo.Native 26.10.0. Targets net4.0, net4.5, net481 (new). The asynchronous analyzer is in MediaInfo.Wrapper.Core only. Previous release: 26.1.0.
+
+ADDED
+
+- AudioStream.DynamicObjects, SubtitleStream.MaxCharactersPerLine.
+- VideoStream.Rotation, ScanType, DisplayAspectRatio.
+- More audio, subtitle, video and HDR format identifiers.
+- P/Invoke declarations for the remaining MediaInfoLib exports.
+
+CHANGED
+
+- DTS:X reports 12 channels (7.1.4) instead of 8; its objects are in DynamicObjects.
+- Five-channel Opus is 5.0, not 4.1.
+- MP3 duration and bit rate are more accurate with encoder delay or a Xing header.
+- MediaInfoList.Open honours InfoFileOptions.
+
+FIXED
+
+- Heap corruption (process exit 0xc0000374): strings owned by the native library were freed by the runtime.
+- MediaInfoWrapper no longer passes a missing file to the native library.
+
+Release notes: https://github.com/yartat/MP-MediaInfo/blob/master/docs/release-notes/26.10.0.md

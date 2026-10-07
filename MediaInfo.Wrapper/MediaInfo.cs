@@ -1,7 +1,7 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
-// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL. 
+// This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
 // https://mediaarea.net
 
 #endregion
@@ -106,7 +106,7 @@ namespace MediaInfo
     /// The options of the parameter
     /// </summary>
     Options,
-    
+
     /// <summary>
     /// The text of the name of the parameter
     /// </summary>
@@ -161,21 +161,24 @@ namespace MediaInfo
   /// All functions in this class will return empty string if library is not loaded successfully. So, you can check if library is loaded by checking if Inform() method returns empty string or not.
   /// </remarks>
   /// <seealso cref="IDisposable" />
-  public class MediaInfo : IDisposable
+  public class MediaInfo : IMediaInfoReader, IDisposable
   {
 #if NETFRAMEWORK
     private const string MediaInfoFileName = "MediaInfo.dll";
     private const string LibCurlFileName = "libcurl.dll";
-    private const string LibCryptoFileName = "libcrypto-3.dll";
-    private const string LibSslFileName = "libssl-3.dll";
-    private const string LibCryptoFileName64Bit = "libcrypto-3-x64.dll";
-    private const string LibSslFileName64Bit = "libssl-3-x64.dll";
+    private const string LibCryptoFileName = "libcrypto-4.dll";
+    private const string LibSslFileName = "libssl-4.dll";
+    private const string LibCryptoFileName64Bit = "libcrypto-4-x64.dll";
+    private const string LibSslFileName64Bit = "libssl-4-x64.dll";
+    private const string LibCryptoFileNameArm64 = "libcrypto-4-arm64.dll";
+    private const string LibSslFileNameArm64 = "libssl-4-arm64.dll";
     private const string LibSshFileName = "libssh2.dll";
     private const string BrotliCommonFileName = "brotlicommon.dll";
     private const string BrotliDecFileName = "brotlidec.dll";
     private const string BrotliEncFileName = "brotlienc.dll";
     private IntPtr _module;
 #else
+    private const string MediaInfoFileName = "libmediainfo";
     private const string LibCurlFileName = "libcurl";
     private const string BrotliCommonFileName = "brotlicommon";
     private const string BrotliDecFileName = "brotlidec";
@@ -190,9 +193,15 @@ namespace MediaInfo
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaInfo"/> class.
     /// </summary>
-#if (NET40 || NET45)
+#if NETFRAMEWORK
     public MediaInfo() :
-      this(Environment.Is64BitProcess ? @".\x64" : @".\x86")
+      this(Environment.Is64BitProcess ?
+#if NET481_OR_GREATER
+          RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? @".\ARM64" : @".\x64" :
+#else
+          @".\x64" :
+#endif
+          @".\x86")
     {
     }
 
@@ -205,8 +214,18 @@ namespace MediaInfo
       NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliCommonFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
       NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliDecFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
       NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliEncFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ? LibCryptoFileName64Bit : LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ? LibSslFileName64Bit : LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ?
+#if NET481_OR_GREATER
+        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibCryptoFileNameArm64 : LibCryptoFileName64Bit) : LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+#else
+        LibCryptoFileName64Bit : LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+#endif
+      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ?
+#if NET481_OR_GREATER
+        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibSslFileNameArm64 : LibSslFileName64Bit) : LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+#else
+        LibSslFileName64Bit : LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+#endif
       NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibSshFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
       NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCurlFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
       _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
@@ -224,17 +243,19 @@ namespace MediaInfo
 #else
     public MediaInfo()
     {
-#if NETSTANDARD2_1_OR_GREATER
-      // Ensure that libcurl is loaded before MediaInfo library, otherwise MediaInfo library will fail to load due to missing libcurl symbols. 
-      // This is a workaround for the issue in .NET Core 3.1 and .NET 5.0, which do not support native library dependencies in the same way as .NET 6.0 and later.
-      CurlNativeMethods.curl_version();
-#endif
 #if NET6_0_OR_GREATER
       // .NET 6.0 and later support native library dependencies, so we don't need to load libcurl manually. However, we still need to ensure that libcurl is
       // loaded before MediaInfo library, otherwise MediaInfo library will fail to load due to missing libcurl symbols. This is a workaround for the issue
       // in .NET 6.0 and later, which do not support native library dependencies in the same way as .NET Core 3.1 and .NET 5.0.
       var currentAssembly = typeof(MediaInfo).Assembly;
-      NativeLibrary.TryLoad(LibCurlFileName, currentAssembly, null, out var library);
+      NativeLibrary.TryLoad(LibCurlFileName, currentAssembly, null, out var libCurl);
+      NativeLibrary.TryLoad(MediaInfoFileName, currentAssembly, null, out var libMediaInfo);
+#else
+#if NETSTANDARD2_1_OR_GREATER
+      // Ensure that libcurl is loaded before MediaInfo library, otherwise MediaInfo library will fail to load due to missing libcurl symbols.
+      // This is a workaround for the issue in .NET Core 3.1 and .NET 5.0, which do not support native library dependencies in the same way as .NET 6.0 and later.
+      CurlNativeMethods.curl_version();
+#endif
 #endif
       try
       {
@@ -245,10 +266,9 @@ namespace MediaInfo
         Handle = IntPtr.Zero;
       }
 
-      _mustUseAnsi = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+      _mustUseAnsi = false;
     }
 #endif
-
             /// <summary>
             /// Finalizes an instance of the <see cref="MediaInfo"/> class.
             /// </summary>
@@ -270,8 +290,8 @@ namespace MediaInfo
       }
 
       return _mustUseAnsi ?
-              NativeMethods.MediaInfoA_Open(Handle, fileName) :
-              NativeMethods.MediaInfo_Open(Handle, fileName);
+        NativeMethods.MediaInfoA_Open(Handle, fileName) :
+        NativeMethods.MediaInfo_Open(Handle, fileName);
     }
 
     /// <summary>
@@ -349,8 +369,8 @@ namespace MediaInfo
       }
 
       return _mustUseAnsi ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Inform(Handle, IntPtr.Zero))! :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfo_Inform(Handle, IntPtr.Zero))!;
+        NativeMethods.MediaInfoA_Inform(Handle, IntPtr.Zero) :
+        NativeMethods.MediaInfo_Inform(Handle, IntPtr.Zero);
     }
 
     /// <summary>
@@ -372,22 +392,20 @@ namespace MediaInfo
       }
 
       return _mustUseAnsi ?
-        Marshal.PtrToStringAnsi(
-          NativeMethods.MediaInfoA_Get(
-            Handle,
-            (IntPtr)streamKind,
-            (IntPtr)streamNumber,
-            parameter,
-            (IntPtr)kindOfInfo,
-            (IntPtr)kindOfSearch))! :
-        Marshal.PtrToStringUni(
-          NativeMethods.MediaInfo_Get(
-            Handle,
-            (IntPtr)streamKind,
-            (IntPtr)streamNumber,
-            parameter,
-            (IntPtr)kindOfInfo,
-            (IntPtr)kindOfSearch))!;
+        NativeMethods.MediaInfoA_Get(
+          Handle,
+          (IntPtr)streamKind,
+          (IntPtr)streamNumber,
+          parameter,
+          (IntPtr)kindOfInfo,
+          (IntPtr)kindOfSearch) :
+        NativeMethods.MediaInfo_Get(
+          Handle,
+          (IntPtr)streamKind,
+          (IntPtr)streamNumber,
+          parameter,
+          (IntPtr)kindOfInfo,
+          (IntPtr)kindOfSearch);
     }
 
     /// <summary>
@@ -408,8 +426,8 @@ namespace MediaInfo
       }
 
       return _mustUseAnsi ?
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo))! :
-        Marshal.PtrToStringUni(NativeMethods.MediaInfo_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo))!;
+        NativeMethods.MediaInfoA_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo) :
+        NativeMethods.MediaInfo_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo);
     }
 
     /// <summary>
@@ -428,8 +446,8 @@ namespace MediaInfo
       }
 
       return _mustUseAnsi ?
-               Marshal.PtrToStringAnsi(NativeMethods.MediaInfoA_Option(Handle, option, value))! :
-               Marshal.PtrToStringUni(NativeMethods.MediaInfo_Option(Handle, option, value))!;
+        NativeMethods.MediaInfoA_Option(Handle, option, value) :
+        NativeMethods.MediaInfo_Option(Handle, option, value);
     }
 
     /// <summary>
@@ -523,7 +541,7 @@ namespace MediaInfo
     protected virtual void Dispose(bool disposing)
     {
       Close();
-#if (NET40 || NET45)
+#if NETFRAMEWORK
       if (_module != IntPtr.Zero)
       {
         NativeMethods.FreeLibrary(_module);
@@ -568,6 +586,10 @@ namespace MediaInfo
     /// <returns>
     /// Returns the file position in case library loaded successfully; elsewhere will return -1.
     /// </returns>
+    /// <remarks>
+    /// The native library honours <paramref name="options"/> from 26.10; 26.05 and earlier ignore them and treat
+    /// every call as <see cref="InfoFileOptions.Nothing"/>.
+    /// </remarks>
     public int Open(string fileName, InfoFileOptions options) =>
       _useAnsiStrings ?
         (int)NativeMethods.MediaInfoListA_Open(_handle, fileName, (IntPtr)options) :
@@ -589,8 +611,8 @@ namespace MediaInfo
     /// </returns>
     public string Inform(int filePos) =>
       _useAnsiStrings ?
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Inform(_handle, (IntPtr)filePos, IntPtr.Zero))! :
-        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, IntPtr.Zero))!;
+        NativeMethods.MediaInfoListA_Inform(_handle, (IntPtr)filePos, IntPtr.Zero) :
+        NativeMethods.MediaInfoList_Inform(_handle, (IntPtr)filePos, IntPtr.Zero);
 
     /// <summary>
     /// Gets the property value in specified file position by stream and property name.
@@ -606,8 +628,8 @@ namespace MediaInfo
     /// </returns>
     public string Get(int filePos, StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch) =>
       _useAnsiStrings ?
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch))! :
-        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch))!;
+        NativeMethods.MediaInfoListA_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch) :
+        NativeMethods.MediaInfoList_Get(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, parameter, (IntPtr)kindOfInfo, (IntPtr)kindOfSearch);
 
     /// <summary>
     /// Gets the property value in specified file position by stream and property index.
@@ -622,8 +644,8 @@ namespace MediaInfo
     /// </returns>
     public string Get(int filePos, StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo) =>
       _useAnsiStrings ?
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo))! :
-        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo))!;
+        NativeMethods.MediaInfoListA_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo) :
+        NativeMethods.MediaInfoList_GetI(_handle, (IntPtr)filePos, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo);
 
     /// <summary>
     /// Sets options value by the specified option name.
@@ -635,8 +657,8 @@ namespace MediaInfo
     /// </returns>
     public string Option(string option, string value) =>
       _useAnsiStrings ?
-        Marshal.PtrToStringAnsi(NativeMethods.MediaInfoListA_Option(_handle, option, value))! :
-        Marshal.PtrToStringUni(NativeMethods.MediaInfoList_Option(_handle, option, value))!;
+        NativeMethods.MediaInfoListA_Option(_handle, option, value) :
+        NativeMethods.MediaInfoList_Option(_handle, option, value);
 
     /// <summary>
     /// Gets current state.

@@ -37,6 +37,7 @@ namespace MediaInfo.Wrapper.Tests
   /// </list>
   /// </remarks>
   /// <param name="testOutputHelper">The test output helper.</param>
+  [Collection(MemoryMeasurementCollection.Name)]
   public class GeneratedFilesIntegrationTests(ITestOutputHelper testOutputHelper)
     {
     /// <summary>Directory that <c>FileGenerator</c> writes files to (relative to test output).</summary>
@@ -191,5 +192,16 @@ namespace MediaInfo.Wrapper.Tests
         double SampleRate, int Duration, int VbrQuality, string FileName, string Status);
 
     #endregion
+  }
+
+  /// <summary>
+  /// Runs the tests that measure the process memory alone. Other test classes run in parallel in the same
+  /// process, and whatever they allocate would be counted as growth of the measured one.
+  /// </summary>
+  [CollectionDefinition(Name, DisableParallelization = true)]
+  public sealed class MemoryMeasurementCollection
+  {
+    /// <summary>The name of the collection.</summary>
+    public const string Name = "memory-measurement";
   }
 }

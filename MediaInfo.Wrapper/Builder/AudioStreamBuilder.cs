@@ -24,7 +24,7 @@ namespace MediaInfo.Builder
   /// <param name="info">The media information source used to extract audio stream metadata. Cannot be null.</param>
   /// <param name="number">The zero-based index of the audio stream within the media container.</param>
   /// <param name="position">The position of the stream in the underlying media information structure.</param>
-  internal class AudioStreamBuilder(MediaInfo info, int number, int position) : LanguageMediaStreamBuilder<AudioStream>(info, number, position)
+  internal class AudioStreamBuilder(IMediaInfoReader info, int number, int position) : LanguageMediaStreamBuilder<AudioStream>(info, number, position)
   {
     #region matching dictionaries
 
@@ -151,6 +151,22 @@ namespace MediaInfo.Builder
       { "Atrac9", AudioCodec.Atrac9 },
       { "ADPCM", AudioCodec.Adpcm },
       { "G.723.1", AudioCodec.G_723_1 },
+      { "A-law", AudioCodec.PcmALaw },
+      { "ALAW", AudioCodec.PcmALaw },
+      { "PCM A-law", AudioCodec.PcmALaw },
+      { "PCMA", AudioCodec.PcmALaw },
+      { "mu-law", AudioCodec.PcmMuLaw },
+      { "U-law", AudioCodec.PcmMuLaw },
+      { "ULAW", AudioCodec.PcmMuLaw },
+      { "PCM mu-law", AudioCodec.PcmMuLaw },
+      { "PCMU", AudioCodec.PcmMuLaw },
+      { "G.711", AudioCodec.PcmMuLaw },
+      { "G.722", AudioCodec.G_722 },
+      { "G.726", AudioCodec.G_726 },
+      { "G.729", AudioCodec.G_729 },
+      { "GSM", AudioCodec.Gsm },
+      { "GSM 6.10", AudioCodec.Gsm },
+      { "Speex", AudioCodec.Speex },
       { "Truespeech", AudioCodec.Truespeech },
       { "Monkey's Audio", AudioCodec.Ape },
       { "RK Audio", AudioCodec.RkAudio },
@@ -172,6 +188,10 @@ namespace MediaInfo.Builder
       { "Dolby E", AudioCodec.DolbyE },
       { "Dolby E-8", AudioCodec.DolbyE },
       { "DTS-UHD", AudioCodec.DtsUhd },
+      { "Nellymoser", AudioCodec.Nellymoser },
+      { "EVRC", AudioCodec.Evrc },
+      { "IAMF", AudioCodec.Iamf },
+      { "WMA Pro", AudioCodec.WmaPro },
     };
 
     private static readonly Dictionary<string, AudioCodec> MlpCodecsAdditionalFeatures = new(StringComparer.OrdinalIgnoreCase)
@@ -275,6 +295,8 @@ namespace MediaInfo.Builder
       result.TimeCodeSource = Get((int)NativeMethods.Audio.Audio_TimeCode_Source, InfoKind.Text);
       result.Bitrate = Get<double>((int)NativeMethods.Audio.Audio_BitRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.Channel = Get<int>((int)NativeMethods.Audio.Audio_Channel_s_, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
+
+      result.DynamicObjects = Get<int>("NumberOfDynamicObjects", TagBuilderHelper.TryGetInt, x => ExtractInfo(x ?? string.Empty, 0)!);
       result.SamplingRate = Get<double>((int)NativeMethods.Audio.Audio_SamplingRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.BitDepth = Get<int>((int)NativeMethods.Audio.Audio_BitDepth, InfoKind.Text, TagBuilderHelper.TryGetInt, x => ExtractInfo(x, baseIndex));
       result.BitrateMode = Get<BitrateMode>((int)NativeMethods.Audio.Audio_BitRate_Mode, InfoKind.Text, TagBuilderHelper.TryGetBitrateMode, x => ExtractInfo(x, baseIndex));

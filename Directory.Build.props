@@ -11,8 +11,8 @@
     <Net10x>10.0.*</Net10x>
     <AzureContainer>1.23.0</AzureContainer>
     <FluentAssertions>7.2.*</FluentAssertions>
-    <MapsterLib>10.0.*</MapsterLib>
-    <MapsterDILib>10.0.*</MapsterDILib>
+    <MapsterLib>10.0.13</MapsterLib>
+    <MapsterDILib>10.0.13</MapsterDILib>
     <xUnitRunner>4.0.1</xUnitRunner>
     <xUnit>2.9.3</xUnit>
     <MediaToolkitNet>0.3.1</MediaToolkitNet>

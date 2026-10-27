@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediaToolkitNet.All" Version="$(MediaToolkitNet)" />
-    <PackageReference Include="System.CommandLine" Version="2.0.5" />
+    <PackageReference Include="System.CommandLine" Version="$(CommandLine)" />
   </ItemGroup>
 
   <!--

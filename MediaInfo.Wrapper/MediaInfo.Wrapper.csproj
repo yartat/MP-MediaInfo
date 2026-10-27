@@ -40,16 +40,26 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net4.5' or '$(TargetFramework)' == 'net481'">
-    <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="microsoft.netframework.referenceassemblies.net45" Version="1.0.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(GitHub)" PrivateAssets="All" />
     <PackageReference Include="MediaInfo.Native" Version="$(Native)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net4.0'">
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net4.5'">     
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net481'">
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.6.2" />
   </ItemGroup>
 
   <ItemGroup>

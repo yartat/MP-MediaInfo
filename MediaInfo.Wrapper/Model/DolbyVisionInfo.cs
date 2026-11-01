@@ -67,5 +67,11 @@ namespace MediaInfo.Model
 
     /// <summary>Gets the reference mode.</summary>
     public string ReferenceMode { get; init; } = string.Empty;
+
+    /// <summary>Gets the luminance range of the mastering display as signalled for HDR10.</summary>
+    public string MasteringDisplayLuminanceHdr10 { get; init; } = string.Empty;
+
+    /// <summary>Gets the number of shots.</summary>
+    public string ShotCount { get; init; } = string.Empty;
   }
 }

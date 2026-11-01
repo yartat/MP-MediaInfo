@@ -210,6 +210,9 @@ namespace MediaInfo
     /// <summary>Mastering display luminance (<c>DolbyVision MasteringDisplay_Luminance</c>).</summary>
     MasteringDisplay_Luminance,
 
+    /// <summary>Mastering display luminance as signalled for HDR10 (<c>DolbyVision MasteringDisplay_Luminance_HDR10</c>).</summary>
+    MasteringDisplay_Luminance_HDR10,
+
     /// <summary>Mastering display diagonal (<c>DolbyVision MasteringDisplay_Diagonal</c>).</summary>
     MasteringDisplay_Diagonal,
 
@@ -229,7 +232,10 @@ namespace MediaInfo
     WhitePoint,
 
     /// <summary>Reference mode (<c>DolbyVision ReferenceMode</c>).</summary>
-    ReferenceMode
+    ReferenceMode,
+
+    /// <summary>Number of shots (<c>DolbyVision ShotCount</c>).</summary>
+    ShotCount
   }
 
   /// <summary>

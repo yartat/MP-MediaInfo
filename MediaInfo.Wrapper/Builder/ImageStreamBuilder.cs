@@ -39,6 +39,8 @@ namespace MediaInfo.Builder
       result.Hdr = Get<Hdr>((int)NativeMethods.Image.Image_HDR_Format, InfoKind.Text, HdrUtils.TryGetHdr);
       result.Rotation = Get<double>("Rotation", TagBuilderHelper.TryGetDouble);
       result.SliceCount = Get<int>("Format_Settings_SliceCount", TagBuilderHelper.TryGetInt);
+      result.Mirror = Get("Mirror");
+      result.DerivedFrom = Get("Derived from");
 
       var baseHeadroom = Get(GainMapField.BaseHeadroom);
       if (baseHeadroom.Length > 0)

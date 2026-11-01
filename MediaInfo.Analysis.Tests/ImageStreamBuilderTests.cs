@@ -27,6 +27,8 @@ public class ImageStreamBuilderTests
       ["Type"] = "Gain map",
       ["Rotation"] = "90",
       ["Format_Settings_SliceCount"] = "6",
+      ["Mirror"] = "Horizontal",
+      ["Derived from"] = "Primary image",
       ["GainMap_BaseHeadroom"] = "0",
       ["GainMap_AlternateHeadroom"] = "2.5",
       ["GainMap_Max"] = "3 3 3",
@@ -38,6 +40,8 @@ public class ImageStreamBuilderTests
     stream.Type.Should().Be("Gain map");
     stream.Rotation.Should().Be(90);
     stream.SliceCount.Should().Be(6);
+    stream.Mirror.Should().Be("Horizontal");
+    stream.DerivedFrom.Should().Be("Primary image");
     stream.GainMap.Should().NotBeNull();
     stream.GainMap!.AlternateHeadroom.Should().Be("2.5");
     stream.GainMap.Max.Should().Be("3 3 3");

@@ -47,6 +47,12 @@ public class DolbyVisionTests
       .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_HDR_Format_Settings, "BL+RPU")
       .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_HDR_Format_Compatibility, "HDR10")
       .Set(StreamKind.Video, 0, "DolbyVision", "Profile 8.1")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_MaxCLL, "1000")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_MaxFALL, "400")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_MasteringDisplay_Luminance, "min: 0.0050 cd/m2, max: 1000 cd/m2")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_ChromaSubsampling_Position, "Type 2")
+      .Set(StreamKind.Video, 0, "DolbyVision ShotCount", "120")
+      .Set(StreamKind.Video, 0, "DolbyVision MasteringDisplay_Luminance_HDR10", "max: 1000 cd/m2")
       .Set(StreamKind.Video, 0, "DolbyVision Profile", "8.1")
       .Set(StreamKind.Video, 0, "DolbyVision CMVersion", "4.0")
       .Set(StreamKind.Video, 0, "DolbyVision BaseLayer_ColorRange", "Limited")
@@ -59,8 +65,14 @@ public class DolbyVisionTests
     video.HdrInfo.Level.Should().Be("06");
     video.HdrInfo.Settings.Should().Be("BL+RPU");
     video.HdrInfo.Compatibility.Should().Be("HDR10");
+    video.HdrInfo.MaxCll.Should().Be("1000");
+    video.HdrInfo.MaxFall.Should().Be("400");
+    video.HdrInfo.MasteringDisplayLuminance.Should().Be("min: 0.0050 cd/m2, max: 1000 cd/m2");
+    video.ChromaSubsamplingPosition.Should().Be("Type 2");
     video.HdrInfo.DolbyVision.Should().NotBeNull();
-    video.HdrInfo.DolbyVision!.Summary.Should().Be("Profile 8.1");
+    video.HdrInfo.DolbyVision!.ShotCount.Should().Be("120");
+    video.HdrInfo.DolbyVision.MasteringDisplayLuminanceHdr10.Should().Be("max: 1000 cd/m2");
+    video.HdrInfo.DolbyVision.Summary.Should().Be("Profile 8.1");
     video.HdrInfo.DolbyVision.Profile.Should().Be("8.1");
     video.HdrInfo.DolbyVision.CmVersion.Should().Be("4.0");
     video.HdrInfo.DolbyVision.BaseLayerColorRange.Should().Be("Limited");

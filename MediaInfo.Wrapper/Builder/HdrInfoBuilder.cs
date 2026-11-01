@@ -31,6 +31,10 @@ namespace MediaInfo.Builder
       Settings = Get(NativeMethods.Video.Video_HDR_Format_Settings),
       Compression = Get(NativeMethods.Video.Video_HDR_Format_Compression),
       Compatibility = Get(NativeMethods.Video.Video_HDR_Format_Compatibility),
+      MasteringDisplayColorPrimaries = Get(NativeMethods.Video.Video_MasteringDisplay_ColorPrimaries),
+      MasteringDisplayLuminance = Get(NativeMethods.Video.Video_MasteringDisplay_Luminance),
+      MaxCll = Get(NativeMethods.Video.Video_MaxCLL),
+      MaxFall = Get(NativeMethods.Video.Video_MaxFALL),
       DolbyVision = GetDolbyVision()
     };
 
@@ -79,7 +83,9 @@ namespace MediaInfo.Builder
         ActiveDisplayAspectRatio = Get(DolbyVisionField.Active_DisplayAspectRatio),
         ContentType = Get(DolbyVisionField.Content_Type),
         WhitePoint = Get(DolbyVisionField.WhitePoint),
-        ReferenceMode = Get(DolbyVisionField.ReferenceMode)
+        ReferenceMode = Get(DolbyVisionField.ReferenceMode),
+        MasteringDisplayLuminanceHdr10 = Get(DolbyVisionField.MasteringDisplay_Luminance_HDR10),
+        ShotCount = Get(DolbyVisionField.ShotCount)
       };
     }
 

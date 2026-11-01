@@ -58,6 +58,26 @@ namespace MediaInfo.Model
     public string Compatibility { get; init; } = string.Empty;
 
     /// <summary>
+    /// Gets the color primaries of the mastering display (HDR10 static metadata).
+    /// </summary>
+    public string MasteringDisplayColorPrimaries { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the luminance range of the mastering display (HDR10 static metadata).
+    /// </summary>
+    public string MasteringDisplayLuminance { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the maximum content light level (MaxCLL) in cd/m2.
+    /// </summary>
+    public string MaxCll { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the maximum frame-average light level (MaxFALL) in cd/m2.
+    /// </summary>
+    public string MaxFall { get; init; } = string.Empty;
+
+    /// <summary>
     /// Gets the Dolby Vision metadata, or <see langword="null"/> when the stream has none.
     /// </summary>
     public DolbyVisionInfo? DolbyVision { get; init; }

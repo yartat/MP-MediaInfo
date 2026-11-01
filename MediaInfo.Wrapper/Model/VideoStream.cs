@@ -166,6 +166,11 @@ public class VideoStream : LanguageMediaStream
   public ChromaSubSampling SubSampling { get; set; }
 
   /// <summary>
+  /// Gets or sets the position of the chroma samples relative to luma, for example "Type 2".
+  /// </summary>
+  public string ChromaSubsamplingPosition { get; set; } = string.Empty;
+
+  /// <summary>
   /// Gets or sets the stream duration.
   /// </summary>
   /// <value>

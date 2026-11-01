@@ -70,6 +70,16 @@ namespace MediaInfo.Model
     public int SliceCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the mirroring of the image derived from the Exif orientation, for example "Horizontal". Empty when not mirrored.
+    /// </summary>
+    public string Mirror { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the image this image is derived from (for example, a gain map's base image). Empty when not reported.
+    /// </summary>
+    public string DerivedFrom { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the ISO 21496-1 gain map metadata, or <see langword="null"/> when the image has none.
     /// </summary>
     public GainMapInfo? GainMap { get; set; }

@@ -174,6 +174,13 @@ public class MediaInfo
     public IList<MenuStream>? MenuStreams { get; set; }
 
     /// <summary>
+    /// The image streams.
+    /// </summary>
+    [DataMember(Name = "images")]
+    [JsonPropertyName("images")]
+    public IList<ImageStream>? ImageStreams { get; set; }
+
+    /// <summary>
     /// A value indicating whether this video is DVD format.
     /// </summary>
     [DataMember(Name = "dvd")]

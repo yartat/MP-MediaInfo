@@ -406,6 +406,7 @@ namespace MediaInfo.Builder
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
       result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
+      result.ChromaSubsamplingPosition = Get((int)NativeMethods.Video.Video_ChromaSubsampling_Position, InfoKind.Text);
       result.HdrInfo = new HdrInfoBuilder(Info, StreamPosition).Build();
       result.Hdr = result.HdrInfo.Format;
 

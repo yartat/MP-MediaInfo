@@ -132,6 +132,20 @@ public class VideoStream : LanguageMediaStream
     public Hdr Hdr { get; set; }
 
     /// <summary>
+    /// HDR properties of the video, including Dolby Vision metadata.
+    /// </summary>
+    [DataMember(Name = "hdrInfo")]
+    [JsonPropertyName("hdrInfo")]
+    public HdrInfo? HdrInfo { get; set; }
+
+    /// <summary>
+    /// A position of the chroma samples relative to luma.
+    /// </summary>
+    [DataMember(Name = "chromaSubsamplingPosition")]
+    [JsonPropertyName("chromaSubsamplingPosition")]
+    public string? ChromaSubsamplingPosition { get; set; }
+
+    /// <summary>
     /// A video bit depth.
     /// </summary>
     [DataMember(Name = "bitDepth")]

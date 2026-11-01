@@ -172,6 +172,81 @@ namespace MediaInfo
   }
 
   /// <summary>
+  /// Describes the Dolby Vision parameters reported by the library as <c>DolbyVision &lt;Name&gt;</c>.
+  /// </summary>
+  /// <remarks>The member names match the parameter names after the <c>DolbyVision </c> prefix.</remarks>
+  internal enum DolbyVisionField
+  {
+    /// <summary>Summary, reported as <c>DolbyVision</c> without a suffix.</summary>
+    Summary,
+
+    /// <summary>Profile (<c>DolbyVision Profile</c>).</summary>
+    Profile,
+
+    /// <summary>Enhancement layer type (<c>DolbyVision EnhancementLayer</c>).</summary>
+    EnhancementLayer,
+
+    /// <summary>Bit depth (<c>DolbyVision BitDepth</c>).</summary>
+    BitDepth,
+
+    /// <summary>Base layer color range (<c>DolbyVision BaseLayer_ColorRange</c>).</summary>
+    BaseLayer_ColorRange,
+
+    /// <summary>Content mapping version (<c>DolbyVision CMVersion</c>).</summary>
+    CMVersion,
+
+    /// <summary>Display management version (<c>DolbyVision DMVersion</c>).</summary>
+    DMVersion,
+
+    /// <summary>Mastering display name (<c>DolbyVision MasteringDisplay_Name</c>).</summary>
+    MasteringDisplay_Name,
+
+    /// <summary>Mastering display identifier (<c>DolbyVision MasteringDisplay_ID</c>).</summary>
+    MasteringDisplay_ID,
+
+    /// <summary>Mastering display color primaries (<c>DolbyVision MasteringDisplay_ColorPrimaries</c>).</summary>
+    MasteringDisplay_ColorPrimaries,
+
+    /// <summary>Mastering display luminance (<c>DolbyVision MasteringDisplay_Luminance</c>).</summary>
+    MasteringDisplay_Luminance,
+
+    /// <summary>Mastering display diagonal (<c>DolbyVision MasteringDisplay_Diagonal</c>).</summary>
+    MasteringDisplay_Diagonal,
+
+    /// <summary>Target displays (<c>DolbyVision TargetDisplays</c>).</summary>
+    TargetDisplays,
+
+    /// <summary>Active area (<c>DolbyVision ActiveArea</c>).</summary>
+    ActiveArea,
+
+    /// <summary>Active area display aspect ratio (<c>DolbyVision Active_DisplayAspectRatio</c>).</summary>
+    Active_DisplayAspectRatio,
+
+    /// <summary>Content type (<c>DolbyVision Content_Type</c>).</summary>
+    Content_Type,
+
+    /// <summary>White point (<c>DolbyVision WhitePoint</c>).</summary>
+    WhitePoint,
+
+    /// <summary>Reference mode (<c>DolbyVision ReferenceMode</c>).</summary>
+    ReferenceMode
+  }
+
+  /// <summary>
+  /// Provides the library parameter names of <see cref="DolbyVisionField"/> values.
+  /// </summary>
+  internal static class DolbyVisionFieldExtensions
+  {
+    /// <summary>
+    /// Gets the library parameter name of the Dolby Vision field.
+    /// </summary>
+    /// <param name="field">The Dolby Vision field.</param>
+    /// <returns>Returns the <c>DolbyVision</c> parameter name.</returns>
+    public static string ToParameterName(this DolbyVisionField field) =>
+      field == DolbyVisionField.Summary ? "DolbyVision" : "DolbyVision " + field;
+  }
+
+  /// <summary>
   /// Describes kinds of information to search in MediaInfoList
   /// </summary>
   public enum InfoOptions

@@ -222,6 +222,11 @@ public class VideoStream : LanguageMediaStream
   public Hdr Hdr { get;set; }
 
   /// <summary>
+  /// Gets or sets the HDR properties of the video stream, including the Dolby Vision metadata.
+  /// </summary>
+  public HdrInfo HdrInfo { get; set; } = new();
+
+  /// <summary>
   /// Gets or sets the video bit depth.
   /// </summary>
   /// <value>

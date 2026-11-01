@@ -406,16 +406,8 @@ namespace MediaInfo.Builder
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
       result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
-      result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format, InfoKind.Text, HdrUtils.TryGetHdr);
-      if (result.Hdr == Hdr.None)
-      {
-        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format_Compatibility, InfoKind.Text, HdrUtils.TryGetHdr);
-      }
-
-      if (result.Hdr == Hdr.None)
-      {
-        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, HdrUtils.TryGetHdr);
-      }
+      result.HdrInfo = new HdrInfoBuilder(Info, StreamPosition).Build();
+      result.Hdr = result.HdrInfo.Format;
 
       result.Tags = new VideoTagBuilder(Info, StreamPosition).Build();
       result.Rotation = Get<double>((int)NativeMethods.Video.Video_Rotation, InfoKind.Text, TagBuilderHelper.TryGetDouble);

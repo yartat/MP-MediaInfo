@@ -141,6 +141,9 @@ public sealed class LegacyResultAdapter
   /// <summary>Gets the menu streams of the media.</summary>
   public IList<MenuStream> MenuStreams => new List<MenuStream>(_result.MenuStreams);
 
+  /// <summary>Gets the image streams of the media.</summary>
+  public IList<ImageStream> ImageStreams => new List<ImageStream>(_result.ImageStreams);
+
   #endregion
 
   #region General

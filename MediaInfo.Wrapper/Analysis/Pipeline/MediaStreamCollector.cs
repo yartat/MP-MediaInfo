@@ -57,12 +57,14 @@ internal sealed class MediaStreamCollector
     var subtitles = new List<SubtitleStream>();
     var chapters = new List<ChapterStream>();
     var menuStreams = new List<MenuStream>();
+    var imageStreams = new List<ImageStream>();
 
     var streamNumber = 0;
     streamNumber = CollectVideo(reader, videoStreams, streamNumber);
     streamNumber = CollectAudio(reader, audioStreams, streamNumber);
     streamNumber = CollectSubtitles(reader, subtitles, streamNumber);
     streamNumber = CollectChapters(reader, chapters, streamNumber);
+    streamNumber = CollectImages(reader, imageStreams, streamNumber);
     CollectMenus(reader, menuStreams, streamNumber);
 
     var tags = new AudioTagBuilder(reader, 0).Build();
@@ -74,7 +76,7 @@ internal sealed class MediaStreamCollector
         ? fileSize
         : 0L;
 
-    var success = videoStreams.Count != 0 || audioStreams.Count != 0 || subtitles.Count != 0;
+    var success = videoStreams.Count != 0 || audioStreams.Count != 0 || subtitles.Count != 0 || imageStreams.Count != 0;
 
     return new MediaAnalysisResult
     {
@@ -106,6 +108,7 @@ internal sealed class MediaStreamCollector
       Subtitles = subtitles,
       Chapters = chapters,
       MenuStreams = menuStreams,
+      ImageStreams = imageStreams,
       BestVideoStream = _selection.SelectBestVideo(videoStreams),
       BestAudioStream = _selection.SelectBestAudio(audioStreams)
     };
@@ -150,6 +153,17 @@ internal sealed class MediaStreamCollector
     for (var i = 0; i < count; ++i)
     {
       target.Add(new ChapterStreamBuilder(reader, streamNumber++, i).Build());
+    }
+
+    return streamNumber;
+  }
+
+  private static int CollectImages(IMediaInfoReader reader, ICollection<ImageStream> target, int streamNumber)
+  {
+    var count = reader.CountGet(StreamKind.Image);
+    for (var i = 0; i < count; ++i)
+    {
+      target.Add(new ImageStreamBuilder(reader, streamNumber++, i).Build());
     }
 
     return streamNumber;

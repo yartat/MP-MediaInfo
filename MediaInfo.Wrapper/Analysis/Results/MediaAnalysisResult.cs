@@ -92,6 +92,11 @@ public sealed record MediaAnalysisResult
   public IReadOnlyList<MenuStream> MenuStreams { get; init; } = [];
 
   /// <summary>
+  /// Gets the image streams of the media.
+  /// </summary>
+  public IReadOnlyList<ImageStream> ImageStreams { get; init; } = [];
+
+  /// <summary>
   /// Gets the video stream that best represents the media.
   /// </summary>
   public VideoStream? BestVideoStream { get; init; }

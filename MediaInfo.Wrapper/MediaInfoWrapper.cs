@@ -121,6 +121,7 @@ namespace MediaInfo
       Subtitles = new List<SubtitleStream>();
       Chapters = new List<ChapterStream>();
       MenuStreams = new List<MenuStream>();
+      ImageStreams = new List<ImageStream>();
       Size = size;
     }
 
@@ -659,15 +660,17 @@ namespace MediaInfo
       // Setup streams
       ProcessingMenuStreams(
         mediaInfo,
-        ProcessingChapterStreams(
+        ProcessingImageStreams(
           mediaInfo,
-          ProcessingSubtitleStreams(
+          ProcessingChapterStreams(
             mediaInfo,
-            ProcessingAudioStreams(
+            ProcessingSubtitleStreams(
               mediaInfo,
-              ProcessingVideoStreams(mediaInfo)))));
+              ProcessingAudioStreams(
+                mediaInfo,
+                ProcessingVideoStreams(mediaInfo))))));
 
-      Success = VideoStreams.Count != 0 || AudioStreams.Count != 0 || Subtitles.Count != 0;
+      Success = VideoStreams.Count != 0 || AudioStreams.Count != 0 || Subtitles.Count != 0 || ImageStreams.Count != 0;
 
       // Produce capability properties
       if (Success)
@@ -788,6 +791,22 @@ namespace MediaInfo
         var chapter = new ChapterStreamBuilder(mediaInfo, streamNumber++, i).Build();
         LogDebug(_logger, "Add chapter #{i}: name={chapter}", i, chapter.Name);
         Chapters.Add(chapter);
+      }
+
+      return streamNumber;
+    }
+
+    private int ProcessingImageStreams(MediaInfo mediaInfo, int streamNumber)
+    {
+      if (mediaInfo is null)
+      {
+        throw new ArgumentNullException(nameof(mediaInfo));
+      }
+
+      LogDebug(_logger, "Found {images} image streams.", mediaInfo.CountGet(StreamKind.Image));
+      for (var i = 0; i < mediaInfo.CountGet(StreamKind.Image); ++i)
+      {
+        ImageStreams.Add(new ImageStreamBuilder(mediaInfo, streamNumber++, i).Build());
       }
 
       return streamNumber;
@@ -1201,6 +1220,20 @@ namespace MediaInfo
     /// The media has menu if it has at least one menu stream. If media was not loaded successfully, the value is <c>false</c>.
     /// </remarks>
     public bool HasMenu => MenuStreams.Count > 0;
+
+#endregion
+
+#region public image related properties
+
+    /// <summary>
+    /// Gets the image streams from media. The list is empty if media has no image streams or media was not loaded successfully.
+    /// </summary>
+    public IList<ImageStream> ImageStreams { get; }
+
+    /// <summary>
+    /// A value indicating whether media has image streams. The value is <c>false</c> if media was not loaded successfully.
+    /// </summary>
+    public bool HasImages => ImageStreams.Count > 0;
 
 #endregion
 

@@ -137,6 +137,24 @@ internal static class RtspStreamCapture
     return capture;
   }
 
+  // RtpPacket is a ref struct, so it is handled outside the async method: a Debug build keeps async locals alive across awaits.
+  private static void Consume(byte[] data, int payloadType, RtspCapture capture, VideoDepacketizer depacketizer)
+  {
+    if (!RtpPacket.TryParse(data, out var packet) || (payloadType >= 0 && packet.PayloadType != payloadType))
+    {
+      return;
+    }
+
+    capture.PacketsRead++;
+    depacketizer.Write(capture.ElementaryStream, packet);
+
+    // The marker bit ends an access unit, which is the unit a frame count is meaningful in.
+    if (packet.Marker)
+    {
+      capture.FramesRebuilt++;
+    }
+  }
+
   private static async Task ReadAsync(
     RtspConnection connection,
     SdpMedia video,
@@ -182,24 +200,12 @@ internal static class RtspStreamCapture
           break;
         }
 
-        if (media.Channel != MediaChannel || !RtpPacket.TryParse(media.Data, out var packet))
+        if (media.Channel != MediaChannel)
         {
           continue;
         }
 
-        if (payloadType >= 0 && packet.PayloadType != payloadType)
-        {
-          continue;
-        }
-
-        capture.PacketsRead++;
-        depacketizer.Write(capture.ElementaryStream, packet);
-
-        // The marker bit ends an access unit, which is the unit a frame count is meaningful in.
-        if (packet.Marker)
-        {
-          capture.FramesRebuilt++;
-        }
+        Consume(media.Data, payloadType, capture, depacketizer);
       }
     }
     catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)

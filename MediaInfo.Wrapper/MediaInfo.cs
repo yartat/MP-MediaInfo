@@ -129,6 +129,49 @@ namespace MediaInfo
   }
 
   /// <summary>
+  /// Describes the ISO 21496-1 gain map parameters reported by the library as <c>GainMap_*</c>.
+  /// </summary>
+  internal enum GainMapField
+  {
+    /// <summary>HDR headroom of the base image (<c>GainMap_BaseHeadroom</c>).</summary>
+    BaseHeadroom,
+
+    /// <summary>HDR headroom of the alternate image (<c>GainMap_AlternateHeadroom</c>).</summary>
+    AlternateHeadroom,
+
+    /// <summary>Minimum gain map value (<c>GainMap_Min</c>).</summary>
+    Min,
+
+    /// <summary>Maximum gain map value (<c>GainMap_Max</c>).</summary>
+    Max,
+
+    /// <summary>Gain map gamma (<c>GainMap_Gamma</c>).</summary>
+    Gamma,
+
+    /// <summary>Offset of the base image (<c>GainMap_BaseOffset</c>).</summary>
+    BaseOffset,
+
+    /// <summary>Offset of the alternate image (<c>GainMap_AlternateOffset</c>).</summary>
+    AlternateOffset,
+
+    /// <summary>Whether the base color space is used (<c>GainMap_UseBaseColorSpace</c>).</summary>
+    UseBaseColorSpace
+  }
+
+  /// <summary>
+  /// Provides the library parameter names of <see cref="GainMapField"/> values.
+  /// </summary>
+  internal static class GainMapFieldExtensions
+  {
+    /// <summary>
+    /// Gets the library parameter name of the gain map field.
+    /// </summary>
+    /// <param name="field">The gain map field.</param>
+    /// <returns>Returns the <c>GainMap_*</c> parameter name.</returns>
+    public static string ToParameterName(this GainMapField field) => "GainMap_" + field;
+  }
+
+  /// <summary>
   /// Describes kinds of information to search in MediaInfoList
   /// </summary>
   public enum InfoOptions

@@ -121,30 +121,6 @@ namespace MediaInfo.Builder
       { "both eyes laced in one block (right eye first)", StereoMode.BothEyesLacedRight }
     };
 
-    private static readonly Dictionary<string, Hdr> HdrFormats = new(StringComparer.OrdinalIgnoreCase)
-    {
-      { "Dolby Vision", Hdr.DolbyVision },
-      { "Dolby Vision Metadata", Hdr.DolbyVision },
-      { "SMPTE ST 2094-10", Hdr.DolbyVision },
-      { "HDR10", Hdr.HDR10 },
-      { "PQ", Hdr.HDR10 },
-      { "SMPTE ST 2086", Hdr.HDR10 },
-      { "HDR10 Plus", Hdr.HDR10Plus },
-      { "HDR10+", Hdr.HDR10Plus },
-      { "SMPTE ST 2094 App 4", Hdr.HDR10Plus },
-      { "HDR10+ Profile A", Hdr.HDR10Plus },
-      { "HDR10+ Profile B", Hdr.HDR10Plus },
-      { "SL-HDR", Hdr.SLHDR1 },
-      { "SL-HDR1", Hdr.SLHDR1 },
-      { "SL-HDR2", Hdr.SLHDR2 },
-      { "SL-HDR3", Hdr.SLHDR3 },
-      { "HLG", Hdr.HLG },
-      { "HLG+", Hdr.HLGPlus },
-      { "HDR Vivid", Hdr.HdrVivid },
-      { "HDR Vivid Metadata", Hdr.HdrVivid },
-      { "T/UWA 005 (HDR Vivid)", Hdr.HdrVivid },
-    };
-
     private static readonly Dictionary<string, VideoCodec> VideoCodecs = new(StringComparer.OrdinalIgnoreCase)
     {
       { "V_UNCOMPRESSED", VideoCodec.Uncompressed },
@@ -360,6 +336,7 @@ namespace MediaInfo.Builder
       {
         result.Bitrate = Get<double>((int)NativeMethods.Video.Video_BitRate_Maximum, InfoKind.Text, TagBuilderHelper.TryGetDouble);
       }
+
       result.AspectRatio = Get<AspectRatio>((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text, TryGetAspectRatio);
       result.DisplayAspectRatio = Get((int)NativeMethods.Video.Video_DisplayAspectRatio, InfoKind.Text);
       result.ScanType = Get((int)NativeMethods.Video.Video_ScanType, InfoKind.Text);
@@ -412,6 +389,7 @@ namespace MediaInfo.Builder
           {
             result.Codec = additionalCodec;
           }
+
           break;
       }
 
@@ -428,20 +406,19 @@ namespace MediaInfo.Builder
       result.Standard = Get<VideoStandard>((int)NativeMethods.Video.Video_Standard, InfoKind.Text, TryGetStandard);
       result.SubSampling = Get<ChromaSubSampling>((int)NativeMethods.Video.Video_ChromaSubsampling, InfoKind.Text, TryGetSubSampling);
       result.CodecName = GetFullCodecName(result.CodecProfile);
-      result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format, InfoKind.Text, TryGetHdr);
+      result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format, InfoKind.Text, HdrUtils.TryGetHdr);
       if (result.Hdr == Hdr.None)
       {
-        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format_Compatibility, InfoKind.Text, TryGetHdr);
+        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_HDR_Format_Compatibility, InfoKind.Text, HdrUtils.TryGetHdr);
       }
+
       if (result.Hdr == Hdr.None)
       {
-        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, TryGetHdr);
+        result.Hdr = Get<Hdr>((int)NativeMethods.Video.Video_transfer_characteristics, InfoKind.Text, HdrUtils.TryGetHdr);
       }
 
       result.Tags = new VideoTagBuilder(Info, StreamPosition).Build();
-            
       result.Rotation = Get<double>((int)NativeMethods.Video.Video_Rotation, InfoKind.Text, TagBuilderHelper.TryGetDouble);
-
       return result;
     }
 
@@ -475,9 +452,6 @@ namespace MediaInfo.Builder
 
     private static bool TryGetSubSampling(string source, out ChromaSubSampling result) =>
       ChromaSubSamplings.TryGetValue(source, out result);
-
-    private static bool TryGetHdr(string source, out Hdr result) =>
-      HdrFormats.TryGetValue(source, out result);
 
     private static bool TryGetFrameRateMode(string source, out FrameRateMode result) =>
       FrameRateModes.TryGetValue(source, out result);

@@ -57,6 +57,17 @@ public sealed record GeneralMediaInfo
   public string Attachments { get; init; } = string.Empty;
 
   /// <summary>
+  /// Gets the specifications the media is compliant with, as the library reports them. Empty when the library does not
+  /// report it, which includes libraries older than the field.
+  /// </summary>
+  public string CompliantWith { get; init; } = string.Empty;
+
+  /// <summary>
+  /// Gets the IPTC metadata of the media, or <see langword="null"/> when it has none.
+  /// </summary>
+  public IptcInfo? Iptc { get; init; }
+
+  /// <summary>
   /// Gets a value indicating whether the media can be played while it is still being received.
   /// </summary>
   public bool IsStreamable { get; init; }

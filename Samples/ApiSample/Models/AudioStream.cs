@@ -101,6 +101,13 @@ public class AudioStream : LanguageMediaStream
     public string? Format { get; set; }
 
     /// <summary>
+    /// The muxing mode, for example "PS2" for the audio of a PlayStation 2 file.
+    /// </summary>
+    [DataMember(Name = "muxingMode")]
+    [JsonPropertyName("muxingMode")]
+    public string? MuxingMode { get; set; }
+
+    /// <summary>
     /// The audio codec name.
     /// </summary>
     /// <example>AVC</example>

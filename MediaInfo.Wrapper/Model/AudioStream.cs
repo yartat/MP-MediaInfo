@@ -264,6 +264,12 @@ namespace MediaInfo.Model
     public string Format { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the muxing mode: how the stream is stored in its container, for example "PS2" for the audio of a
+    /// PlayStation 2 file. Empty when the library does not report it.
+    /// </summary>
+    public string MuxingMode { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the normalized audio codec name.
     /// </summary>
     /// <value>

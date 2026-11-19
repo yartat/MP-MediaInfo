@@ -139,6 +139,13 @@ public class VideoStream : LanguageMediaStream
     public HdrInfo? HdrInfo { get; set; }
 
     /// <summary>
+    /// A mirroring of the video.
+    /// </summary>
+    [DataMember(Name = "mirror")]
+    [JsonPropertyName("mirror")]
+    public string? Mirror { get; set; }
+
+    /// <summary>
     /// A position of the chroma samples relative to luma.
     /// </summary>
     [DataMember(Name = "chromaSubsamplingPosition")]

@@ -314,6 +314,7 @@ namespace MediaInfo.Builder
       }
 
       result.Format = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text, x => ExtractInfo(x, 0));
+      result.MuxingMode = Get((int)NativeMethods.Audio.Audio_MuxingMode, InfoKind.Text);
       result.CodecName = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text).ToUpperInvariant();
       result.CodecDescription = Get((int)NativeMethods.Audio.Audio_Format_Commercial, InfoKind.Text);
       result.Tags = new AudioTagBuilder(Info, StreamPosition).Build();

@@ -95,6 +95,8 @@ internal sealed class MediaStreamCollector
         WritingApplication = reader.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Application),
         WritingLibrary = reader.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Library),
         Attachments = reader.Get(StreamKind.General, 0, "Attachments"),
+        CompliantWith = reader.Get(StreamKind.General, 0, (int)NativeMethods.General.General_CompliantWith),
+        Iptc = new IptcInfoBuilder(reader).Build(),
         IsStreamable =
           reader.Get(StreamKind.General, 0, (int)NativeMethods.General.General_IsStreamable).TryGetBool(out var streamable) && streamable,
         Size = size,

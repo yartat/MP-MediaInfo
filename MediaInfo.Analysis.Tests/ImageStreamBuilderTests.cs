@@ -25,8 +25,6 @@ public class ImageStreamBuilderTests
     var reader = new NamedReader
     {
       ["Type"] = "Gain map",
-      ["Rotation"] = "90",
-      ["Format_Settings_SliceCount"] = "6",
       ["Mirror"] = "Horizontal",
       ["Derived from"] = "Primary image",
       ["GainMap_BaseHeadroom"] = "0",
@@ -34,6 +32,9 @@ public class ImageStreamBuilderTests
       ["GainMap_Max"] = "3 3 3",
       ["GainMap_UseBaseColorSpace"] = "Yes",
     };
+
+    reader.Indexed[(int)NativeMethods.Image.Image_Rotation] = "90";
+    reader.Indexed[(int)NativeMethods.Image.Image_Format_Settings_SliceCount] = "6";
 
     var stream = new ImageStreamBuilder(reader, 0, 0).Build();
 
@@ -65,8 +66,8 @@ public class ImageStreamBuilderTests
     var factory = new FakeNativeMediaInfoFactory();
     factory.AddMedia(Photo)
       .WithStreams(StreamKind.Image, 2)
-      .Set(StreamKind.Image, 0, "Rotation", "180")
-      .Set(StreamKind.Image, 0, "Format_Settings_SliceCount", "12")
+      .SetIndexed(StreamKind.Image, 0, (int)NativeMethods.Image.Image_Rotation, "180")
+      .SetIndexed(StreamKind.Image, 0, (int)NativeMethods.Image.Image_Format_Settings_SliceCount, "12")
       .Set(StreamKind.Image, 1, "GainMap_BaseHeadroom", "0");
     var analyzer = MediaInfoAnalyzerBuilder.Create()
       .UseNativeFactory(factory)
@@ -88,7 +89,10 @@ public class ImageStreamBuilderTests
     public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch) =>
       Get(streamKind, streamNumber, parameter);
 
-    public string Get(StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo) => string.Empty;
+    public Dictionary<int, string> Indexed { get; } = [];
+
+    public string Get(StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo) =>
+      Indexed.TryGetValue(parameter, out var value) ? value : string.Empty;
 
     public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo) =>
       Get(streamKind, streamNumber, parameter);

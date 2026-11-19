@@ -53,6 +53,123 @@ public class HardeningTests
     }
   }
 
+  #region Fields of newer libraries
+
+  [Fact]
+  public async Task Analyze_ReadsTheIptcMetadata()
+  {
+    var fileSystem = new FakeFileSystem().AddFile(@"D:\media\photo.jpg");
+    var factory = new FakeNativeMediaInfoFactory();
+    factory.AddMedia(@"D:\media\photo.jpg")
+      .WithStreams(StreamKind.Image, 1)
+      .Set(StreamKind.General, 0, "Headline", "A headline")
+      .Set(StreamKind.General, 0, "City", "Kyiv")
+      .Set(StreamKind.General, 0, "CountryCode", "UA")
+      .Set(StreamKind.General, 0, "SupplementalCategories", "one / two")
+      .Set(StreamKind.General, 0, "ExpirationDate", "2030-01-01")
+      .Set(StreamKind.General, 0, "DigitalSourceType", "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia")
+      .Set(StreamKind.General, 0, "DigitalSourceType/String", "Created using Generative AI");
+
+    var result = await MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(factory)
+      .UseFileSystem(fileSystem)
+      .Configure(options => options.OffloadBlockingCalls = false)
+      .Build()
+      .AnalyzeAsync(new FileMediaSource(@"D:\media\photo.jpg"));
+
+    var iptc = result.General.Iptc;
+    iptc.Should().NotBeNull();
+    iptc!.Headline.Should().Be("A headline");
+    iptc.City.Should().Be("Kyiv");
+    iptc.CountryCode.Should().Be("UA");
+    iptc.SupplementalCategories.Should().Be("one / two");
+    iptc.ExpirationDate.Should().Be("2030-01-01");
+    iptc.DigitalSourceTypeName.Should().Be("Created using Generative AI");
+    iptc.Credit.Should().BeEmpty();
+    new LegacyResultAdapter(result).Iptc.Should().BeSameAs(iptc);
+  }
+
+  [Fact]
+  public async Task Analyze_FileWithoutIptc_HasNone()
+  {
+    var fileSystem = new FakeFileSystem().AddFile(Movie);
+    var factory = new FakeNativeMediaInfoFactory();
+    factory.AddMedia(Movie).WithStreams(StreamKind.Video, 1);
+
+    var result = await MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(factory)
+      .UseFileSystem(fileSystem)
+      .Configure(options => options.OffloadBlockingCalls = false)
+      .Build()
+      .AnalyzeAsync(new FileMediaSource(Movie));
+
+    result.General.Iptc.Should().BeNull();
+  }
+
+  [Theory]
+  [InlineData("Headline", "Headline")]
+  [InlineData("SupplementalCategories", "SupplementalCategories")]
+  [InlineData("DigitalSourceType", "DigitalSourceType")]
+  [InlineData("DigitalSourceType_String", "DigitalSourceType/String")]
+  public void IptcField_ParameterName_IsTheNameTheLibraryUses(string member, string expected) =>
+    Enum.Parse<IptcField>(member).ToParameterName().Should().Be(expected);
+
+  [Fact]
+  public async Task Analyze_Ps2Audio_ReportsTheMuxingMode()
+  {
+    var fileSystem = new FakeFileSystem().AddFile(@"D:\media\song.ss2");
+    var factory = new FakeNativeMediaInfoFactory();
+    factory.AddMedia(@"D:\media\song.ss2")
+      .WithStreams(StreamKind.Audio, 1)
+      .SetIndexed(StreamKind.Audio, 0, (int)NativeMethods.Audio.Audio_Format, "ADPCM")
+      .SetIndexed(StreamKind.Audio, 0, (int)NativeMethods.Audio.Audio_MuxingMode, "PS2");
+
+    var result = await MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(factory)
+      .UseFileSystem(fileSystem)
+      .Configure(options => options.OffloadBlockingCalls = false)
+      .Build()
+      .AnalyzeAsync(new FileMediaSource(@"D:\media\song.ss2"));
+
+    result.AudioStreams[0].MuxingMode.Should().Be("PS2");
+    result.AudioStreams[0].Codec.Should().Be(AudioCodec.Adpcm);
+  }
+
+  [Theory]
+  [InlineData(@"D:\media\song.ss2", true)]
+  [InlineData(@"D:\media\broadcast.bw64", true)]
+  [InlineData(@"D:\media\track.cmfa", true)]
+  [InlineData(@"D:\media\video.cmfv", false)]
+  public void Extensions_NewerFormats_AreKnownAsMedia(string path, bool audio)
+  {
+    (audio ? path.IsAudio() : path.IsVideo()).Should().BeTrue();
+  }
+
+
+  [Fact]
+  public async Task Analyze_ReadsTheFieldsAddedAfter2610()
+  {
+    var fileSystem = new FakeFileSystem().AddFile(Movie);
+    var factory = new FakeNativeMediaInfoFactory();
+    factory.AddMedia(Movie)
+      .WithStreams(StreamKind.Video, 1)
+      .SetIndexed(StreamKind.General, 0, (int)NativeMethods.General.General_CompliantWith, "SMPTE ST 2067-21")
+      .Set(StreamKind.Video, 0, "Mirror", "Horizontal");
+
+    var result = await MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(factory)
+      .UseFileSystem(fileSystem)
+      .Configure(options => options.OffloadBlockingCalls = false)
+      .Build()
+      .AnalyzeAsync(new FileMediaSource(Movie));
+
+    result.General.CompliantWith.Should().Be("SMPTE ST 2067-21");
+    result.VideoStreams[0].Mirror.Should().Be("Horizontal");
+    new LegacyResultAdapter(result).CompliantWith.Should().Be("SMPTE ST 2067-21");
+  }
+
+  #endregion
+
   #region Culture
 
   [Fact]

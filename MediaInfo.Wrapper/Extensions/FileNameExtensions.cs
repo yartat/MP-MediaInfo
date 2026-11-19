@@ -58,6 +58,7 @@ namespace MediaInfo
       { ".WEBP", true },
       { ".RIFF", true },
       { ".HEIF", true },
+      { ".HIF", true },
       { ".PCX", true },
       { ".TGA", true },
       { ".SGI", true },
@@ -128,6 +129,7 @@ namespace MediaInfo
       { ".DV", true },
       { ".VC1", true },
       { ".AVC", true },
+      { ".CMFV", true },
     };
 
     private static readonly Dictionary<string, bool> AudioExtensions = new(StringComparer.OrdinalIgnoreCase) 
@@ -189,6 +191,9 @@ namespace MediaInfo
       { ".SPX", true },
       { ".TTA", true },
       { ".WV", true },
+      { ".SS2", true },
+      { ".BW64", true },
+      { ".CMFA", true },
     };
 
     #endregion

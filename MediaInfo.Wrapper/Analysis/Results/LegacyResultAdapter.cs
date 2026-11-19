@@ -184,6 +184,12 @@ public sealed class LegacyResultAdapter
   /// <summary>Gets the description of the media attachments.</summary>
   public string Attachments => _result.General.Attachments;
 
+  /// <summary>Gets the specifications the media is compliant with.</summary>
+  public string CompliantWith => _result.General.CompliantWith;
+
+  /// <summary>Gets the IPTC metadata of the media, or <see langword="null"/> when it has none.</summary>
+  public IptcInfo? Iptc => _result.General.Iptc;
+
   /// <summary>Gets the duration of the media in milliseconds.</summary>
   public int Duration => (int)_result.General.Duration.TotalMilliseconds;
 

@@ -297,6 +297,11 @@ public class VideoStream : LanguageMediaStream
   /// </value>
   public double Rotation { get; set; }
 
+  /// <summary>
+  /// Gets or sets the mirroring of the video, for example "Horizontal". Empty when the video is not mirrored.
+  /// </summary>
+  public string Mirror { get; set; } = string.Empty;
+
   private string GetVideoResolution()
   {
     var result = (Width, Height) switch

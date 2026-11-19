@@ -669,6 +669,8 @@ namespace MediaInfo
       WritingApplication = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Application);
       WritingLibrary = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_Encoded_Library);
       Attachments = mediaInfo.Get(StreamKind.General, 0, "Attachments");
+      CompliantWith = mediaInfo.Get(StreamKind.General, 0, (int)NativeMethods.General.General_CompliantWith);
+      Iptc = new IptcInfoBuilder(mediaInfo).Build();
       Profile = mediaInfo.Get(StreamKind.General, 0, "Format_Profile");
       FormatVersion = mediaInfo.Get(StreamKind.General, 0, "Format_Version");
       Codec = mediaInfo.Get(StreamKind.General, 0, "CodecID");
@@ -1331,6 +1333,18 @@ namespace MediaInfo
     /// The media attachments are determined based on the media file. If media was not loaded successfully, the value is an empty string.
     /// </remarks>
     public string Attachments { get; private set; } = default!;
+
+    /// <summary>
+    /// Gets the specifications the media is compliant with. The value is an empty string if the library does not report
+    /// them or media was not loaded successfully.
+    /// </summary>
+    public string CompliantWith { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets the IPTC metadata of the media, or <see langword="null"/> when the media has none or was not loaded
+    /// successfully.
+    /// </summary>
+    public IptcInfo? Iptc { get; private set; }
 
     /// <summary>
     /// Gets the media (container) format version. The value is an empty string if media was not loaded successfully.

@@ -37,8 +37,8 @@ namespace MediaInfo.Builder
       result.ColorSpace = Get((int)NativeMethods.Image.Image_ColorSpace, InfoKind.Text);
       result.ChromaSubsampling = Get((int)NativeMethods.Image.Image_ChromaSubsampling, InfoKind.Text);
       result.Hdr = Get<Hdr>((int)NativeMethods.Image.Image_HDR_Format, InfoKind.Text, HdrUtils.TryGetHdr);
-      result.Rotation = Get<double>("Rotation", TagBuilderHelper.TryGetDouble);
-      result.SliceCount = Get<int>("Format_Settings_SliceCount", TagBuilderHelper.TryGetInt);
+      result.Rotation = Get<double>((int)NativeMethods.Image.Image_Rotation, InfoKind.Text, TagBuilderHelper.TryGetDouble);
+      result.SliceCount = Get<int>((int)NativeMethods.Image.Image_Format_Settings_SliceCount, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.Mirror = Get("Mirror");
       result.DerivedFrom = Get("Derived from");
 

@@ -223,6 +223,20 @@ public class MediaInfo
     public string? Attachments { get; set; }
 
     /// <summary>
+    /// The specifications the media is compliant with.
+    /// </summary>
+    [DataMember(Name = "compliantWith")]
+    [JsonPropertyName("compliantWith")]
+    public string? CompliantWith { get; set; }
+
+    /// <summary>
+    /// The IPTC metadata of the media.
+    /// </summary>
+    [DataMember(Name = "iptc")]
+    [JsonPropertyName("iptc")]
+    public IptcInfo? Iptc { get; set; }
+
+    /// <summary>
     /// A media format version.
     /// </summary>
     [DataMember(Name = "formatVersion")]

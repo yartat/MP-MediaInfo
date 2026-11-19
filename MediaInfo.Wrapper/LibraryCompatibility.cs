@@ -29,10 +29,10 @@ namespace MediaInfo
   /// Describes the native library this wrapper was built for, and checks a loaded library against it.
   /// </summary>
   /// <remarks>
-  /// The wrapper reads most values by the index of a field, and the indexes are those of <see cref="ExpectedVersion"/>.
-  /// A library with another version, or a development build with fields inserted in the middle of a table, answers the
-  /// same index with a different field. The values are then wrong without any error, so the mismatch is reported as a
-  /// warning instead.
+  /// The wrapper reads most values by the number of a field, and the numbers are those of <see cref="ExpectedVersion"/>.
+  /// A library with other numbers is handled: the numbers are translated by the names of the fields, so a field that
+  /// moved is still found, and a field the library does not have reads as empty. What is reported is the version, because
+  /// a library of another version may also differ in what it reports and how.
   /// </remarks>
   public static class LibraryCompatibility
   {
@@ -42,8 +42,6 @@ namespace MediaInfo
     public const string ExpectedVersion = "26.10";
 
     private static readonly Regex VersionPattern = new(@"(\d+)\.(\d+)", RegexOptions.CultureInvariant);
-
-    private static readonly FieldLayoutInspector LayoutInspector = new();
 
     /// <summary>
     /// Compares the version of a loaded library with <see cref="ExpectedVersion"/>.
@@ -85,19 +83,6 @@ namespace MediaInfo
       if (CheckVersion(reader.Option("Info_Version")) is { } version)
       {
         warnings.Add(version);
-      }
-
-      foreach (var kind in FieldLayoutInspector.Kinds)
-      {
-        if (reader.CountGet(kind) <= 0)
-        {
-          continue;
-        }
-
-        if (LayoutInspector.Inspect(reader, kind) is { } layout)
-        {
-          warnings.Add(layout);
-        }
       }
 
       return warnings.ToArray();

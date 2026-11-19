@@ -42,48 +42,124 @@ public class LibraryCompatibilityTests
     message.Should().Contain(found).And.Contain(LibraryCompatibility.ExpectedVersion);
   }
 
-  [Fact]
-  public void Inspect_MatchingLayout_ReportsNothing() =>
-    new FieldLayoutInspector().Inspect(new LayoutReader(StreamKind.Image), StreamKind.Image).Should().BeNull();
+  // The names a library gives to the fields of a stream kind, written the way the library writes them.
+  private static List<string> NamesOf(Type enumeration, params string[] without) =>
+    Enum.GetNames(enumeration)
+      .Select(x => x.Substring(x.IndexOf('_') + 1))
+      .Where(x => !without.Contains(x))
+      .ToList();
+
+  private static Func<int, string> Reading(List<string> names) =>
+    index => index >= 0 && index < names.Count ? names[index] : string.Empty;
 
   [Fact]
-  public void Inspect_FieldsInsertedInTheMiddle_ReportsTheFirstDifference()
+  public void FieldLayout_SameOrderAsTheWrapper_NeedsNoTranslation()
   {
-    // What upstream MediaInfoLib after 26.10 does to the image table: two fields appear before MuxingMode.
-    var reader = new LayoutReader(StreamKind.Image, insertAt: 43, "Format_Settings_SliceCount", "Format_Settings_SliceCount/String");
+    var layout = new FieldLayout();
 
-    var message = new FieldLayoutInspector().Inspect(reader, StreamKind.Image);
+    layout.GetTable(StreamKind.Image, Reading(NamesOf(typeof(NativeMethods.Image)))).Should().BeNull();
 
-    message.Should()
-      .Contain("Image")
-      .And.Contain("#43")
-      .And.Contain("Format_Settings_SliceCount")
-      .And.Contain(LibraryCompatibility.ExpectedVersion);
+    layout.TryGetKnown(StreamKind.Image, out var table).Should().BeTrue();
+    table.Should().BeNull();
   }
 
   [Fact]
-  public void Inspect_LibraryAnswersNothing_IsInconclusiveAndNotRemembered()
+  public void FieldLayout_LibraryWithoutAFieldTheWrapperKnows_FindsTheOthersByName()
   {
-    var inspector = new FieldLayoutInspector();
+    // The library of 26.10: there is no CompliantWith, so every general field after it is one number lower.
+    var layout = new FieldLayout();
+    var library = NamesOf(typeof(NativeMethods.General), "CompliantWith");
 
-    inspector.Inspect(new LayoutReader(StreamKind.Video, silent: true), StreamKind.Video).Should().BeNull();
+    var table = layout.GetTable(StreamKind.General, Reading(library));
 
-    // A later, conclusive check is not masked by the earlier silence.
-    inspector
-      .Inspect(new LayoutReader(StreamKind.Video, insertAt: 10, "Extra"), StreamKind.Video)
-      .Should().NotBeNull();
+    FieldLayout.Apply(table, (int)NativeMethods.General.General_CompliantWith).Should().Be(-1);
+    FieldLayout.Apply(table, (int)NativeMethods.General.General_Format).Should().Be((int)NativeMethods.General.General_Format);
+    var after = (int)NativeMethods.General.General_InternetMediaType;
+    after.Should().BeGreaterThan((int)NativeMethods.General.General_CompliantWith);
+    FieldLayout.Apply(table, after).Should().Be(after - 1);
+    library[after - 1].Should().Be("InternetMediaType");
   }
 
   [Fact]
-  public void Inspect_ConclusiveOutcome_IsKeptForTheLifetimeOfTheLibrary()
+  public void FieldLayout_LibraryWithAFieldTheWrapperDoesNotKnow_SkipsIt()
   {
-    var inspector = new FieldLayoutInspector();
-    inspector.Inspect(new LayoutReader(StreamKind.Audio), StreamKind.Audio).Should().BeNull();
+    var layout = new FieldLayout();
+    var library = NamesOf(typeof(NativeMethods.Video));
+    library.Insert(10, "NotInTheWrapper");
 
-    // The order of the fields belongs to the library, so a second media does not repeat the check.
-    inspector
-      .Inspect(new LayoutReader(StreamKind.Audio, insertAt: 5, "Extra"), StreamKind.Audio)
-      .Should().BeNull();
+    var table = layout.GetTable(StreamKind.Video, Reading(library));
+
+    FieldLayout.Apply(table, 9).Should().Be(9);
+    FieldLayout.Apply(table, 10).Should().Be(11);
+    FieldLayout.Apply(table, (int)NativeMethods.Video.Video_Format).Should().Be((int)NativeMethods.Video.Video_Format + 1);
+    library[(int)NativeMethods.Video.Video_Format + 1].Should().Be("Format");
+  }
+
+  [Fact]
+  public void FieldLayout_NumberBeyondTheEnumeration_IsPassedOn()
+  {
+    var layout = new FieldLayout();
+    var library = NamesOf(typeof(NativeMethods.Menu));
+    library.Insert(3, "Another");
+    var table = layout.GetTable(StreamKind.Menu, Reading(library));
+
+    // A field the media added to its own stream, such as a chapter, is numbered by the library and is not translated.
+    FieldLayout.Apply(table, 5000).Should().Be(5000);
+    FieldLayout.Apply(table, -1).Should().Be(-1);
+  }
+
+  [Fact]
+  public void FieldLayout_NamesWithSlashes_MatchTheNamesOfTheEnumeration()
+  {
+    var layout = new FieldLayout();
+    var library = NamesOf(typeof(NativeMethods.Image));
+    library.Insert(0, "Zero");
+    library.Remove("Zero");
+    var name = library.Single(x => x == "Format_Settings_SliceCount_String");
+    library[library.IndexOf(name)] = "Format_Settings_SliceCount/String";
+
+    layout.GetTable(StreamKind.Image, Reading(library)).Should().BeNull("a slash in a name is the same as an underscore");
+  }
+
+  [Fact]
+  public void FieldLayout_LibraryAnswersNothing_IsInconclusiveAndNotRemembered()
+  {
+    var layout = new FieldLayout();
+
+    layout.GetTable(StreamKind.Video, _ => string.Empty).Should().BeNull();
+    layout.TryGetKnown(StreamKind.Video, out _).Should().BeFalse();
+
+    var library = NamesOf(typeof(NativeMethods.Video));
+    library.Insert(10, "NotInTheWrapper");
+    layout.GetTable(StreamKind.Video, Reading(library)).Should().NotBeNull();
+  }
+
+  [Fact]
+  public void FieldLayout_ConclusiveOutcome_IsKeptForTheLifetimeOfTheLibrary()
+  {
+    var layout = new FieldLayout();
+    layout.GetTable(StreamKind.Audio, Reading(NamesOf(typeof(NativeMethods.Audio)))).Should().BeNull();
+
+    // The order of the fields belongs to the library, so a second media does not repeat the look.
+    var other = NamesOf(typeof(NativeMethods.Audio));
+    other.Insert(5, "Extra");
+    layout.GetTable(StreamKind.Audio, Reading(other)).Should().BeNull();
+  }
+
+  [Fact]
+  public void FieldLayout_EveryMemberOfTheEnumerationsHasAName()
+  {
+    // The wrapper's own enumerations must be consistent with themselves: no two members may stand for one field.
+    foreach (var type in new[]
+             {
+               typeof(NativeMethods.General), typeof(NativeMethods.Video), typeof(NativeMethods.Audio),
+               typeof(NativeMethods.Text), typeof(NativeMethods.Other), typeof(NativeMethods.Image), typeof(NativeMethods.Menu)
+             })
+    {
+      var names = NamesOf(type).Select(FieldLayout.Normalize).ToList();
+
+      names.Should().OnlyHaveUniqueItems(type.Name);
+    }
   }
 
   [Fact]

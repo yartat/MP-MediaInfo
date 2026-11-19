@@ -253,6 +253,111 @@ namespace MediaInfo
   }
 
   /// <summary>
+  /// Describes the IPTC fields the library reports by name in the general stream, from IPTC-IIM and from XMP.
+  /// </summary>
+  /// <remarks>The member names match the parameter names, except that <c>_String</c> stands for <c>/String</c>.</remarks>
+  internal enum IptcField
+  {
+    /// <summary><c>Headline</c>.</summary>
+    Headline,
+
+    /// <summary><c>Credit</c>.</summary>
+    Credit,
+
+    /// <summary><c>Source</c>.</summary>
+    Source,
+
+    /// <summary><c>CreatorJobTitle</c>.</summary>
+    CreatorJobTitle,
+
+    /// <summary><c>DescriptionWriter</c>.</summary>
+    DescriptionWriter,
+
+    /// <summary><c>Contact</c>.</summary>
+    Contact,
+
+    /// <summary><c>Instructions</c>.</summary>
+    Instructions,
+
+    /// <summary><c>JobId</c>.</summary>
+    JobId,
+
+    /// <summary><c>Urgency</c>.</summary>
+    Urgency,
+
+    /// <summary><c>Category</c>.</summary>
+    Category,
+
+    /// <summary><c>SupplementalCategories</c>.</summary>
+    SupplementalCategories,
+
+    /// <summary><c>IntellectualGenre</c>.</summary>
+    IntellectualGenre,
+
+    /// <summary><c>SubjectCode</c>.</summary>
+    SubjectCode,
+
+    /// <summary><c>SceneCode</c>.</summary>
+    SceneCode,
+
+    /// <summary><c>SubjectReference</c>.</summary>
+    SubjectReference,
+
+    /// <summary><c>ObjectAttributeReference</c>.</summary>
+    ObjectAttributeReference,
+
+    /// <summary><c>EditStatus</c>.</summary>
+    EditStatus,
+
+    /// <summary><c>FixtureIdentifier</c>.</summary>
+    FixtureIdentifier,
+
+    /// <summary><c>ObjectCycle</c>.</summary>
+    ObjectCycle,
+
+    /// <summary><c>City</c>.</summary>
+    City,
+
+    /// <summary><c>Sublocation</c>.</summary>
+    Sublocation,
+
+    /// <summary><c>State</c>.</summary>
+    State,
+
+    /// <summary><c>CountryCode</c>.</summary>
+    CountryCode,
+
+    /// <summary><c>ContentLocationCode</c>.</summary>
+    ContentLocationCode,
+
+    /// <summary><c>ContentLocationName</c>.</summary>
+    ContentLocationName,
+
+    /// <summary><c>ExpirationDate</c>.</summary>
+    ExpirationDate,
+
+    /// <summary><c>DigitalSourceType</c>.</summary>
+    DigitalSourceType,
+
+    /// <summary><c>DigitalSourceType/String</c>.</summary>
+    DigitalSourceType_String
+  }
+
+  /// <summary>
+  /// Provides the library parameter names of <see cref="IptcField"/> values.
+  /// </summary>
+  internal static class IptcFieldExtensions
+  {
+    /// <summary>
+    /// Gets the library parameter name of the IPTC field.
+    /// </summary>
+    /// <param name="field">The IPTC field.</param>
+    /// <returns>Returns the parameter name.</returns>
+    public static string ToParameterName(this IptcField field) =>
+      field.ToString().Replace('_', '/');
+  }
+
+  /// <summary>
   /// Describes kinds of information to search in MediaInfoList
   /// </summary>
   public enum InfoOptions
@@ -622,10 +727,20 @@ namespace MediaInfo
         return string.Empty;
       }
 
-      return _mustUseAnsi ?
+      // The number is that of the field in the enumeration of the wrapper. The library may number the fields differently.
+      if (!FieldLayout.Shared.TryGetKnown(streamKind, out var table))
+      {
+        table = FieldLayout.Shared.GetTable(streamKind, index => GetByNumber(streamKind, streamNumber, index, InfoKind.Name));
+      }
+
+      parameter = FieldLayout.Apply(table, parameter);
+      return parameter < 0 ? string.Empty : GetByNumber(streamKind, streamNumber, parameter, kindOfInfo);
+    }
+
+    private string GetByNumber(StreamKind streamKind, int streamNumber, int parameter, InfoKind kindOfInfo) =>
+      _mustUseAnsi ?
         NativeMethods.MediaInfoA_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo) :
         NativeMethods.MediaInfo_GetI(Handle, (IntPtr)streamKind, (IntPtr)streamNumber, (IntPtr)parameter, (IntPtr)kindOfInfo);
-    }
 
     /// <summary>
     /// Gets options value by the specified option name and value. If library is not loaded successfully, will return empty string.

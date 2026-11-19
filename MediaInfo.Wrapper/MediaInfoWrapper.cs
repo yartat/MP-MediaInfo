@@ -196,7 +196,7 @@ namespace MediaInfo
        : this(0L, logger)
     {
       _filePath = filePath;
-      LogDebug(_logger, "Analyzing media {path}.", filePath);
+      LogDebug(_logger, "Analyzing media {path}.", UrlRedactor.Redact(filePath)!);
       if (string.IsNullOrEmpty(filePath))
       {
         LogError(_logger, "Media file name to processing is null or empty");
@@ -320,7 +320,7 @@ namespace MediaInfo
     /// </remarks>
     public void WriteInfo()
     {
-      LogInformation(_logger, "Inspecting media    : {path}", _filePath!);
+      LogInformation(_logger, "Inspecting media    : {path}", UrlRedactor.Redact(_filePath)!);
       if (!Success)
       {
         LogWarning(_logger, "MediaInfo library was not loaded!");
@@ -456,18 +456,20 @@ namespace MediaInfo
     }
 
 #if NETFRAMEWORK
-    private static string? GetPathToMediaInfo(string path, ILogger? logger) =>
-      default(string)
-        .IfExistsPath("./", logger)
-        .IfExistsPath(path, logger)
+    private static string? GetPathToMediaInfo(string path, ILogger? logger)
+    {
+      var assemblyDirectory = Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location);
+
+      // The folder of the application is trusted, the working directory is not: whoever controls it could put a library
+      // of their own there. So the working directory is the last place to look, and only when nothing else has it.
+      return default(string)
         .IfExistsPath(
-          Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location),
+          assemblyDirectory is null ? null : Path.IsPathRooted(path) ? path : Path.Combine(assemblyDirectory, path),
           logger)
-        .IfExistsPath(
-          Path.IsPathRooted(path) ?
-            null :
-            Path.Combine(Path.GetDirectoryName(typeof(MediaInfoWrapper).Assembly.Location), path),
-          logger);
+        .IfExistsPath(assemblyDirectory, logger)
+        .IfExistsPath(path, logger)
+        .IfExistsPath("./", logger);
+    }
 #endif
 
     private static long GetDirectorySize(string folderName)
@@ -564,7 +566,7 @@ namespace MediaInfo
 #endif
       if (mediaInfo.Handle == IntPtr.Zero)
       {
-        LogWarning(_logger, "MediaInfo library was not loaded!");
+        LogWarning(_logger, "MediaInfo library was not loaded! {reason}", mediaInfo.LoadFailure ?? string.Empty);
         return;
       }
 
@@ -596,7 +598,7 @@ namespace MediaInfo
 #endif
       if (mediaInfo.Handle == IntPtr.Zero)
       {
-        LogWarning(_logger, "MediaInfo library was not loaded!");
+        LogWarning(_logger, "MediaInfo library was not loaded! {reason}", mediaInfo.LoadFailure ?? string.Empty);
         return;
       }
       else
@@ -613,12 +615,12 @@ namespace MediaInfo
       var fileProcessingHandle = mediaInfo.Open(filePath);
       if (fileProcessingHandle == IntPtr.Zero)
       {
-        LogWarning(_logger, "MediaInfo library has not been opened media {path}", filePath);
+        LogWarning(_logger, "MediaInfo library has not been opened media {path}", UrlRedactor.Redact(filePath)!);
         return;
       }
       else
       {
-        LogDebug(_logger, "MediaInfo library successfully opened {path}. (handle={handle})", filePath, fileProcessingHandle);
+        LogDebug(_logger, "MediaInfo library successfully opened {path}. (handle={handle})", UrlRedactor.Redact(filePath)!, fileProcessingHandle);
       }
 
       ParseMedia(mediaInfo);

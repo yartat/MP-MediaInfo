@@ -15,8 +15,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using MediaInfo.Analysis.Abstractions;
+using MediaInfo.Analysis.Native;
+using MediaInfo.Analysis.Pipeline;
 using MediaInfo.Analysis.Rtsp.Rtp;
 using MediaInfo.Analysis.Rtsp.Rtsp;
+using MediaInfo.Analysis.Sources;
+using MediaInfo.Analysis.Strategies;
+using MediaInfo.Analysis.Strategies.Selection;
 using Xunit;
 
 namespace MediaInfo.Analysis.Rtsp.Tests;
@@ -215,6 +221,27 @@ public sealed class RtspServerBehaviourTests : IDisposable
 
     capture.ElementaryStream.Length.Should().BeGreaterThan(0);
     clock.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(5));
+  }
+
+  [Fact]
+  public async Task Strategy_FailureDoesNotRevealTheCredentialsOfTheLocation()
+  {
+    Serve(async stream =>
+    {
+      await ReadRequestAsync(stream).ConfigureAwait(false);
+      await SendAsync(stream, "RTSP/1.0 404 Not Found\r\nCSeq: 1\r\n\r\n").ConfigureAwait(false);
+    });
+    var location = $"rtsp://admin:s3cret@127.0.0.1:{((IPEndPoint)_listener.LocalEndpoint).Port}/stream";
+    var context = new MediaAnalysisContext(
+      new MediaProbe(MediaInfoLibFactory.Instance, DefaultStreamSelectionStrategy.Instance),
+      MediaInfoFileSystem.Instance);
+
+    var result = await new RtspAnalysisStrategy()
+      .AnalyzeAsync(new NetworkMediaSource(location), context, _lifetime.Token);
+
+    result.Success.Should().BeFalse();
+    result.Failure!.Message.Should().NotContain("s3cret").And.Contain("***@127.0.0.1");
+    result.SourcePath.Should().NotContain("s3cret");
   }
 
   #region Fragment limit

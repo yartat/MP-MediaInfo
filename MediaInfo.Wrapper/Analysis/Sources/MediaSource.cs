@@ -138,8 +138,10 @@ public sealed class NetworkMediaSource(string location) : IMediaSource
   /// <inheritdoc />
   public MediaSourceKind Kind => MediaSourceKind.Network;
 
-  /// <inheritdoc />
-  public string DisplayName => Location;
+  /// <summary>
+  /// Gets the location without the credentials it may carry, which is the form that is safe to log or to return.
+  /// </summary>
+  public string DisplayName => UrlRedactor.Redact(Location) ?? string.Empty;
 }
 
 /// <summary>

@@ -91,10 +91,16 @@ internal sealed class RtspConnection : IDisposable
   /// <param name="credentials">The credentials to answer a challenge with, when the server asks for one.</param>
   /// <param name="userAgent">The user agent to identify as.</param>
   /// <param name="receiveTimeout">How long a single read may take before the connection is considered dead.</param>
-  public RtspConnection(Uri uri, NetworkCredential? credentials, string userAgent, TimeSpan receiveTimeout)
+  /// <param name="allowBasicAuthentication">Whether the basic scheme, which sends the password unprotected, may be used.</param>
+  public RtspConnection(
+    Uri uri,
+    NetworkCredential? credentials,
+    string userAgent,
+    TimeSpan receiveTimeout,
+    bool allowBasicAuthentication = true)
   {
     _uri = uri ?? throw new ArgumentNullException(nameof(uri));
-    _authenticator = new RtspAuthenticator(credentials);
+    _authenticator = new RtspAuthenticator(credentials, allowBasicAuthentication);
     _userAgent = userAgent;
     _receiveTimeout = receiveTimeout;
   }
@@ -324,7 +330,15 @@ internal sealed class RtspConnection : IDisposable
       var separator = line.IndexOf(':');
       if (separator > 0)
       {
-        headers[line.Substring(0, separator).Trim()] = line.Substring(separator + 1).Trim();
+        var name = line.Substring(0, separator).Trim();
+        var value = line.Substring(separator + 1).Trim();
+
+        // A server that offers several ways to authenticate sends a header for each. They are all kept, one to a line,
+        // so that the client can pick the best one instead of the one that happened to come last.
+        headers[name] = name.Equals("WWW-Authenticate", StringComparison.OrdinalIgnoreCase) &&
+                        headers.TryGetValue(name, out var previous)
+          ? previous + "\n" + value
+          : value;
       }
     }
 

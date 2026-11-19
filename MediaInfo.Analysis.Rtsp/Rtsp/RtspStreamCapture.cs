@@ -75,7 +75,12 @@ internal static class RtspStreamCapture
     CancellationToken cancellationToken)
   {
     var credentials = options.Credentials ?? CredentialsFrom(uri);
-    using var connection = new RtspConnection(uri, credentials, options.UserAgent, options.ReceiveTimeout);
+    using var connection = new RtspConnection(
+      uri,
+      credentials,
+      options.UserAgent,
+      options.ReceiveTimeout,
+      options.AllowBasicAuthentication);
 
     await connection.ConnectAsync(options.ConnectTimeout, cancellationToken).ConfigureAwait(false);
 

@@ -147,11 +147,11 @@ public sealed class MediaProbe
         LibraryVersion = version,
         Failure = new AnalysisFailure(
           AnalysisFailureReason.NativeOpenFailed,
-          $"The MediaInfo native library could not open '{path}'.")
+          $"The MediaInfo native library could not open '{UrlRedactor.Redact(path)}'.")
       };
     }
 
-    return _collector.Collect(handle, knownSize) with { LibraryVersion = version, AnalyzedPath = path };
+    return _collector.Collect(handle, knownSize) with { LibraryVersion = version, AnalyzedPath = UrlRedactor.Redact(path) };
   }
 
   private TimeSpan ProbeDuration(string path)

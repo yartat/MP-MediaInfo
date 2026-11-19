@@ -335,35 +335,91 @@ namespace MediaInfo
     /// <param name="pathToDll">The path to the directory containing the MediaInfo library.</param>
     public MediaInfo(string pathToDll)
     {
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliCommonFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliDecFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, BrotliEncFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ?
+      _mustUseAnsi = Environment.OSVersion.ToString().IndexOf("Windows", StringComparison.OrdinalIgnoreCase) == -1;
+
+      // Every library is loaded by its full path from this one folder. A library that is not found there is not looked
+      // for anywhere else, because the first folder that has one would otherwise be trusted with the process.
+      var directory = ResolveDirectory(pathToDll);
+      LoadModule(directory, BrotliCommonFileName);
+      LoadModule(directory, BrotliDecFileName);
+      LoadModule(directory, BrotliEncFileName);
+      LoadModule(directory, Environment.Is64BitProcess ?
 #if NET481_OR_GREATER
-        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibCryptoFileNameArm64 : LibCryptoFileName64Bit) : LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibCryptoFileNameArm64 : LibCryptoFileName64Bit) : LibCryptoFileName);
 #else
-        LibCryptoFileName64Bit : LibCryptoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+        LibCryptoFileName64Bit : LibCryptoFileName);
 #endif
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, Environment.Is64BitProcess ?
+      LoadModule(directory, Environment.Is64BitProcess ?
 #if NET481_OR_GREATER
-        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibSslFileNameArm64 : LibSslFileName64Bit) : LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+        (RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? LibSslFileNameArm64 : LibSslFileName64Bit) : LibSslFileName);
 #else
-        LibSslFileName64Bit : LibSslFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+        LibSslFileName64Bit : LibSslFileName);
 #endif
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibSshFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, LibCurlFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
-      _module = NativeMethods.LoadLibraryEx(Path.Combine(pathToDll, MediaInfoFileName), IntPtr.Zero, NativeMethods.LoadLibraryFlags.None);
+      LoadModule(directory, LibSshFileName);
+      LoadModule(directory, LibCurlFileName);
+      _module = LoadModule(directory, MediaInfoFileName, out var loadError);
+      if (_module == IntPtr.Zero)
+      {
+        // Without the module, importing from it would search the working directory and the path for a library of that
+        // name, which is exactly what loading by full path avoids.
+        LoadFailure = $"{MediaInfoFileName} could not be loaded from '{directory}' (error {loadError}).";
+        return;
+      }
+
       try
       {
         Handle = NativeMethods.MediaInfo_New();
       }
-      catch
+      catch (Exception exception)
       {
         Handle = IntPtr.Zero;
+        LoadFailure = exception.Message;
+      }
+    }
+
+    // A relative folder is looked for next to this assembly first, because the working directory is not a place the
+    // application can vouch for.
+    private static string ResolveDirectory(string path)
+    {
+      if (!Path.IsPathRooted(path))
+      {
+        var assemblyDirectory = Path.GetDirectoryName(typeof(MediaInfo).Assembly.Location);
+        if (!string.IsNullOrEmpty(assemblyDirectory))
+        {
+          var candidate = Path.Combine(assemblyDirectory, path);
+          if (Directory.Exists(candidate))
+          {
+            return Path.GetFullPath(candidate);
+          }
+        }
       }
 
-      _mustUseAnsi = Environment.OSVersion.ToString().IndexOf("Windows", StringComparison.OrdinalIgnoreCase) == -1;
+      return Path.GetFullPath(path);
     }
+
+    private static IntPtr LoadModule(string directory, string fileName) =>
+      LoadModule(directory, fileName, out _);
+
+    private static IntPtr LoadModule(string directory, string fileName, out int error)
+    {
+      var path = Path.Combine(directory, fileName);
+      var module = NativeMethods.LoadLibraryEx(
+        path,
+        IntPtr.Zero,
+        NativeMethods.LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR |
+        NativeMethods.LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+      if (module == IntPtr.Zero && Marshal.GetLastWin32Error() == InvalidParameter)
+      {
+        // Windows that does not know the flags above: the folder of the library is searched first, the working directory
+        // is not searched before it.
+        module = NativeMethods.LoadLibraryEx(path, IntPtr.Zero, NativeMethods.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH);
+      }
+
+      error = module == IntPtr.Zero ? Marshal.GetLastWin32Error() : 0;
+      return module;
+    }
+
+    private const int InvalidParameter = 87;
 #else
     public MediaInfo()
     {
@@ -385,9 +441,10 @@ namespace MediaInfo
       {
         Handle = NativeMethods.MediaInfo_New();
       }
-      catch
+      catch (Exception exception)
       {
         Handle = IntPtr.Zero;
+        LoadFailure = exception.Message;
       }
 
       _mustUseAnsi = false;
@@ -425,6 +482,11 @@ namespace MediaInfo
     /// This property is used to access to low-level functions, such as Open_Buffer_Init, Open_Buffer_Continue, Open_Buffer_Finalize, etc. If library is not loaded successfully, this property will return IntPtr.Zero.
     /// </remarks>
     public IntPtr Handle { get; private set; }
+
+    /// <summary>
+    /// Gets the reason the native library could not be loaded, or <see langword="null"/> when it was.
+    /// </summary>
+    public string? LoadFailure { get; private set; }
 
     /// <summary>
     /// Opens the buffer initialization to inform library about the file size and offset.

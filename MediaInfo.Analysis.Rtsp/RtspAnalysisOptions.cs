@@ -70,6 +70,17 @@ public sealed class RtspAnalysisOptions
   public NetworkCredential? Credentials { get; set; }
 
   /// <summary>
+  /// Gets or sets a value indicating whether a server may be answered with basic authentication.
+  /// </summary>
+  /// <remarks>
+  /// Basic authentication sends the user name and the password encoded but not protected, and the connection is not
+  /// encrypted, so anyone on the path can read them. Digest authentication does not have that problem and is always
+  /// preferred when a server offers it. Set the value to <see langword="false"/> to refuse servers that offer only basic.
+  /// </remarks>
+  /// <value>The default value is <see langword="true"/>, because many cameras offer nothing else.</value>
+  public bool AllowBasicAuthentication { get; set; } = true;
+
+  /// <summary>
   /// Gets or sets the user agent the server is told about.
   /// </summary>
   public string UserAgent { get; set; } = "MP-MediaInfo";

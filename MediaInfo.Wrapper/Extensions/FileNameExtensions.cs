@@ -427,7 +427,7 @@ namespace MediaInfo
 
       if (!path!.IsDirectory())
       {
-        if (!path.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+        if (!path!.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
         {
           return false;
         }
@@ -438,10 +438,10 @@ namespace MediaInfo
 
       // Only the folder itself and its own structure folder are looked at. A folder that holds many discs, or a whole
       // drive, is not a disc, and walking it would be slow and would pick one of the discs at random.
-      pathToResult = FindFile(path, extension);
+      pathToResult = FindFile(path!, extension);
       if (pathToResult is null)
       {
-        var nested = FindDirectory(path, structureFolder);
+        var nested = FindDirectory(path!, structureFolder);
         pathToResult = nested is null ? null : FindFile(nested, extension);
       }
 

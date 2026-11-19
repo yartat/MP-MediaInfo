@@ -93,10 +93,10 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
       return MediaAnalysisResult.Failed(
         source,
         AnalysisFailureReason.SourceNotSpecified,
-        $"'{network.Location}' is not a usable RTSP location.");
+        $"'{network.DisplayName}' is not a usable RTSP location.");
     }
 
-    context.Report(new AnalysisProgress(AnalysisPhase.Opening, Detail: network.Location));
+    context.Report(new AnalysisProgress(AnalysisPhase.Opening, Detail: network.DisplayName));
 
     RtspCapture capture;
     try
@@ -112,7 +112,7 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
       return MediaAnalysisResult.Failed(
         source,
         AnalysisFailureReason.NativeOpenFailed,
-        $"Could not capture '{network.Location}': {exception.Message}",
+        $"Could not capture '{network.DisplayName}': {exception.Message}",
         exception);
     }
 
@@ -123,7 +123,7 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
         return MediaAnalysisResult.Failed(
           source,
           AnalysisFailureReason.NoStreamsFound,
-          $"'{network.Location}' sent nothing that could be rebuilt within {_options.CaptureDuration}.");
+          $"'{network.DisplayName}' sent nothing that could be rebuilt within {_options.CaptureDuration}.");
       }
 
       context.Report(
@@ -134,12 +134,12 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
 
       var result = await _streamStrategy
         .AnalyzeAsync(
-          new StreamMediaSource(capture.ElementaryStream, leaveOpen: true, network.Location),
+          new StreamMediaSource(capture.ElementaryStream, leaveOpen: true, network.DisplayName),
           context,
           cancellationToken)
         .ConfigureAwait(false);
 
-      context.Report(new AnalysisProgress(AnalysisPhase.Completed, Detail: network.Location));
+      context.Report(new AnalysisProgress(AnalysisPhase.Completed, Detail: network.DisplayName));
 
       return Describe(result, capture, network);
     }
@@ -159,8 +159,8 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
     return result with
     {
       SourceKind = MediaSourceKind.Network,
-      SourcePath = network.Location,
-      AnalyzedPath = network.Location,
+      SourcePath = network.DisplayName,
+      AnalyzedPath = network.DisplayName,
       AudioStreams = audio,
       BestAudioStream = result.BestAudioStream ?? (audio.Count > 0 ? audio[0] : null),
       General = result.General with

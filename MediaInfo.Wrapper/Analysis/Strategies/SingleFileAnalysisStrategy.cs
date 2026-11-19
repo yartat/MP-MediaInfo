@@ -76,14 +76,14 @@ public sealed class NetworkStreamAnalysisStrategy : IMediaAnalysisStrategy
     CancellationToken cancellationToken)
   {
     var network = (NetworkMediaSource)source;
-    context.Report(new AnalysisProgress(AnalysisPhase.Opening, Detail: network.Location));
+    context.Report(new AnalysisProgress(AnalysisPhase.Opening, Detail: network.DisplayName));
 
     var result = await context.Probe
       .OpenAndCollectAsync(network.Location, context.Options, 0L, cancellationToken)
       .ConfigureAwait(false);
 
-    context.Report(new AnalysisProgress(AnalysisPhase.Completed, Detail: network.Location));
-    return result with { SourceKind = MediaSourceKind.Network, SourcePath = network.Location };
+    context.Report(new AnalysisProgress(AnalysisPhase.Completed, Detail: network.DisplayName));
+    return result with { SourceKind = MediaSourceKind.Network, SourcePath = network.DisplayName };
   }
 }
 

@@ -27,6 +27,9 @@ public sealed class FakeMediaProfile
   /// <summary>Gets or sets a value indicating whether the media can be opened.</summary>
   public bool CanOpen { get; set; } = true;
 
+  /// <summary>Gets or sets a gate that opening the media waits for, to simulate a native call that does not return.</summary>
+  public System.Threading.ManualResetEventSlim? OpenGate { get; set; }
+
   /// <summary>Gets the number of streams of each kind the media reports.</summary>
   public Dictionary<StreamKind, int> Counts { get; } = [];
 
@@ -117,6 +120,8 @@ public sealed class FakeNativeMediaInfo : INativeMediaInfo
     {
       return false;
     }
+
+    profile.OpenGate?.Wait();
 
     _profile = profile;
     return true;

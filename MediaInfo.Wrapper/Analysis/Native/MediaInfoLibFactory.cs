@@ -24,12 +24,9 @@ public sealed class MediaInfoLibFactory : INativeMediaInfoFactory
   public INativeMediaInfo Create()
   {
     var adapter = new MediaInfoLibAdapter(new MediaInfo());
-    if (adapter.IsAvailable && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+    if (adapter.IsAvailable)
     {
-      // On Linux and macOS the library converts the wchar_t path passed to Open() into a byte path via wcstombs(),
-      // which depends on the process LC_CTYPE locale. .NET does not call setlocale() itself, so without this the
-      // conversion runs in the "C" locale and multi-byte file names fail to open.
-      adapter.Option("setlocale_LC_CTYPE", "C.UTF-8");
+      NativeLocale.Shared.Ensure(adapter);
     }
 
     return adapter;

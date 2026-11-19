@@ -73,7 +73,7 @@ namespace MediaInfo.Builder
     {
       var result = base.Build();
       result.Format = Get((int)NativeMethods.Text.Text_Format, InfoKind.Text);
-      result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Text.Text_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
+      result.Duration = DurationConverter.FromMilliseconds(Get<double>((int)NativeMethods.Text.Text_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
       result.FrameRate = Get<double>((int)NativeMethods.Text.Text_FrameRate, InfoKind.Text, TagBuilderHelper.TryGetDouble);
       result.FrameRateNumerator = Get<int>((int)NativeMethods.Text.Text_FrameRate_Num, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.FrameRateDenominator = Get<int>((int)NativeMethods.Text.Text_FrameRate_Den, InfoKind.Text, TagBuilderHelper.TryGetInt);

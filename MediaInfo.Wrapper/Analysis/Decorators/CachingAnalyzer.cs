@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.Analysis.Abstractions;
@@ -55,7 +56,7 @@ public sealed class CachingAnalyzer : MediaInfoAnalyzerDecorator
     IMediaSource source,
     CancellationToken cancellationToken = default)
   {
-    var key = CreateKey(source);
+    var key = TryCreateKey(source);
     if (key is null)
     {
       return await Inner.AnalyzeAsync(source, cancellationToken).ConfigureAwait(false);
@@ -73,6 +74,20 @@ public sealed class CachingAnalyzer : MediaInfoAnalyzerDecorator
     }
 
     return result;
+  }
+
+  // A path the file system cannot make sense of is not worth caching, and is left for the analysis to report.
+  private string? TryCreateKey(IMediaSource source)
+  {
+    try
+    {
+      return CreateKey(source);
+    }
+    catch (Exception exception) when (
+      exception is ArgumentException or NotSupportedException or IOException or UnauthorizedAccessException)
+    {
+      return null;
+    }
   }
 
   private string? CreateKey(IMediaSource source)

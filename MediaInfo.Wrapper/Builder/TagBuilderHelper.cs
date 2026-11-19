@@ -202,7 +202,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out object value)
     {
-      var result = double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultValue);
+      var result = double.TryParse(source, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultValue);
       value = resultValue;
       return result;
     }
@@ -223,7 +223,7 @@ namespace MediaInfo.Builder
     /// <param name="value">The result double value.</param>
     /// <returns><c>true</c> if source string is not empty and valid double value, <c>false</c> otherwise.</returns>
     public static bool TryGetDouble(this string source, out double value) =>
-      double.TryParse(source, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value);
+      double.TryParse(source, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out value);
 
     /// <summary>
     /// A string extension method that attempts to get stereo mode a StereoMode from the given string.

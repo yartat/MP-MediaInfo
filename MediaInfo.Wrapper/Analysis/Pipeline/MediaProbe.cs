@@ -90,10 +90,39 @@ public sealed class MediaProbe
   /// <returns>Returns the outcome of the analysis.</returns>
   public MediaAnalysisResult Collect(IMediaInfoReader reader, long knownSize = 0L) => _collector.Collect(reader, knownSize);
 
-  private static Task<T> Run<T>(Func<T> action, MediaAnalysisOptions options, CancellationToken cancellationToken) =>
-    options.OffloadBlockingCalls
-      ? Task.Run(action, cancellationToken)
-      : Task.FromResult(action());
+  private static async Task<T> Run<T>(Func<T> action, MediaAnalysisOptions options, CancellationToken cancellationToken)
+  {
+    if (!options.OffloadBlockingCalls)
+    {
+      return action();
+    }
+
+    var task = Task.Run(action, cancellationToken);
+    if (task.IsCompleted || !cancellationToken.CanBeCanceled)
+    {
+      return await task.ConfigureAwait(false);
+    }
+
+    // The native call cannot be interrupted, but the caller does not have to wait for it. When the token fires first,
+    // the call is left to finish on its own thread and to release its handle there.
+    var cancelled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    using (cancellationToken.Register(() => cancelled.TrySetResult(true)))
+    {
+      if (await Task.WhenAny(task, cancelled.Task).ConfigureAwait(false) != task)
+      {
+        // Nobody awaits the abandoned call any more, so its failure is observed here instead of going unobserved.
+        _ = task.ContinueWith(
+          static abandoned => abandoned.Exception,
+          CancellationToken.None,
+          TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+          TaskScheduler.Default);
+
+        cancellationToken.ThrowIfCancellationRequested();
+      }
+    }
+
+    return await task.ConfigureAwait(false);
+  }
 
   private MediaAnalysisResult OpenAndCollect(string path, long knownSize)
   {

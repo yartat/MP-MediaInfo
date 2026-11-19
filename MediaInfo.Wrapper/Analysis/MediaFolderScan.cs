@@ -109,47 +109,60 @@ public static class MediaFolderScanExtensions
       yield break;
     }
 
+    foreach (var source in Enumerate(files, folder, scan, 0))
+    {
+      cancellationToken.ThrowIfCancellationRequested();
+      yield return await analyzer.AnalyzeAsync(source, cancellationToken).ConfigureAwait(false);
+    }
+  }
+
+  // Folders nest, and a link can make them nest forever, so the walk gives up below this depth.
+  private const int MaximumDepth = 64;
+
+  private static IEnumerable<IMediaSource> Enumerate(
+    IFileSystem files,
+    string folder,
+    MediaFolderScanOptions scan,
+    int depth)
+  {
     // A folder that is itself a disc describes one media, not a pile of VOB files.
     if (scan.TreatDiscFoldersAsDiscs && IsDiscFolder(files, folder))
     {
-      yield return await analyzer.AnalyzeAsync(new DirectoryMediaSource(folder), cancellationToken)
-        .ConfigureAwait(false);
+      yield return new DirectoryMediaSource(folder);
       yield break;
     }
 
+    var children = files.GetDirectories(folder).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToArray();
     var discs = scan.TreatDiscFoldersAsDiscs
-      ? files.GetDirectories(folder).Where(x => IsDiscFolder(files, x)).ToArray()
+      ? children.Where(x => IsDiscFolder(files, x)).ToArray()
       : [];
 
     foreach (var disc in discs)
     {
-      cancellationToken.ThrowIfCancellationRequested();
-      yield return await analyzer.AnalyzeAsync(new DirectoryMediaSource(disc), cancellationToken)
-        .ConfigureAwait(false);
+      yield return new DirectoryMediaSource(disc);
     }
 
-    foreach (var file in EnumerateFiles(files, folder, scan, discs))
+    var found = files.GetFiles(folder, scan.SearchPattern, SearchOption.TopDirectoryOnly);
+    foreach (var file in found
+               .Where(file => !scan.MediaFilesOnly || file.IsVideo() || file.IsAudio())
+               .OrderBy(file => file, StringComparer.OrdinalIgnoreCase))
     {
-      cancellationToken.ThrowIfCancellationRequested();
-      yield return await analyzer.AnalyzeAsync(new FileMediaSource(file), cancellationToken).ConfigureAwait(false);
+      yield return new FileMediaSource(file);
     }
-  }
 
-  private static IEnumerable<string> EnumerateFiles(
-    IFileSystem files,
-    string folder,
-    MediaFolderScanOptions scan,
-    IReadOnlyCollection<string> discs)
-  {
-    var found = files.GetFiles(
-      folder,
-      scan.SearchPattern,
-      scan.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+    if (!scan.Recursive || depth >= MaximumDepth)
+    {
+      yield break;
+    }
 
-    return found
-      .Where(file => !scan.MediaFilesOnly || file.IsVideo() || file.IsAudio())
-      .Where(file => discs.Count == 0 || !discs.Any(disc => IsInside(file, disc)))
-      .OrderBy(file => file, StringComparer.OrdinalIgnoreCase);
+    // A disc is not walked into: its files are the disc, not media of their own, and each disc is one result.
+    foreach (var child in children.Except(discs, StringComparer.OrdinalIgnoreCase))
+    {
+      foreach (var source in Enumerate(files, child, scan, depth + 1))
+      {
+        yield return source;
+      }
+    }
   }
 
   private static bool IsDiscFolder(IFileSystem files, string folder) =>
@@ -158,10 +171,6 @@ public static class MediaFolderScanExtensions
       string.Equals(NameOf(child), BdmvFolderName, StringComparison.OrdinalIgnoreCase)) ||
     string.Equals(NameOf(folder), VideoTsFolderName, StringComparison.OrdinalIgnoreCase) ||
     string.Equals(NameOf(folder), BdmvFolderName, StringComparison.OrdinalIgnoreCase);
-
-  private static bool IsInside(string file, string folder) =>
-    file.StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
-    file.StartsWith(folder + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
 
   private static string NameOf(string path) => Path.GetFileName(path.TrimEnd('/', '\\'));
 }

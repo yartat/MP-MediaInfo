@@ -284,7 +284,7 @@ namespace MediaInfo.Builder
           break;
       }
 
-      result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Audio.Audio_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, 0)));
+      result.Duration = DurationConverter.FromMilliseconds(Get<double>((int)NativeMethods.Audio.Audio_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, 0)));
       result.FrameRate = Get<double>((int)NativeMethods.Audio.Audio_FrameRate, InfoKind.Text, TagBuilderHelper.TryGetDouble, x => ExtractInfo(x, baseIndex));
       result.FrameRateNumerator = Get<int>((int)NativeMethods.Audio.Audio_FrameRate_Num, InfoKind.Text, TagBuilderHelper.TryGetInt);
       result.FrameRateDenominator = Get<int>((int)NativeMethods.Audio.Audio_FrameRate_Den, InfoKind.Text, TagBuilderHelper.TryGetInt);

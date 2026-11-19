@@ -61,11 +61,24 @@ public sealed class RetryingAnalyzer : MediaInfoAnalyzerDecorator
     !result.Success &&
     result.Failure?.Reason is AnalysisFailureReason.NativeOpenFailed or AnalysisFailureReason.Unknown;
 
+  internal static readonly TimeSpan LongestDelay = TimeSpan.FromMinutes(1);
+
+  // Every attempt waits twice as long as the one before, up to a limit, so that a long series of attempts cannot overflow.
+  internal static TimeSpan NextDelay(TimeSpan delay) =>
+    delay >= TimeSpan.FromTicks(LongestDelay.Ticks / 2) ? LongestDelay : delay + delay;
+
   /// <inheritdoc />
   public override async Task<MediaAnalysisResult> AnalyzeAsync(
     IMediaSource source,
     CancellationToken cancellationToken = default)
   {
+    // A stream is consumed by the first attempt: the second one would read from where the first stopped, or from a
+    // stream that has been closed, and its failure would hide the reason of the first.
+    if (source is StreamMediaSource)
+    {
+      return await Inner.AnalyzeAsync(source, cancellationToken).ConfigureAwait(false);
+    }
+
     var delay = _delay;
     MediaAnalysisResult result;
 
@@ -78,7 +91,7 @@ public sealed class RetryingAnalyzer : MediaInfoAnalyzerDecorator
       }
 
       await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
-      delay += delay;
+      delay = NextDelay(delay);
     }
   }
 }

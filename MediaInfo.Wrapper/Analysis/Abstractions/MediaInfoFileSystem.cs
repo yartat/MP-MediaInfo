@@ -43,9 +43,20 @@ public sealed class MediaInfoFileSystem : IFileSystem
 
     try
     {
-      return Directory.GetFiles(path, searchPattern, searchOption);
+      // The options of the overload that takes a search option, except that a folder that cannot be read is skipped
+      // instead of making the whole search come back empty.
+      return Directory.GetFiles(
+        path,
+        searchPattern,
+        new EnumerationOptions
+        {
+          RecurseSubdirectories = searchOption == SearchOption.AllDirectories,
+          IgnoreInaccessible = true,
+          AttributesToSkip = 0,
+          MatchType = MatchType.Win32
+        });
     }
-    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
     {
       return EmptyPaths;
     }
@@ -77,7 +88,8 @@ public sealed class MediaInfoFileSystem : IFileSystem
       var info = new FileInfo(path);
       return info.Exists ? info.Length : 0L;
     }
-    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+    catch (Exception exception) when (
+      exception is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
     {
       return 0L;
     }
@@ -97,7 +109,8 @@ public sealed class MediaInfoFileSystem : IFileSystem
         ? new DateTimeOffset(Directory.GetLastWriteTimeUtc(path), TimeSpan.Zero)
         : DateTimeOffset.MinValue;
     }
-    catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+    catch (Exception exception) when (
+      exception is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
     {
       return DateTimeOffset.MinValue;
     }

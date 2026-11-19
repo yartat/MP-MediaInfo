@@ -24,9 +24,10 @@ namespace MediaInfo.Analysis;
 /// </summary>
 /// <remarks>
 /// The order the concerns are requested in does not matter. They are always composed outermost first as logging,
-/// validation, caching, timeout, retry, concurrency limit and subtitle discovery, so that logging sees every outcome
-/// including a rejected media, a cached answer costs nothing, and a latency budget covers the wait for a free slot as
-/// well as the analysis itself.
+/// validation, subtitle discovery, caching, timeout, retry and concurrency limit, so that logging sees every outcome
+/// including a rejected media, a cached answer costs nothing, a latency budget covers the wait for a free slot as well
+/// as the analysis itself, and subtitle files that appear after the first analysis are noticed even when the rest of
+/// the answer comes from the cache.
 /// </remarks>
 public sealed class MediaInfoAnalyzerBuilder
 {
@@ -244,11 +245,6 @@ public sealed class MediaInfoAnalyzerBuilder
     // Composed from the core outwards, so that the outermost wrapper is the first one in the documented order.
     IMediaInfoAnalyzer analyzer = new MediaInfoAnalyzer(new PriorityStrategySelector(strategies), context);
 
-    if (_externalSubtitles)
-    {
-      analyzer = new ExternalSubtitleAnalyzer(analyzer, fileSystem);
-    }
-
     if (_concurrency is { } concurrency)
     {
       analyzer = new ThrottlingAnalyzer(analyzer, concurrency);
@@ -267,6 +263,13 @@ public sealed class MediaInfoAnalyzerBuilder
     if (_caching)
     {
       analyzer = new CachingAnalyzer(analyzer, _cache ?? new MemoryAnalysisCache(_cacheTimeToLive), fileSystem);
+    }
+
+    // Outside the cache: the folder next to the media is not part of what the cache key describes, so the answer
+    // about subtitle files is worked out again on every call.
+    if (_externalSubtitles)
+    {
+      analyzer = new ExternalSubtitleAnalyzer(analyzer, fileSystem);
     }
 
     if (_validation)

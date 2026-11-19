@@ -394,7 +394,7 @@ namespace MediaInfo.Builder
       }
 
       result.CodecProfile = Get((int)NativeMethods.Video.Video_Format_Profile, InfoKind.Text);
-      result.Duration = TimeSpan.FromMilliseconds(Get<double>((int)NativeMethods.Video.Video_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
+      result.Duration = DurationConverter.FromMilliseconds(Get<double>((int)NativeMethods.Video.Video_Duration, InfoKind.Text, TagBuilderHelper.TryGetDouble));
       result.TimeCodeFirstFrame = Get((int)NativeMethods.Video.Video_TimeCode_FirstFrame, InfoKind.Text);
       result.TimeCodeLastFrame = Get((int)NativeMethods.Video.Video_TimeCode_LastFrame, InfoKind.Text);
       result.TimeCodeDropFrame = Get<bool>((int)NativeMethods.Video.Video_TimeCode_DropFrame, InfoKind.Text, TagBuilderHelper.TryGetBool);

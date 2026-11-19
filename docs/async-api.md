@@ -104,7 +104,7 @@ var analyzer = MediaInfoAnalyzerBuilder.Create()
 | `WithTimeout` | Total time budget, including the wait for a free slot |
 | `WithRetry` | Repeats only failures that may not persist |
 | `WithConcurrencyLimit` | Limits how many native handles are open at once |
-| `WithExternalSubtitles` | Reports subtitle files next to the media (`HasExternalSubtitles`) |
+| `WithExternalSubtitles` | Reports subtitle files next to the media (`HasExternalSubtitles`); worked out on every call, also when the rest of the answer comes from the cache |
 
 ## Dependency injection
 

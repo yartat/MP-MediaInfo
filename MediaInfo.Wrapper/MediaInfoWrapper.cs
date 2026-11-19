@@ -606,14 +606,8 @@ namespace MediaInfo
       }
 
 #if !NETFRAMEWORK
-      if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-      {
-        // On Linux/macOS, MediaInfoLib converts the wchar_t path passed to Open() into a
-        // byte path via wcstombs(), which depends on the process' LC_CTYPE locale. .NET does
-        // not call setlocale() itself, so without this the conversion runs in the "C" locale
-        // and multi-byte (e.g. Unicode) file names fail to open.
-        mediaInfo.Option("setlocale_LC_CTYPE", "C.UTF-8");
-      }
+      // The locale is that of the process, so it is set once however many handles are created.
+      global::MediaInfo.Analysis.Native.NativeLocale.Shared.Ensure(mediaInfo);
 #endif
 
       var fileProcessingHandle = mediaInfo.Open(filePath);

@@ -81,8 +81,10 @@ public sealed class MediaAnalysisOptions
   /// Gets or sets a value indicating whether blocking calls into the native library are moved off the calling thread.
   /// </summary>
   /// <remarks>
-  /// This keeps the calling thread responsive, but it does not make the call cancellable. Opening a file or a network
-  /// media runs to completion inside the library even when the analysis has already been abandoned.
+  /// This keeps the calling thread responsive and lets a cancellation or a timeout release the caller at once. It does
+  /// not interrupt the call: opening a file or a network media still runs to completion inside the library, on its own
+  /// thread, and holds the file or the connection until it does. When the value is <see langword="false"/> the call runs
+  /// on the calling thread and nothing can release the caller before it returns.
   /// </remarks>
   /// <value>The default value is <see langword="true"/>.</value>
   public bool OffloadBlockingCalls { get; set; } = true;

@@ -76,11 +76,11 @@ public class BuilderTests
     Unwrap(analyzer).Should().ContainInOrder(
       typeof(LoggingAnalyzer),
       typeof(ValidatingAnalyzer),
+      typeof(ExternalSubtitleAnalyzer),
       typeof(CachingAnalyzer),
       typeof(TimeoutAnalyzer),
       typeof(RetryingAnalyzer),
       typeof(ThrottlingAnalyzer),
-      typeof(ExternalSubtitleAnalyzer),
       typeof(MediaInfoAnalyzer));
 
     (analyzer as IDisposable)?.Dispose();

@@ -109,6 +109,7 @@ internal sealed class MediaStreamCollector
       Chapters = chapters,
       MenuStreams = menuStreams,
       ImageStreams = imageStreams,
+      Warnings = (reader as ILibraryCompatibilityProvider)?.GetCompatibilityWarnings() ?? [],
       BestVideoStream = _selection.SelectBestVideo(videoStreams),
       BestAudioStream = _selection.SelectBestAudio(audioStreams)
     };

@@ -144,6 +144,9 @@ public sealed class LegacyResultAdapter
   /// <summary>Gets the image streams of the media.</summary>
   public IList<ImageStream> ImageStreams => new List<ImageStream>(_result.ImageStreams);
 
+  /// <summary>Gets the warnings about the analysis, such as a native library that does not match the wrapper.</summary>
+  public IList<string> Warnings => new List<string>(_result.Warnings);
+
   #endregion
 
   #region General

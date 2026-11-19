@@ -41,15 +41,61 @@ internal static class HdrUtils
     { "T/UWA 005 (HDR Vivid)", Hdr.HdrVivid },
   };
 
+  // The most specific format comes first: a stream that carries Dolby Vision on top of HDR10 is a Dolby Vision stream.
+  private static readonly Hdr[] Priority =
+  [
+    Hdr.DolbyVision,
+    Hdr.HDR10Plus,
+    Hdr.HdrVivid,
+    Hdr.SLHDR1,
+    Hdr.SLHDR2,
+    Hdr.SLHDR3,
+    Hdr.HLGPlus,
+    Hdr.HLG,
+    Hdr.HDR10
+  ];
+
+  private static readonly string[] Separator = [" / "];
+
   /// <summary>
   /// Tries to map the HDR format name reported by the library to the <see cref="Hdr"/> value.
   /// </summary>
-  /// <param name="source">The HDR format name.</param>
+  /// <remarks>
+  /// A stream with several HDR formats is reported by the library as a list joined with " / ", for example
+  /// "Dolby Vision / SMPTE ST 2086". The format that comes first in <see cref="Priority"/> is returned.
+  /// </remarks>
+  /// <param name="source">The HDR format name, or the list of names.</param>
   /// <param name="result">The HDR format.</param>
-  /// <returns><c>true</c> if the format is recognized; otherwise, <c>false</c>.</returns>
+  /// <returns><c>true</c> if at least one format is recognized; otherwise, <c>false</c>.</returns>
   public static bool TryGetHdr(this string source, out Hdr result)
   {
     result = Hdr.None;
-    return !string.IsNullOrEmpty(source) && HdrFormats.TryGetValue(source, out result);
+    if (string.IsNullOrEmpty(source))
+    {
+      return false;
+    }
+
+    if (HdrFormats.TryGetValue(source, out result))
+    {
+      return true;
+    }
+
+    var bestRank = int.MaxValue;
+    foreach (var part in source.Split(Separator, StringSplitOptions.RemoveEmptyEntries))
+    {
+      if (!HdrFormats.TryGetValue(part.Trim(), out var format))
+      {
+        continue;
+      }
+
+      var rank = Array.IndexOf(Priority, format);
+      if (rank >= 0 && rank < bestRank)
+      {
+        bestRank = rank;
+        result = format;
+      }
+    }
+
+    return bestRank != int.MaxValue;
   }
 }

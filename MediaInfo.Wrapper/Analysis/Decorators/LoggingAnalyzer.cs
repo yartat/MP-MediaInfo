@@ -50,6 +50,11 @@ public sealed class LoggingAnalyzer : MediaInfoAnalyzerDecorator
     {
       var result = await Inner.AnalyzeAsync(source!, cancellationToken).ConfigureAwait(false);
 
+      foreach (var warning in result.Warnings)
+      {
+        _logger.LogWarning("{media}: {warning}", name, warning);
+      }
+
       if (result.Success)
       {
         _logger.LogDebug(

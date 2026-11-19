@@ -17,7 +17,7 @@ namespace MediaInfo.Analysis.Native;
 /// The adapter does not reimplement any platform invoke declaration. It translates the pointer and bit flag results of
 /// the binding into the types the analysis pipeline works with, so that the pipeline can be driven by a test double.
 /// </remarks>
-internal sealed class MediaInfoLibAdapter : INativeMediaInfo
+internal sealed class MediaInfoLibAdapter : INativeMediaInfo, ILibraryCompatibilityProvider
 {
   private readonly MediaInfo _mediaInfo;
   private bool _disposed;
@@ -101,6 +101,10 @@ internal sealed class MediaInfoLibAdapter : INativeMediaInfo
 
   /// <inheritdoc />
   public string Inform() => _mediaInfo.Inform();
+
+  /// <inheritdoc />
+  public string[] GetCompatibilityWarnings() =>
+    IsAvailable ? ((ILibraryCompatibilityProvider)_mediaInfo).GetCompatibilityWarnings() : [];
 
   /// <inheritdoc />
   public void Dispose()

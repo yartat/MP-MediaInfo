@@ -57,6 +57,18 @@ internal sealed class RtspConnection : IDisposable
 {
   private const int MaximumBlockSize = 0xFFFF;
 
+  // The only body this client reads is a session description, which is a few kilobytes at most. A server that announces
+  // more is either broken or trying to make the client allocate whatever it asks for.
+  internal const int MaximumBodySize = 1024 * 1024;
+
+  // A response is a status line and a handful of headers. A server that sends far more is not speaking RTSP.
+  private const int MaximumHeaderCount = 128;
+  private const int MaximumHeaderBytes = 64 * 1024;
+
+  // One read is limited by the receive timeout. A server could still answer one byte at a time, each just in time, so
+  // the whole response gets a budget too: it needs one round trip, and a few receive timeouts are generous for that.
+  private const int ResponseBudgetInReceiveTimeouts = 4;
+
   private readonly Uri _uri;
   private readonly RtspAuthenticator _authenticator;
   private readonly string _userAgent;
@@ -65,6 +77,7 @@ internal sealed class RtspConnection : IDisposable
   private readonly byte[] _buffer = new byte[8192];
   private int _bufferStart;
   private int _bufferEnd;
+  private bool _timedOut;
 
   private TcpClient? _client;
   private NetworkStream? _stream;
@@ -251,8 +264,27 @@ internal sealed class RtspConnection : IDisposable
     await stream.WriteAsync(bytes, 0, bytes.Length, cancellationToken).ConfigureAwait(false);
     await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-    return await ReadResponseAsync(cancellationToken).ConfigureAwait(false)
-      ?? throw new RtspProtocolException($"The server closed the connection while answering {method}.");
+    using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+    if (_receiveTimeout > TimeSpan.Zero)
+    {
+      budget.CancelAfter(TimeSpan.FromTicks(_receiveTimeout.Ticks * ResponseBudgetInReceiveTimeouts));
+    }
+
+    _timedOut = false;
+    RtspResponse? response;
+    try
+    {
+      response = await ReadResponseAsync(budget.Token).ConfigureAwait(false);
+    }
+    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+    {
+      throw new RtspProtocolException($"The server did not finish answering {method} in time.");
+    }
+
+    return response ?? throw new RtspProtocolException(
+      _timedOut
+        ? $"The server did not answer {method} within {_receiveTimeout}."
+        : $"The server closed the connection while answering {method}.");
   }
 
   private async Task<RtspResponse?> ReadResponseAsync(CancellationToken cancellationToken)
@@ -268,6 +300,8 @@ internal sealed class RtspConnection : IDisposable
       int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var code) ? code : 0;
 
     var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    var headerCount = 0;
+    var headerBytes = statusLine.Length;
     while (true)
     {
       var line = await ReadLineAsync(cancellationToken).ConfigureAwait(false);
@@ -281,6 +315,12 @@ internal sealed class RtspConnection : IDisposable
         break;
       }
 
+      headerBytes += line.Length + 2;
+      if (++headerCount > MaximumHeaderCount || headerBytes > MaximumHeaderBytes)
+      {
+        throw new RtspProtocolException("The server sent more header data than any server should.");
+      }
+
       var separator = line.IndexOf(':');
       if (separator > 0)
       {
@@ -289,9 +329,7 @@ internal sealed class RtspConnection : IDisposable
     }
 
     var body = string.Empty;
-    if (headers.TryGetValue("Content-Length", out var lengthText) &&
-        int.TryParse(lengthText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var length) &&
-        length > 0)
+    if (headers.TryGetValue("Content-Length", out var lengthText) && ParseContentLength(lengthText) is var length and > 0)
     {
       var content = new byte[length];
       if (!await ReadExactlyAsync(content, cancellationToken).ConfigureAwait(false))
@@ -305,6 +343,32 @@ internal sealed class RtspConnection : IDisposable
     return new RtspResponse(statusCode, parts.Length > 2 ? parts[2] : string.Empty, headers, body);
   }
 
+  internal static int ParseContentLength(string text)
+  {
+    var trimmed = text.Trim();
+    foreach (var character in trimmed)
+    {
+      // Anything that is not a plain count is treated as no body, as before.
+      if (character < '0' || character > '9')
+      {
+        return 0;
+      }
+    }
+
+    if (trimmed.Length == 0)
+    {
+      return 0;
+    }
+
+    if (!int.TryParse(trimmed, NumberStyles.None, CultureInfo.InvariantCulture, out var length) || length > MaximumBodySize)
+    {
+      throw new RtspProtocolException(
+        $"The server announced a response body larger than the {MaximumBodySize} bytes this client accepts.");
+    }
+
+    return length;
+  }
+
   private async Task<string?> ReadLineAsync(CancellationToken cancellationToken)
   {
     var line = new StringBuilder();
@@ -313,7 +377,8 @@ internal sealed class RtspConnection : IDisposable
     {
       if (!await FillAsync(1, cancellationToken).ConfigureAwait(false))
       {
-        return line.Length > 0 ? line.ToString() : null;
+        // A line that was cut short by a timeout is not a line the server finished.
+        return line.Length > 0 && !_timedOut ? line.ToString() : null;
       }
 
       var value = _buffer[_bufferStart++];
@@ -367,9 +432,27 @@ internal sealed class RtspConnection : IDisposable
       }
 
       var stream = _stream ?? throw new RtspProtocolException("The connection is not open.");
-      var read = await stream
-        .ReadAsync(_buffer, _bufferEnd, _buffer.Length - _bufferEnd, cancellationToken)
-        .ConfigureAwait(false);
+      // The receive timeout of the socket does not apply to asynchronous reads, so a read is limited here.
+      using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+      if (_receiveTimeout > TimeSpan.Zero)
+      {
+        timeout.CancelAfter(_receiveTimeout);
+      }
+
+      int read;
+      try
+      {
+        read = await stream
+          .ReadAsync(_buffer, _bufferEnd, _buffer.Length - _bufferEnd, timeout.Token)
+          .ConfigureAwait(false);
+      }
+      catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+      {
+        // The server said nothing for as long as the receive timeout allows. While media is being captured this ends
+        // the capture like a closed connection does, and while a response is awaited it is reported as a timeout.
+        _timedOut = true;
+        return false;
+      }
 
       if (read <= 0)
       {

@@ -122,6 +122,7 @@ namespace MediaInfo
       Chapters = new List<ChapterStream>();
       MenuStreams = new List<MenuStream>();
       ImageStreams = new List<ImageStream>();
+      Warnings = new List<string>();
       Size = size;
     }
 
@@ -671,6 +672,12 @@ namespace MediaInfo
                 ProcessingVideoStreams(mediaInfo))))));
 
       Success = VideoStreams.Count != 0 || AudioStreams.Count != 0 || Subtitles.Count != 0 || ImageStreams.Count != 0;
+
+      foreach (var warning in LibraryCompatibility.Inspect(mediaInfo))
+      {
+        Warnings.Add(warning);
+        LogWarning(_logger, "{warning}", warning);
+      }
 
       // Produce capability properties
       if (Success)
@@ -1234,6 +1241,15 @@ namespace MediaInfo
     /// A value indicating whether media has image streams. The value is <c>false</c> if media was not loaded successfully.
     /// </summary>
     public bool HasImages => ImageStreams.Count > 0;
+
+    /// <summary>
+    /// Gets the warnings about the analysis, for example that the loaded native library does not match the version the
+    /// wrapper was built for. The list is empty when the library is compatible.
+    /// </summary>
+    /// <remarks>
+    /// Values read by field index are unreliable when the list is not empty.
+    /// </remarks>
+    public IList<string> Warnings { get; }
 
 #endregion
 

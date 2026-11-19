@@ -97,6 +97,12 @@ public sealed record MediaAnalysisResult
   public IReadOnlyList<ImageStream> ImageStreams { get; init; } = [];
 
   /// <summary>
+  /// Gets the warnings about the analysis, for example that the loaded native library does not match the version the
+  /// wrapper was built for. Values may be wrong when the list is not empty.
+  /// </summary>
+  public IReadOnlyList<string> Warnings { get; init; } = [];
+
+  /// <summary>
   /// Gets the video stream that best represents the media.
   /// </summary>
   public VideoStream? BestVideoStream { get; init; }

@@ -44,6 +44,15 @@ public abstract class VideoDepacketizer
   public int UnitsDropped { get; private set; }
 
   /// <summary>
+  /// Gets or sets the greatest number of bytes a fragmented unit may take before it is dropped.
+  /// </summary>
+  /// <remarks>
+  /// Without a limit, a sender that never ends a fragmented unit makes the buffer grow for as long as it keeps sending.
+  /// </remarks>
+  /// <value>The default value is 8 megabytes.</value>
+  public int MaximumFragmentSize { get; set; } = 8 * 1024 * 1024;
+
+  /// <summary>
   /// Gets a value indicating whether a unit is currently being reassembled.
   /// </summary>
   protected bool HasFragment { get; private set; }
@@ -145,7 +154,19 @@ public abstract class VideoDepacketizer
   /// Adds the body of a fragment to the unit being reassembled.
   /// </summary>
   /// <param name="body">The fragment, without its headers.</param>
-  protected void AppendFragment(ReadOnlySpan<byte> body) => Append(body);
+  protected void AppendFragment(ReadOnlySpan<byte> body)
+  {
+    if (_fragment.Length + body.Length <= MaximumFragmentSize)
+    {
+      Append(body);
+      return;
+    }
+
+    DropFragment();
+
+    // The buffer has grown to what the limit allows, and keeping it would keep that much memory for nothing.
+    _fragment.Capacity = 0;
+  }
 
   /// <summary>
   /// Writes the unit that has finished being reassembled.
@@ -153,6 +174,12 @@ public abstract class VideoDepacketizer
   /// <param name="output">The stream the elementary stream is written to.</param>
   protected void EndFragment(Stream output)
   {
+    // The end of a fragmented unit that was dropped on the way, because it grew too large, has nothing to write.
+    if (!HasFragment)
+    {
+      return;
+    }
+
     var buffer = _fragment.GetBuffer();
     WriteUnit(output, new ReadOnlySpan<byte>(buffer, 0, (int)_fragment.Length));
 

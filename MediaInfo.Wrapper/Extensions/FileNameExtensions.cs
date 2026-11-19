@@ -390,15 +390,16 @@ namespace MediaInfo
     /// Determines whether the specified path represents a DVD structure by checking for the presence of an IFO
     /// file.
     /// </summary>
-    /// <remarks>If the path is a directory, the method searches all subdirectories for files with the
-    /// ".IFO" extension. If the path is a file with the ".IFO" extension, it is considered a valid DVD structure.
-    /// The search is case-insensitive.</remarks>
+    /// <remarks>If the path is a directory, the method looks for files with the ".IFO" extension in the directory
+    /// itself and in its VIDEO_TS subdirectory. Other subdirectories are not searched, so a folder that merely holds
+    /// discs is not taken for a disc. If the path is a file with the ".IFO" extension, it is considered a valid DVD
+    /// structure. The search is case-insensitive.</remarks>
     /// <param name="path">The file or directory path to examine. Can be a path to a directory or an IFO file. May be null.</param>
     /// <param name="pathToIfoFile">When this method returns, contains the full path to the first IFO file found if the path is identified as a
     /// DVD structure; otherwise, null. This parameter is passed uninitialized.</param>
     /// <returns>true if the specified path is a DVD structure or an IFO file; otherwise, false.</returns>
     public static bool IsDvD(this string? path, [NotNullWhen(true)] out string? pathToIfoFile) =>
-      path.IsComplexStructure(".IFO", out pathToIfoFile);
+      path.IsComplexStructure(".IFO", "VIDEO_TS", out pathToIfoFile);
 
     /// <summary>
     /// Determines whether the specified path represents a Blu-ray disc structure and retrieves the path to the BDMV
@@ -410,41 +411,72 @@ namespace MediaInfo
     /// <returns><see langword="true"/> if the path represents a valid Blu-ray disc structure and the BDMV file is found;
     /// otherwise, <see langword="false"/>.</returns>
     public static bool IsBluRay(this string? path, [NotNullWhen(true)] out string? pathToBdmvFile) =>
-      path.IsComplexStructure(".BDMV", out pathToBdmvFile);
+      path.IsComplexStructure(".BDMV", "BDMV", out pathToBdmvFile);
 
-    private static bool IsComplexStructure(this string? path, string pattern, [NotNullWhen(true)] out string? pathToResult)
+    private static bool IsComplexStructure(
+      this string? path,
+      string extension,
+      string structureFolder,
+      [NotNullWhen(true)] out string? pathToResult)
     {
+      pathToResult = null;
       if (string.IsNullOrEmpty(path))
       {
-        pathToResult = null;
         return false;
       }
 
-      if (!path!.IsDirectory() && path!.EndsWith(pattern, StringComparison.OrdinalIgnoreCase))
+      if (!path!.IsDirectory())
       {
+        if (!path.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+        {
+          return false;
+        }
+
         pathToResult = path;
         return true;
       }
 
-      if (path!.IsDirectory())
+      // Only the folder itself and its own structure folder are looked at. A folder that holds many discs, or a whole
+      // drive, is not a disc, and walking it would be slow and would pick one of the discs at random.
+      pathToResult = FindFile(path, extension);
+      if (pathToResult is null)
       {
-        var files = Directory.GetFiles(
-          path,
-          "*" + pattern,
-#if NETFRAMEWORK
-          SearchOption.AllDirectories);
-#else
-          new EnumerationOptions { IgnoreInaccessible = true, MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true });
-#endif
-        if (files.Any())
-        {
-          pathToResult = files.First();
-          return true;
-        }
+        var nested = FindDirectory(path, structureFolder);
+        pathToResult = nested is null ? null : FindFile(nested, extension);
       }
 
-      pathToResult = null;
-      return false;
+      return pathToResult is not null;
+    }
+
+    private static string? FindFile(string directory, string extension)
+    {
+      try
+      {
+        // Matching the extension here rather than in the search pattern avoids the file system matching ".IFOX" too.
+        return Directory
+          .GetFiles(directory)
+          .Where(x => string.Equals(Path.GetExtension(x), extension, StringComparison.OrdinalIgnoreCase))
+          .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+          .FirstOrDefault();
+      }
+      catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+      {
+        return null;
+      }
+    }
+
+    private static string? FindDirectory(string directory, string name)
+    {
+      try
+      {
+        return Directory
+          .GetDirectories(directory)
+          .FirstOrDefault(x => string.Equals(Path.GetFileName(x), name, StringComparison.OrdinalIgnoreCase));
+      }
+      catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+      {
+        return null;
+      }
     }
 
     /// <summary>

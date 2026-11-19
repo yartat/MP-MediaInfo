@@ -81,6 +81,18 @@ public class DolbyVisionTests
   }
 
   [Fact]
+  public async Task Build_StreamWithSeveralHdrFormats_IsReportedByTheMostSpecificOne()
+  {
+    var video = await AnalyzeAsync(p => p
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_HDR_Format, "Dolby Vision / SMPTE ST 2086")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_HDR_Format_Compatibility, "HDR10 / HDR10")
+      .SetIndexed(StreamKind.Video, 0, (int)NativeMethods.Video.Video_transfer_characteristics, "PQ"));
+
+    video.Hdr.Should().Be(Hdr.DolbyVision);
+    video.HdrInfo.Format.Should().Be(Hdr.DolbyVision);
+  }
+
+  [Fact]
   public async Task Build_WithoutDolbyVision_LeavesItNull()
   {
     var video = await AnalyzeAsync(_ => { });

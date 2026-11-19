@@ -167,6 +167,9 @@ internal static class RtspStreamCapture
         $"The video track is {capture.VideoEncoding ?? "of an unnamed encoding"}, " +
         "and only H264 and H265 are rebuilt today.");
 
+    // A unit larger than the whole capture is of no use to the analysis.
+    depacketizer.MaximumFragmentSize = options.MaximumCaptureBytes;
+
     // The session usually carries the parameter sets, so the stream starts with what decodes it even when the
     // capture happens to begin between key frames.
     foreach (var parameterSet in ParameterSetsOf(video))

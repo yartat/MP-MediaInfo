@@ -285,7 +285,7 @@ namespace MediaInfo
   /// All functions in this class will return empty string if library is not loaded successfully. So, you can check if library is loaded by checking if Inform() method returns empty string or not.
   /// </remarks>
   /// <seealso cref="IDisposable" />
-  public class MediaInfo : IMediaInfoReader, IDisposable
+  public class MediaInfo : IMediaInfoReader, ILibraryCompatibilityProvider, IDisposable
   {
 #if NETFRAMEWORK
     private const string MediaInfoFileName = "MediaInfo.dll";
@@ -650,6 +650,10 @@ namespace MediaInfo
     /// </returns>
     public int CountGet(StreamKind streamKind) =>
       CountGet(streamKind, -1);
+
+    /// <inheritdoc/>
+    string[] ILibraryCompatibilityProvider.GetCompatibilityWarnings() =>
+      Handle == IntPtr.Zero ? [] : LibraryCompatibility.Inspect(this);
 
     /// <inheritdoc/>
     public void Dispose()

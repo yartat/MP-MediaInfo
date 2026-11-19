@@ -54,6 +54,7 @@ public class FileAndStreamAnalysisTests(ITestOutputHelper output)
     result.SourceKind.Should().Be(MediaSourceKind.File);
     result.AnalyzedPath.Should().Be(path);
     result.LibraryVersion.Should().NotBeNullOrEmpty();
+    result.Warnings.Should().BeEmpty("the native library must be the one the wrapper was built for");
     result.General.Size.Should().Be(new FileInfo(path).Length);
     result.General.Format.Should().NotBeNullOrEmpty();
     result.Disc.Should().BeNull();

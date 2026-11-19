@@ -207,17 +207,20 @@
 
 Там же: `TryGetDouble` разбирает с `NumberStyles.AllowDecimalPoint`, поэтому отрицательные значения (`Rotation = -90`) не разбираются и превращаются в 0.
 
-### 10. Кэш — исправлено частично
+### 10. Кэш — исправлено
 
 Исправлено 2026-11-19:
 - `CachingAnalyzer` не бросает исключение, если файловая система не принимает путь (`ArgumentException`, `NotSupportedException`, `IOException`, `UnauthorizedAccessException`): такой анализ просто идёт без кэша. `MediaInfoFileSystem.GetFileLength` и `GetLastWriteTimeUtc` тоже перестали бросать на таких путях.
 - `ExternalSubtitleAnalyzer` перенесён снаружи кэша, поэтому субтитры, появившиеся позже, замечаются. Это меняет порядок декораторов (сверху вниз: Logging, Validating, ExternalSubtitle, Caching, Timeout, Retrying, Throttling): обновлены `MediaInfoAnalyzerBuilder`, `docs/async-api.md` и тест `Build_ComposesTheDocumentedOrderWhicheverOrderTheConcernsAreRequestedIn`.
 
-Не исправлено по решению: кэш по-прежнему отдаёт один и тот же объект результата, а потоки (`VideoStream` и др.) изменяемые. Копирование было бы неполным (списки, теги), поэтому результат из кэша нужно считать доступным только для чтения. Одновременные промахи по одному ключу всё ещё запускают несколько анализов.
+Исправлено 2026-11-20:
+- Каждый вызывающий получает собственную копию результата: `CachingAnalyzer` отдаёт `ResultCloner.Clone(...)`, а в кэш кладёт отдельную копию, которая наружу не выдаётся. Копирование идёт по полям (а не по списку свойств), поэтому новое поле модели копируется без правок; общие объекты внутри результата остаются общими (`BestVideoStream` остаётся элементом `VideoStreams`). Строки, enum, делегаты, исключения и ленивые LINQ-итераторы не копируются.
+- Одновременные промахи по одному ключу делят один анализ (single-flight). Анализ отменяется, только когда отказались все ожидающие; один отказавшийся не прерывает остальных. Ошибка общего анализа доходит до каждого ожидающего. Неудачный результат по-прежнему не кэшируется.
+- Тест `Caching_MakesTheSecondAnalysisOfTheSameFileFree` (интеграционный) раньше требовал тот же объект (`BeSameAs`); теперь он проверяет эквивалентную, но отдельную копию на реальном файле.
 
 Тесты: `AnalyzerRobustnessTests` (раздел Cache).
 
-`Analysis/Decorators/CachingAnalyzer.cs`, `IAnalysisCache.cs`, `Analysis/Abstractions/MediaInfoFileSystem.cs:77`.
+`Analysis/Decorators/CachingAnalyzer.cs`, `ResultCloner.cs`, `IAnalysisCache.cs`, `Analysis/Abstractions/MediaInfoFileSystem.cs:77`.
 
 - Из кэша отдаётся тот же объект `MediaAnalysisResult`. Он `record`, но внутри изменяемые `VideoStream`, `AudioStream` и т.д. с публичными сеттерами. Если один вызывающий их изменит, изменится кэш для всех. `LegacyResultAdapter` копирует списки, но не объекты.
 - `CreateKey` вызывается до вложенного анализатора и не защищён. `new FileInfo(path)` бросает `ArgumentException` на пути с `\0` (на .NET Framework ещё и на недопустимых символах, `NotSupportedException` на `:`), а `GetFileLength` ловит только `IOException` и `UnauthorizedAccessException`. Исключение уходит вызывающему вместо результата с ошибкой, в обход договора «ошибка — это `Failure`».

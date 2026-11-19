@@ -197,6 +197,142 @@ public class AnalyzerRobustnessTests
     factory.OpenedPaths.Should().ContainSingle("the second answer comes from the cache");
   }
 
+  private static CachingAnalyzer CachingOf(StubAnalyzer inner, out MemoryAnalysisCache cache)
+  {
+    cache = new MemoryAnalysisCache();
+    return new CachingAnalyzer(inner, cache, new FakeFileSystem().AddFile(Movie, 4096));
+  }
+
+  private static MediaAnalysisResult ResultWithStream(string title)
+  {
+    var video = new global::MediaInfo.Model.VideoStream { Format = title };
+    return new MediaAnalysisResult { Success = true, VideoStreams = [video], BestVideoStream = video };
+  }
+
+  [Fact]
+  public async Task Cache_ChangingAnAnswer_DoesNotChangeTheNextOne()
+  {
+    var inner = new StubAnalyzer((_, _, _) => Task.FromResult(ResultWithStream("original")));
+    var caching = CachingOf(inner, out _);
+
+    var first = await caching.AnalyzeAsync(new FileMediaSource(Movie));
+    first.VideoStreams[0].Format = "changed";
+    var second = await caching.AnalyzeAsync(new FileMediaSource(Movie));
+    second.VideoStreams[0].Format = "changed too";
+    var third = await caching.AnalyzeAsync(new FileMediaSource(Movie));
+
+    inner.CallCount.Should().Be(1);
+    third.VideoStreams[0].Format.Should().Be("original");
+    third.Should().NotBeSameAs(second);
+  }
+
+  [Fact]
+  public async Task Cache_Copy_KeepsTheBestStreamAsAnElementOfTheList()
+  {
+    var inner = new StubAnalyzer((_, _, _) => Task.FromResult(ResultWithStream("a")));
+    var caching = CachingOf(inner, out _);
+
+    await caching.AnalyzeAsync(new FileMediaSource(Movie));
+    var cached = await caching.AnalyzeAsync(new FileMediaSource(Movie));
+
+    cached.BestVideoStream.Should().BeSameAs(cached.VideoStreams[0]);
+  }
+
+  [Fact]
+  public async Task Cache_ConcurrentMisses_ShareOneAnalysis()
+  {
+    var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    var inner = new StubAnalyzer(async (_, _, _) =>
+    {
+      await release.Task;
+      return ResultWithStream("shared");
+    });
+    var caching = CachingOf(inner, out _);
+
+    var calls = Enumerable.Range(0, 5).Select(_ => caching.AnalyzeAsync(new FileMediaSource(Movie))).ToArray();
+    await Task.Delay(100);
+    release.SetResult(true);
+    var results = await Task.WhenAll(calls);
+
+    inner.CallCount.Should().Be(1);
+    results.Select(x => x.VideoStreams[0]).Distinct(ReferenceEqualityComparer.Instance).Should().HaveCount(5, "each caller gets its own copy");
+  }
+
+  [Fact]
+  public async Task Cache_OneCallerGivingUp_DoesNotCancelTheOthers()
+  {
+    var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    CancellationToken seen = default;
+    var inner = new StubAnalyzer(async (_, _, token) =>
+    {
+      seen = token;
+      await release.Task.WaitAsync(token);
+      return ResultWithStream("kept");
+    });
+    var caching = CachingOf(inner, out _);
+    using var giveUp = new CancellationTokenSource();
+
+    var impatient = caching.AnalyzeAsync(new FileMediaSource(Movie), giveUp.Token);
+    var patient = caching.AnalyzeAsync(new FileMediaSource(Movie));
+    await Task.Delay(100);
+    giveUp.Cancel();
+    await FluentActions.Awaiting(() => impatient).Should().ThrowAsync<OperationCanceledException>();
+    release.SetResult(true);
+    var result = await patient;
+
+    result.Success.Should().BeTrue();
+    seen.IsCancellationRequested.Should().BeFalse();
+    inner.CallCount.Should().Be(1);
+  }
+
+  [Fact]
+  public async Task Cache_EveryCallerGivingUp_CancelsTheAnalysis()
+  {
+    var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    CancellationToken seen = default;
+    var inner = new StubAnalyzer(async (_, _, token) =>
+    {
+      seen = token;
+      started.SetResult(true);
+      await Task.Delay(Timeout.Infinite, token);
+      return ResultWithStream("never");
+    });
+    var caching = CachingOf(inner, out var cache);
+    using var giveUp = new CancellationTokenSource();
+
+    var call = caching.AnalyzeAsync(new FileMediaSource(Movie), giveUp.Token);
+    await started.Task;
+    giveUp.Cancel();
+    await FluentActions.Awaiting(() => call).Should().ThrowAsync<OperationCanceledException>();
+    await Task.Delay(100);
+
+    seen.IsCancellationRequested.Should().BeTrue();
+    cache.Count.Should().Be(0);
+  }
+
+  [Fact]
+  public async Task Cache_FailureOfTheSharedAnalysis_ReachesEveryCaller()
+  {
+    var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    var inner = new StubAnalyzer(async (_, _, _) =>
+    {
+      await release.Task;
+      throw new InvalidOperationException("boom");
+    });
+    var caching = CachingOf(inner, out _);
+
+    var calls = Enumerable.Range(0, 3).Select(_ => caching.AnalyzeAsync(new FileMediaSource(Movie))).ToArray();
+    await Task.Delay(100);
+    release.SetResult(true);
+
+    foreach (var call in calls)
+    {
+      await FluentActions.Awaiting(() => call).Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    inner.CallCount.Should().Be(1);
+  }
+
   [Fact]
   public void FileSystem_PathItCannotRepresent_ReportsNothingInsteadOfThrowing()
   {

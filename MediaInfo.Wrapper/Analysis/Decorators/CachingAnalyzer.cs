@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,11 +32,16 @@ namespace MediaInfo.Analysis.Decorators;
 ///   <item>A stream cannot be identified without consuming it, and a network media has no cheap validator, so both are passed straight through.</item>
 ///   <item>A failed analysis is never stored, because the condition that caused it is usually temporary.</item>
 /// </list>
+/// Callers who ask for the same media while it is being analyzed share that one analysis. It is cancelled only when
+/// every one of them has given up. Every caller receives its own copy of the result, so changing a stream does not
+/// change what the cache hands to the next caller.
 /// </remarks>
 public sealed class CachingAnalyzer : MediaInfoAnalyzerDecorator
 {
   private readonly IAnalysisCache _cache;
   private readonly IFileSystem _fileSystem;
+  private readonly object _gate = new();
+  private readonly Dictionary<string, Flight> _flights = new(StringComparer.Ordinal);
 
   /// <summary>
   /// Initializes a new instance of the <see cref="CachingAnalyzer"/> class.
@@ -64,16 +70,136 @@ public sealed class CachingAnalyzer : MediaInfoAnalyzerDecorator
 
     if (_cache.TryGet(key, out var cached))
     {
-      return cached;
+      return ResultCloner.Clone(cached);
     }
 
-    var result = await Inner.AnalyzeAsync(source, cancellationToken).ConfigureAwait(false);
-    if (result.Success)
+    cancellationToken.ThrowIfCancellationRequested();
+    var flight = Join(key, out var created);
+    if (created)
     {
-      _cache.Set(key, result);
+      _ = RunAsync(key, source, flight);
     }
 
-    return result;
+    var result = await WaitAsync(flight, cancellationToken).ConfigureAwait(false);
+    return ResultCloner.Clone(result);
+  }
+
+  // Never throws: the outcome goes to the flight, which every waiter reads.
+  private async Task RunAsync(string key, IMediaSource source, Flight flight)
+  {
+    await Task.Yield();
+    try
+    {
+      var result = await Inner.AnalyzeAsync(source, flight.Token).ConfigureAwait(false);
+      if (result.Success)
+      {
+        // The stored object is never handed out, only copies of it.
+        _cache.Set(key, ResultCloner.Clone(result));
+      }
+
+      flight.Completion.TrySetResult(result);
+    }
+    catch (OperationCanceledException exception)
+    {
+      flight.Completion.TrySetCanceled(exception.CancellationToken);
+    }
+    catch (Exception exception)
+    {
+      flight.Completion.TrySetException(exception);
+    }
+    finally
+    {
+      lock (_gate)
+      {
+        if (_flights.TryGetValue(key, out var current) && ReferenceEquals(current, flight))
+        {
+          _flights.Remove(key);
+        }
+      }
+
+      flight.Dispose();
+    }
+  }
+
+  private Flight Join(string key, out bool created)
+  {
+    lock (_gate)
+    {
+      created = !_flights.TryGetValue(key, out var flight);
+      if (created)
+      {
+        flight = new Flight(key);
+        _flights[key] = flight;
+      }
+
+      flight!.Waiters++;
+      return flight;
+    }
+  }
+
+  private void Leave(string key, Flight flight)
+  {
+    lock (_gate)
+    {
+      if (--flight.Waiters > 0)
+      {
+        return;
+      }
+
+      // Nobody is waiting for it any more: stop the analysis, and let the next caller start a new one.
+      if (_flights.TryGetValue(key, out var current) && ReferenceEquals(current, flight))
+      {
+        _flights.Remove(key);
+      }
+
+      flight.Cancel();
+    }
+  }
+
+  private async Task<MediaAnalysisResult> WaitAsync(Flight flight, CancellationToken cancellationToken)
+  {
+    var key = flight.Key;
+    var cancelled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+    using (cancellationToken.Register(static state => ((TaskCompletionSource<bool>)state!).TrySetResult(true), cancelled))
+    {
+      if (await Task.WhenAny(flight.Completion.Task, cancelled.Task).ConfigureAwait(false) != flight.Completion.Task)
+      {
+        Leave(key, flight);
+        cancellationToken.ThrowIfCancellationRequested();
+      }
+    }
+
+    Leave(key, flight);
+    return await flight.Completion.Task.ConfigureAwait(false);
+  }
+
+  private sealed class Flight : IDisposable
+  {
+    private readonly CancellationTokenSource _cancellation = new();
+
+    public Flight(string key) => Key = key;
+
+    public string Key { get; }
+
+    public int Waiters { get; set; }
+
+    public CancellationToken Token => _cancellation.Token;
+
+    public TaskCompletionSource<MediaAnalysisResult> Completion { get; } =
+      new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public void Cancel()
+    {
+      try
+      {
+        _cancellation.Cancel();
+      }
+      catch (ObjectDisposedException)
+      {
+      }
+    }
+
+    public void Dispose() => _cancellation.Dispose();
   }
 
   // A path the file system cannot make sense of is not worth caching, and is left for the analysis to report.

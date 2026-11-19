@@ -79,7 +79,9 @@ public class ComposedAnalyzerTests(ITestOutputHelper output) : IDisposable
     output.WriteLine($"Cold {cold.ElapsedMilliseconds} ms, warm {warm.ElapsedMilliseconds} ms");
 
     first.Success.Should().BeTrue();
-    second.Should().BeSameAs(first, "the second call is answered from the cache");
+    second.Should().NotBeSameAs(first, "every caller gets its own copy");
+    second.Should().BeEquivalentTo(first, "the second call is answered from the cache");
+    second.VideoStreams.Should().NotIntersectWith(first.VideoStreams);
   }
 
   [Fact]

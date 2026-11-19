@@ -158,7 +158,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetInt(this string source, out object value)
     {
-      var result = int.TryParse(source, out var resultValue);
+      var result = int.TryParse(source, NumberStyles.Integer, CultureInfo.InvariantCulture, out var resultValue);
       value = resultValue;
       return result;
     }
@@ -170,7 +170,7 @@ namespace MediaInfo.Builder
     /// <param name="value">The result int value.</param>
     /// <returns><c>true</c> if source string is not empty and valid integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetInt(this string source, out int value) =>
-      int.TryParse(source, out value);
+      int.TryParse(source, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
 
     /// <summary>
     /// Tries the get long value from string.
@@ -180,7 +180,7 @@ namespace MediaInfo.Builder
     /// <returns><c>true</c> if source string is not empty and valid long integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetLong(this string source, out object value)
     {
-      var result = long.TryParse(source, out var resultValue);
+      var result = long.TryParse(source, NumberStyles.Integer, CultureInfo.InvariantCulture, out var resultValue);
       value = resultValue;
       return result;
     }
@@ -192,7 +192,7 @@ namespace MediaInfo.Builder
     /// <param name="value">The result long value.</param>
     /// <returns><c>true</c> if source string is not empty and valid long integer value, <c>false</c> otherwise.</returns>
     public static bool TryGetLong(this string source, out long value) =>
-      long.TryParse(source, out value);
+      long.TryParse(source, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
 
     /// <summary>
     /// Tries the get double value from string.

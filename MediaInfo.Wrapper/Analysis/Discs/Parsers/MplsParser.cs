@@ -98,6 +98,7 @@ public static class MplsParser
 
     var items = new List<PlaylistItem>(itemCount);
     var itemStarts = new List<TimeSpan>(itemCount);
+    var itemInTimes = new List<uint>(itemCount);
     var elapsed = TimeSpan.Zero;
 
     // The play items are packed one after another, each prefixed with its own length, so the length is what walks
@@ -122,6 +123,7 @@ public static class MplsParser
 
       items.Add(new PlaylistItem(clipId, duration));
       itemStarts.Add(elapsed);
+      itemInTimes.Add(inTime);
       elapsed += duration;
 
       offset = body + length;
@@ -129,14 +131,15 @@ public static class MplsParser
 
     return items.Count == 0
       ? empty
-      : new Playlist(items, ReadChapters(data, markStart, items, itemStarts));
+      : new Playlist(items, ReadChapters(data, markStart, items, itemStarts, itemInTimes));
   }
 
   private static IReadOnlyList<DiscChapter> ReadChapters(
     ReadOnlySpan<byte> data,
     int markStart,
     IReadOnlyList<PlaylistItem> items,
-    IReadOnlyList<TimeSpan> itemStarts)
+    IReadOnlyList<TimeSpan> itemStarts,
+    IReadOnlyList<uint> itemInTimes)
   {
     if (markStart <= 0 || markStart >= data.Length)
     {
@@ -165,7 +168,7 @@ public static class MplsParser
       }
 
       // A mark is a timestamp on the clock of the item it belongs to, so it has to be rebased onto the playlist.
-      var itemStart = BigEndian.U32(data, MarkedItemInTimeOffset(data, itemIndex));
+      var itemStart = itemInTimes[itemIndex];
       var timestamp = BigEndian.U32(data, entry + 4);
       var withinItem = timestamp > itemStart
         ? TimeSpan.FromSeconds((timestamp - itemStart) / TimeScale)
@@ -196,24 +199,5 @@ public static class MplsParser
     }
 
     return chapters;
-
-    // Walks back to the play item the mark refers to and returns where its IN time is stored.
-    static int MarkedItemInTimeOffset(ReadOnlySpan<byte> data, int itemIndex)
-    {
-      var playListStart = (int)BigEndian.U32(data, 8);
-      var offset = playListStart + 10;
-      for (var i = 0; i < itemIndex; i++)
-      {
-        var length = BigEndian.U16(data, offset);
-        if (length == 0)
-        {
-          return -1;
-        }
-
-        offset += PlayItemPrefix + length;
-      }
-
-      return offset + PlayItemPrefix + 10;
-    }
   }
 }

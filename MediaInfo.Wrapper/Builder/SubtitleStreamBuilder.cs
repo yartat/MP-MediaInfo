@@ -93,6 +93,6 @@ namespace MediaInfo.Builder
     }
 
     private static bool TryGetCodec(string source, out SubtitleCodec result) =>
-      SubtitleCodecs.TryGetValue(source.ToUpper(), out result);
+      SubtitleCodecs.TryGetValue(source.ToUpperInvariant(), out result);
   }
 }

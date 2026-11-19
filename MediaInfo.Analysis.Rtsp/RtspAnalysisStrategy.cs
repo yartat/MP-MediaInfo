@@ -199,8 +199,8 @@ public sealed class RtspAnalysisStrategy : IMediaAnalysisStrategy
     encoding.ToUpperInvariant() switch
     {
       "MPEG4-GENERIC" or "MP4A-LATM" => AudioCodec.Aac,
-      // The model has no member for either flavour of G.711, so the encoding survives as the codec name only.
-      "PCMA" or "PCMU" => AudioCodec.Undefined,
+      "PCMA" => AudioCodec.PcmALaw,
+      "PCMU" => AudioCodec.PcmMuLaw,
       "OPUS" => AudioCodec.Opus,
       "MPA" or "MPEG" => AudioCodec.MpegLayer3,
       "L16" => AudioCodec.PcmIntBig,

@@ -40,12 +40,6 @@ public static class RtspAnalyzerExtensions
     var options = new RtspAnalysisOptions();
     configure?.Invoke(options);
 
-    // Adding any strategy replaces the default set, so the defaults come along explicitly.
-    foreach (var strategy in MediaInfoAnalyzer.CreateDefaultStrategies(MediaInfoFileSystem.Instance))
-    {
-      builder.AddStrategy(strategy);
-    }
-
-    return builder.AddStrategy(new RtspAnalysisStrategy(options));
+    return builder.WithStrategy(new RtspAnalysisStrategy(options));
   }
 }

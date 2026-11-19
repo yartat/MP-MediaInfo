@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -171,6 +172,16 @@ internal static class RtspStreamCapture
       ?? throw new RtspProtocolException(
         $"The video track is {capture.VideoEncoding ?? "of an unnamed encoding"}, " +
         "and only H264 and H265 are rebuilt today.");
+
+    // With a decoding order difference above zero, H.265 payloads carry decoding order numbers that the depacketizer does
+    // not read, so the units it rebuilt would be wrong without anything saying so.
+    if (depacketizer is H265Depacketizer &&
+        int.TryParse(video.GetFormatParameter("sprop-max-don-diff"), NumberStyles.Integer, CultureInfo.InvariantCulture, out var decodingOrderDifference) &&
+        decodingOrderDifference > 0)
+    {
+      throw new RtspProtocolException(
+        "The H265 stream uses decoding order numbers (sprop-max-don-diff above zero), which are not supported.");
+    }
 
     // A unit larger than the whole capture is of no use to the analysis.
     depacketizer.MaximumFragmentSize = options.MaximumCaptureBytes;

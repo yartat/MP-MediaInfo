@@ -105,12 +105,12 @@ public sealed class RtspServerBehaviourTests : IDisposable
     return framed;
   }
 
-  private static async Task AnswerSessionSetupAsync(NetworkStream stream)
+  private static async Task AnswerSessionSetupAsync(NetworkStream stream, string description = Description)
   {
     await ReadRequestAsync(stream).ConfigureAwait(false);
     await SendAsync(
       stream,
-      $"RTSP/1.0 200 OK\r\nCSeq: 1\r\nContent-Type: application/sdp\r\nContent-Length: {Description.Length}\r\n\r\n{Description}")
+      $"RTSP/1.0 200 OK\r\nCSeq: 1\r\nContent-Type: application/sdp\r\nContent-Length: {description.Length}\r\n\r\n{description}")
       .ConfigureAwait(false);
 
     await ReadRequestAsync(stream).ConfigureAwait(false);
@@ -242,6 +242,19 @@ public sealed class RtspServerBehaviourTests : IDisposable
     result.Success.Should().BeFalse();
     result.Failure!.Message.Should().NotContain("s3cret").And.Contain("***@127.0.0.1");
     result.SourcePath.Should().NotContain("s3cret");
+  }
+
+  [Fact]
+  public async Task Capture_H265WithDecodingOrderNumbers_IsRefusedInsteadOfRebuiltWrongly()
+  {
+    const string H265 =
+      "v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\ns=test\r\nt=0 0\r\n" +
+      "m=video 0 RTP/AVP 96\r\na=rtpmap:96 H265/90000\r\na=fmtp:96 sprop-max-don-diff=2\r\na=control:track1\r\n";
+    Serve(stream => AnswerSessionSetupAsync(stream, H265));
+
+    var act = () => CaptureAsync(TimeSpan.FromSeconds(5));
+
+    await act.Should().ThrowAsync<RtspProtocolException>().WithMessage("*decoding order*");
   }
 
   #region Fragment limit

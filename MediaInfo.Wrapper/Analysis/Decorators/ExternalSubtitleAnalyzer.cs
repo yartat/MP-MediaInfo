@@ -83,6 +83,9 @@ public sealed class ExternalSubtitleAnalyzer : MediaInfoAnalyzerDecorator
       .GetFiles(folder, name + "*", SearchOption.TopDirectoryOnly)
       .Any(x =>
         !string.Equals(x, path, StringComparison.OrdinalIgnoreCase) &&
+
+        // The name went into a search pattern, where * and ? mean something, so the result is checked against the name.
+        Path.GetFileName(x).StartsWith(name, StringComparison.OrdinalIgnoreCase) &&
         _extensions.Contains(Path.GetExtension(x)));
   }
 }

@@ -33,6 +33,10 @@ public sealed class IfoDvdStructureReader : IDiscStructureReader
 {
   private const string VideoManagerFileName = "VIDEO_TS.IFO";
 
+  // The navigation tables of a real disc are tens of kilobytes. A file far larger than that is not one, and reading it
+  // into memory would be a way to make the analysis allocate whatever the folder holds.
+  private const long MaximumTableSize = 16 * 1024 * 1024;
+
   private readonly IFileSystem _fileSystem;
 
   /// <summary>
@@ -137,6 +141,11 @@ public sealed class IfoDvdStructureReader : IDiscStructureReader
   {
     try
     {
+      if (_fileSystem.GetFileLength(path) > MaximumTableSize)
+      {
+        return [];
+      }
+
       using var stream = _fileSystem.OpenRead(path);
       using var buffer = new MemoryStream();
       stream.CopyTo(buffer);

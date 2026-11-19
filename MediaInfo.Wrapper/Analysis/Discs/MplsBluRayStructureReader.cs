@@ -39,6 +39,10 @@ public sealed class MplsBluRayStructureReader : IDiscStructureReader
   private const string StreamFolderName = "STREAM";
   private const string PlaylistFolderName = "PLAYLIST";
 
+  // A playlist of a real disc is a few kilobytes. A file far larger than that is not one, and reading it into memory
+  // would be a way to make the analysis allocate whatever the folder holds.
+  private const long MaximumPlaylistSize = 16 * 1024 * 1024;
+
   private static readonly TimeSpan ShortestTitle = TimeSpan.FromMinutes(1);
 
   private readonly IFileSystem _fileSystem;
@@ -84,7 +88,13 @@ public sealed class MplsBluRayStructureReader : IDiscStructureReader
 
     var clips = _fileSystem
       .GetFiles(streamFolder, "*.m2ts", SearchOption.TopDirectoryOnly)
-      .ToDictionary(x => Path.GetFileNameWithoutExtension(x), x => x, StringComparer.OrdinalIgnoreCase);
+      .GroupBy(x => Path.GetFileNameWithoutExtension(x), StringComparer.OrdinalIgnoreCase)
+
+      // On a file system that tells the case of names apart, 00001.m2ts and 00001.M2TS are two files for one clip.
+      .ToDictionary(
+        group => group.Key,
+        group => group.OrderBy(x => x, StringComparer.Ordinal).First(),
+        StringComparer.OrdinalIgnoreCase);
 
     var totalSize = _fileSystem.GetFiles(discRoot, "*", SearchOption.AllDirectories).Sum(_fileSystem.GetFileLength);
 
@@ -148,6 +158,11 @@ public sealed class MplsBluRayStructureReader : IDiscStructureReader
   {
     try
     {
+      if (_fileSystem.GetFileLength(path) > MaximumPlaylistSize)
+      {
+        return [];
+      }
+
       using var stream = _fileSystem.OpenRead(path);
       using var buffer = new MemoryStream();
       stream.CopyTo(buffer);
@@ -209,7 +224,20 @@ public sealed class FallbackDiscStructureReader : IDiscStructureReader
     MediaAnalysisContext context,
     CancellationToken cancellationToken)
   {
-    var structure = await _preferred.ReadAsync(discRoot, context, cancellationToken).ConfigureAwait(false);
+    DiscStructure? structure = null;
+    try
+    {
+      structure = await _preferred.ReadAsync(discRoot, context, cancellationToken).ConfigureAwait(false);
+    }
+    catch (Exception exception) when (exception is not OperationCanceledException)
+    {
+      // A navigation table that cannot be read is no reason not to describe the disc from its folders.
+      context.Report(
+        new AnalysisProgress(
+          AnalysisPhase.DiscoveringStructure,
+          Detail: $"The navigation tables of '{discRoot}' could not be read ({exception.Message}); using the folders."));
+    }
+
     return structure ?? await _fallback.ReadAsync(discRoot, context, cancellationToken).ConfigureAwait(false);
   }
 }

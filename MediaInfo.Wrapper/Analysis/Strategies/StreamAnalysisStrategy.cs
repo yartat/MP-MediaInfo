@@ -160,6 +160,11 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
       {
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (context.Options.MaximumStreamBytes is { } limit && processed >= limit)
+        {
+          break;
+        }
+
         var read = await stream.ReadAsync(buffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
         if (read <= 0)
         {

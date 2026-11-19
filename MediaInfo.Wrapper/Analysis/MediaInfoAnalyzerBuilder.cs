@@ -32,6 +32,7 @@ namespace MediaInfo.Analysis;
 public sealed class MediaInfoAnalyzerBuilder
 {
   private readonly List<IMediaAnalysisStrategy> _strategies = [];
+  private readonly List<IMediaAnalysisStrategy> _additionalStrategies = [];
 
   private INativeMediaInfoFactory? _nativeFactory;
   private IFileSystem? _fileSystem;
@@ -143,6 +144,21 @@ public sealed class MediaInfoAnalyzerBuilder
   }
 
   /// <summary>
+  /// Adds a strategy next to the default ones.
+  /// </summary>
+  /// <remarks>
+  /// The default strategies are created when the analyzer is built, with the file system the builder was given, so the
+  /// order of the calls does not matter. Unlike <see cref="AddStrategy"/>, this does not replace the default set.
+  /// </remarks>
+  /// <param name="strategy">The strategy to add.</param>
+  /// <returns>Returns this builder.</returns>
+  public MediaInfoAnalyzerBuilder WithStrategy(IMediaAnalysisStrategy strategy)
+  {
+    _additionalStrategies.Add(strategy ?? throw new ArgumentNullException(nameof(strategy)));
+    return this;
+  }
+
+  /// <summary>
   /// Records the analysis through the specified logger.
   /// </summary>
   /// <param name="logger">The logger to record through.</param>
@@ -238,9 +254,11 @@ public sealed class MediaInfoAnalyzerBuilder
       _selection ?? DefaultStreamSelectionStrategy.Instance);
 
     var context = new MediaAnalysisContext(probe, fileSystem, _options, _progress);
-    var strategies = _strategies.Count > 0
-      ? _strategies
-      : MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem).ToList();
+    var strategies = (_strategies.Count > 0
+        ? _strategies
+        : MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem))
+      .Concat(_additionalStrategies)
+      .ToList();
 
     // Composed from the core outwards, so that the outermost wrapper is the first one in the documented order.
     IMediaInfoAnalyzer analyzer = new MediaInfoAnalyzer(new PriorityStrategySelector(strategies), context);

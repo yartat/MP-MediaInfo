@@ -530,7 +530,18 @@ namespace MediaInfo
       Handle == IntPtr.Zero ? IntPtr.Zero : NativeMethods.MediaInfo_Open_Buffer_Finalize(Handle);
 
     /// <summary>
-    /// Closes this instance and releases library resources.
+    /// Closes the opened media, leaving the handle available to open another one.
+    /// </summary>
+    internal void CloseMedia()
+    {
+      if (Handle != IntPtr.Zero)
+      {
+        NativeMethods.MediaInfo_Close(Handle);
+      }
+    }
+
+    /// <summary>
+    /// Closes this instance and releases library resources. The instance cannot be used afterwards.
     /// </summary>
     public void Close()
     {

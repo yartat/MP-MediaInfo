@@ -51,6 +51,13 @@ internal static class IfoParser
 {
   private const int SectorSize = 2048;
 
+  // A sector number from a file is not to be trusted: multiplied as an int it wraps around into an offset that looks valid.
+  private static int SectorOffset(uint sector)
+  {
+    var offset = (long)sector * SectorSize;
+    return offset > int.MaxValue ? -1 : (int)offset;
+  }
+
   private const string VideoManagerSignature = "DVDVIDEO-VMG";
   private const string TitleSetSignature = "DVDVIDEO-VTS";
 
@@ -76,7 +83,7 @@ internal static class IfoParser
       return [];
     }
 
-    var table = (int)BigEndian.U32(videoManager, TitleSearchPointerTableSector) * SectorSize;
+    var table = SectorOffset(BigEndian.U32(videoManager, TitleSearchPointerTableSector));
     if (table <= 0 || table >= videoManager.Length)
     {
       return [];
@@ -128,7 +135,7 @@ internal static class IfoParser
       return new Dictionary<int, ProgramChain>();
     }
 
-    var table = (int)BigEndian.U32(titleSet, ProgramChainTableSector) * SectorSize;
+    var table = SectorOffset(BigEndian.U32(titleSet, ProgramChainTableSector));
     if (table <= 0 || table >= titleSet.Length)
     {
       return new Dictionary<int, ProgramChain>();
@@ -165,7 +172,7 @@ internal static class IfoParser
       return map;
     }
 
-    var table = (int)BigEndian.U32(titleSet, PartOfTitleSearchPointerTableSector) * SectorSize;
+    var table = SectorOffset(BigEndian.U32(titleSet, PartOfTitleSearchPointerTableSector));
     if (table <= 0 || table >= titleSet.Length)
     {
       return map;

@@ -145,7 +145,7 @@ namespace MediaInfo
     /// <param name="logger">The logger instance. Optional.</param>
     public MediaInfoWrapper(Stream inputStream, string pathToDll, ILogger? logger)
 #endif
-      : this(inputStream.Length, logger)
+      : this(inputStream is { CanSeek: true } ? inputStream.Length : 0L, logger)
     {
       try
       {
@@ -230,7 +230,10 @@ namespace MediaInfo
       {
         string path = Path.GetDirectoryName(filePath!)!;
         string fileName = Path.GetFileName(filePath);
-        string[] files = Directory.GetFiles(path!, fileName + "*.ts");
+        var files = Directory
+          .GetFiles(path!, fileName + "*.ts")
+          .Where(x => Path.GetFileName(x).StartsWith(fileName, StringComparison.OrdinalIgnoreCase))
+          .ToArray();
         if (files.Length > 0)
         {
           filePath = files[0];
@@ -479,8 +482,36 @@ namespace MediaInfo
         return 0L;
       }
 
-      var result = Directory.GetFiles(folderName).Sum(x => new FileInfo(x).Length);
-      result += Directory.GetDirectories(folderName).Sum(x => GetDirectorySize(x));
+      // A folder is walked with a list of the folders still to visit instead of recursion: a link that leads back into
+      // the folder would otherwise end the process with a stack overflow, which cannot be caught. A link is not followed,
+      // and a folder that cannot be read counts for nothing instead of failing the whole sum.
+      var result = 0L;
+      var pending = new Stack<string>();
+      pending.Push(folderName);
+      while (pending.Count > 0)
+      {
+        var current = pending.Pop();
+        try
+        {
+          foreach (var file in Directory.GetFiles(current))
+          {
+            result += new FileInfo(file).Length;
+          }
+
+          foreach (var directory in Directory.GetDirectories(current))
+          {
+            if ((File.GetAttributes(directory) & FileAttributes.ReparsePoint) == 0)
+            {
+              pending.Push(directory);
+            }
+          }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+          // Not readable: it is left out of the size.
+        }
+      }
+
       return result;
     }
 
@@ -948,7 +979,9 @@ namespace MediaInfo
       try
       {
         return Directory.GetFiles(Path.GetDirectoryName(strFile) ?? string.Empty, filenameNoExt + "*")
-          .Any(x => SubTitleExtensions.ContainsKey(Path.GetExtension(x)));
+          .Any(x =>
+            Path.GetFileName(x).StartsWith(filenameNoExt, StringComparison.OrdinalIgnoreCase) &&
+            SubTitleExtensions.ContainsKey(Path.GetExtension(x)));
       }
       catch (Exception ex)
       {

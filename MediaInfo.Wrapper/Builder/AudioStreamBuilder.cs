@@ -314,7 +314,7 @@ namespace MediaInfo.Builder
       }
 
       result.Format = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text, x => ExtractInfo(x, 0));
-      result.CodecName = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text).ToUpper();
+      result.CodecName = Get((int)NativeMethods.Audio.Audio_Format, InfoKind.Text).ToUpperInvariant();
       result.CodecDescription = Get((int)NativeMethods.Audio.Audio_Format_Commercial, InfoKind.Text);
       result.Tags = new AudioTagBuilder(Info, StreamPosition).Build();
 
@@ -377,7 +377,7 @@ namespace MediaInfo.Builder
     private void ExtractMpegLayer3Audio(AudioStream result)
     {
       var formatProfile = Get((int)NativeMethods.Audio.Audio_Format_Profile, InfoKind.Text)?.Trim();
-      switch (formatProfile?.ToLower())
+      switch (formatProfile?.ToLowerInvariant())
       {
         case "layer 2":
           result.Codec = AudioCodec.MpegLayer2;

@@ -64,7 +64,14 @@ public sealed class ThrottlingAnalyzer : MediaInfoAnalyzerDecorator
     }
     finally
     {
-      _slots.Release();
+      try
+      {
+        _slots.Release();
+      }
+      catch (ObjectDisposedException)
+      {
+        // The analyzer was disposed while this analysis was still running, and there is no slot left to give back.
+      }
     }
   }
 

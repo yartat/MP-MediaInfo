@@ -65,7 +65,7 @@ internal sealed class MediaInfoLibAdapter : INativeMediaInfo, ILibraryCompatibil
   public void OpenBufferFinalize() => _mediaInfo.OpenBufferFinalize();
 
   /// <inheritdoc />
-  public void Close() => _mediaInfo.Close();
+  public void Close() => _mediaInfo.CloseMedia();
 
   /// <inheritdoc />
   public string Get(StreamKind streamKind, int streamNumber, string parameter, InfoKind kindOfInfo, InfoKind kindOfSearch) =>

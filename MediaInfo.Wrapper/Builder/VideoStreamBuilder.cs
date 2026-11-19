@@ -449,31 +449,8 @@ namespace MediaInfo.Builder
     private static bool TryGetFrameRateMode(string source, out FrameRateMode result) =>
       FrameRateModes.TryGetValue(source, out result);
 
-    private string GetFullCodecName(string codecProfile)
-    {
-      var strFormat = Get((int)NativeMethods.Video.Video_Format_Commercial, InfoKind.Text);
-      var strCodec = Get((int)NativeMethods.Video.Video_CodecID, InfoKind.Text);
-
-      var strCodecVer = Get((int)NativeMethods.Video.Video_Format_Version, InfoKind.Text).ToUpper();
-      if (strCodec == "MPEG-4 VISUAL")
-      {
-        strCodec = Get((int)NativeMethods.Video.Video_CodecID, InfoKind.Text).ToUpperInvariant();
-      }
-      else
-      {
-        if (!string.IsNullOrEmpty(strCodecVer))
-        {
-          strCodec = (strCodec + " " + strCodecVer).Trim();
-          var strCodecProf = Get((int)NativeMethods.Video.Video_Format_Profile, InfoKind.Text).ToUpper();
-          if (strCodecProf != "MAIN@MAIN")
-          {
-            strCodec = (strCodec + " " + strCodecProf).Trim();
-          }
-        }
-      }
-
-      return strFormat + (string.IsNullOrEmpty(codecProfile) ? string.Empty : " " + codecProfile);
-      //return strCodec.Replace("+", "PLUS");
-    }
+    private string GetFullCodecName(string codecProfile) =>
+      Get((int)NativeMethods.Video.Video_Format_Commercial, InfoKind.Text) +
+      (string.IsNullOrEmpty(codecProfile) ? string.Empty : " " + codecProfile);
   }
 }

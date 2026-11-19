@@ -211,7 +211,7 @@ namespace MediaInfo
     /// Returns <c>true</c> if the specified path is RTSP; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsRtsp(this string? path) =>
-      !string.IsNullOrEmpty(path) && path!.IndexOf("rtsp:", StringComparison.OrdinalIgnoreCase) >= 0;
+      !string.IsNullOrEmpty(path) && path!.StartsWith("rtsp:", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Determines whether path is network video.

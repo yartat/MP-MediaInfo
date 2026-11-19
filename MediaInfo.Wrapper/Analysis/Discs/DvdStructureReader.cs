@@ -109,9 +109,10 @@ public sealed class DvdStructureReader : IDiscStructureReader
     var informationFiles = files
       .Select(path => (Path: path, Match: TitleSetIfo.Match(GetName(path))))
       .Where(x => x.Match.Success)
+      .GroupBy(x => int.Parse(x.Match.Groups["set"].Value))
       .ToDictionary(
-        x => int.Parse(x.Match.Groups["set"].Value),
-        x => x.Path);
+        group => group.Key,
+        group => group.OrderBy(x => x.Path, StringComparer.Ordinal).First().Path);
 
     var videoManager = files.FirstOrDefault(
       x => string.Equals(GetName(x), VideoManagerFileName, StringComparison.OrdinalIgnoreCase));

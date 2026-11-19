@@ -34,13 +34,13 @@
 | 15 | Средняя | Уязвимость | RTSP: Basic по открытому каналу, понижение схемы, Digest без `qop` (повтор) | Исправлено |
 | 16 | Средняя | Уязвимость | Загрузка нативных DLL по относительному пути, ошибки загрузки игнорируются (повтор) | Исправлено для .NET Framework |
 | 17 | Средняя | Поведение | `setlocale` меняет глобальную локаль процесса из параллельных потоков | Исправлено |
-| 18 | Низкая | Поведение | Зависимость от текущей культуры (`ToUpper`/`ToLower`) | Открыто |
-| 19 | Низкая | Поведение | Fallback-читатель дисков не срабатывает на исключение; дубликат ключа на регистрозависимой ФС | Открыто |
-| 20 | Низкая | Поведение | `WithRtsp` игнорирует `UseFileSystem` | Открыто |
-| 21 | Низкая | Поведение | Мелкие ошибки моделей и билдеров (см. раздел) | Открыто |
-| 22 | Низкая | Устойчивость | Мелкие проблемы декораторов и потокового анализа (см. раздел) | Открыто |
-| 23 | Низкая | Уязвимость | IFO/MPLS без лимита размера, квадратичный MPLS, переполнение в IFO, wildcard в имени (повтор) | Открыто |
-| 24 | Низкая | Устойчивость | Устаревший `MediaInfoWrapper`: рекурсия без защиты от циклов ссылок | Открыто |
+| 18 | Низкая | Поведение | Зависимость от текущей культуры (`ToUpper`/`ToLower`) | Исправлено |
+| 19 | Низкая | Поведение | Fallback-читатель дисков не срабатывает на исключение; дубликат ключа на регистрозависимой ФС | Исправлено |
+| 20 | Низкая | Поведение | `WithRtsp` игнорирует `UseFileSystem` | Исправлено |
+| 21 | Низкая | Поведение | Мелкие ошибки моделей и билдеров (см. раздел) | Исправлено частично |
+| 22 | Низкая | Устойчивость | Мелкие проблемы декораторов и потокового анализа (см. раздел) | Исправлено частично |
+| 23 | Низкая | Уязвимость | IFO/MPLS без лимита размера, квадратичный MPLS, переполнение в IFO, wildcard в имени (повтор) | Исправлено |
+| 24 | Низкая | Устойчивость | Устаревший `MediaInfoWrapper`: рекурсия без защиты от циклов ссылок | Исправлено |
 
 Зависимости: известных уязвимостей в NuGet-пакетах нет (оба решения, включая транзитивные).
 
@@ -64,12 +64,19 @@
 | 13 | `UrlRedactor`, `NetworkMediaSource.DisplayName`, маскирование в результатах, сообщениях, прогрессе и логах | `CredentialRedactionTests`, `RtspServerBehaviourTests` |
 | 15 | Несколько `WWW-Authenticate`, защита от понижения схемы, Digest `qop=auth`, экранирование, `AllowBasicAuthentication` | `RtspAuthenticationTests` |
 | 16 | Порядок поиска, загрузка по полному пути с флагами, `LoadFailure` (только .NET Framework) | `MediaInfo.Wrapper.Tests` (net481) |
+| 18 | Инвариантная культура для регистра и чисел | `HardeningTests` |
+| 19 | Переход к папочному читателю при исключении, `GroupBy` вместо `ToDictionary` | `HardeningTests` |
+| 20 | `WithStrategy`, `WithRtsp` не зависит от порядка вызовов | `HardeningTests` |
+| 21 | `PcmALaw`/`PcmMuLaw`, `IsRtsp`, отказ для H.265 с DONL | `RtspServerBehaviourTests` |
+| 22 | Dispose у throttle, проверка `BufferSize`, `MaximumStreamBytes`, `Close` адаптера | `HardeningTests` |
+| 23 | Лимиты IFO/MPLS, линейный MPLS, `long` для секторов, проверка имени в шаблоне | `HardeningTests` |
+| 24 | Обход размера папки списком, поток без перемотки в конструкторе | `LegacyWrapperRobustnessTests` |
 
 Для устаревшего `MediaInfoWrapper` пункт 4 меняет поведение: путь к папке с вложенными дисками больше не открывается, раньше он случайно находил первый диск.
 
 Пункт 2 ничего не исправляет в значениях: пока нативная библиотека не совпадает с `NativeMethods`, `ImageStreamBuilder` и остальные билдеры читают по индексу чужие поля. Предупреждение лишь сообщает об этом. Перевод `ImageStreamBuilder` на чтение по имени отложен по решению владельца.
 
-Состояние проверок после исправлений: Debug и Release собираются, `MediaInfo.Analysis.Tests` 229, `MediaInfo.Analysis.Rtsp.Tests` 107 (6 пропущены), интеграционные 64 (10 пропущены). В `MediaInfo.Wrapper.Core.Tests` падают 14 тестов, из них 7 (`Load3dDemo`, 6 `LoadUhdDemo`) падают и на чистом `HEAD`, остальные ждут `localhost`-сервер (`LoadAVSteam`) и файлы от `TestFilesGenerator`.
+Состояние проверок после исправлений (на 2026-11-20 `MediaInfo.Analysis.Tests` 242, `MediaInfo.Analysis.Rtsp.Tests` 108, `MediaInfo.Wrapper.Tests` на 255 успешных из 270): Debug и Release собираются, `MediaInfo.Analysis.Tests` 229, `MediaInfo.Analysis.Rtsp.Tests` 107 (6 пропущены), интеграционные 64 (10 пропущены). В `MediaInfo.Wrapper.Core.Tests` падают 14 тестов, из них 7 (`Load3dDemo`, 6 `LoadUhdDemo`) падают и на чистом `HEAD`, остальные ждут `localhost`-сервер (`LoadAVSteam`) и файлы от `TestFilesGenerator`.
 
 ---
 
@@ -273,22 +280,39 @@
 
 ## Низкая
 
-### 18. Зависимость от культуры
+### 18. Зависимость от культуры — исправлено
+
+Исправлено 2026-11-20: `ToUpper`/`ToLower` в билдерах заменены на инвариантные варианты, `int.TryParse` и `long.TryParse` в `TagBuilderHelper` разбирают с `CultureInfo.InvariantCulture`. Тест: `HardeningTests.Analyze_UnderTheTurkishCulture_StillFindsTheLanguageAndTheSubtitleCodec`.
 
 - `SubtitleStreamBuilder.TryGetCodec`: `source.ToUpper()` с текущей культурой. В турецкой и азербайджанской культуре `i` превращается в `İ`, и коды вроде `dvb_subtitle` не находятся.
 - `LanguageMediaStreamBuilder`: `Get("Language").ToLower()`; `AudioStreamBuilder`: `CodecName = ...ToUpper()`; `VideoStreamBuilder.GetFullCodecName`: `ToUpper()`. Нужно использовать `ToUpperInvariant` и `ToLowerInvariant`.
 - `TagBuilderHelper.TryGetInt` и `TryGetLong` разбирают с текущей культурой. Для целых это почти всегда безопасно, но стоит явно указать `CultureInfo.InvariantCulture`.
 
-### 19. Чтение дисков
+### 19. Чтение дисков — исправлено
+
+Исправлено 2026-11-20: `FallbackDiscStructureReader` переходит к папочному читателю и при исключении предпочтительного (отмена не скрывается), сообщение идёт в прогресс. Словари клипов и наборов заголовков строятся через `GroupBy`, поэтому `00001.m2ts` и `00001.M2TS` на регистрозависимой файловой системе больше не дают `ArgumentException`. Тесты: `HardeningTests` (раздел Discs). Дубликаты имён отдельным тестом не покрыты: `FakeFileSystem` не различает регистр.
 
 - `FallbackDiscStructureReader.ReadAsync`: запасной читатель вызывается только при `null`, а не при исключении. Любая ошибка предпочтительного читателя проваливает анализ, хотя папочный читатель справился бы.
 - `MplsBluRayStructureReader.cs:87` и `DvdStructureReader.cs:112`: `ToDictionary(..., OrdinalIgnoreCase)`. На регистрозависимой ФС `00001.m2ts` и `00001.M2TS` дают `ArgumentException` (с учётом предыдущего пункта весь анализ падает).
 
-### 20. `WithRtsp` игнорирует `UseFileSystem`
+### 20. `WithRtsp` игнорирует `UseFileSystem` — исправлено
+
+Исправлено 2026-11-20: новый `MediaInfoAnalyzerBuilder.WithStrategy` добавляет стратегию рядом со стандартными, которые создаются при `Build()` с файловой системой билдера. `WithRtsp` использует его, поэтому порядок вызовов не важен. `AddStrategy` по-прежнему заменяет стандартный набор. Тест: `HardeningTests.Builder_WithStrategy_KeepsTheDefaultsWhateverTheOrderOfTheCalls`.
 
 `MediaInfo.Analysis.Rtsp/RtspAnalyzerExtensions.cs:44`: стратегии по умолчанию создаются с `MediaInfoFileSystem.Instance`. Дисковые стратегии читают реальную ФС, остальные — подставленную.
 
-### 21. Модели и билдеры
+### 21. Модели и билдеры — исправлено частично
+
+Исправлено 2026-11-20:
+- `PCMA` и `PCMU` дают `AudioCodec.PcmALaw` и `AudioCodec.PcmMuLaw`.
+- `IsRtsp` проверяет начало строки (`StartsWith`), а не вхождение.
+- H.265 с `sprop-max-don-diff` выше нуля отклоняется с понятной ошибкой вместо молча неверной сборки. Поддержка DONL не реализована. Тест: `RtspServerBehaviourTests.Capture_H265WithDecodingOrderNumbers_IsRefusedInsteadOfRebuiltWrongly`.
+- Удалена мёртвая часть `GetFullCodecName`.
+
+Не менялось:
+- `ChapterStreamBuilder.Kind` возвращает `Menu`, потому что в публичном `MediaStreamKind` нет члена для потока `Other`; добавление члена меняет публичный API.
+- Теги файла для потока с индексом больше нуля читаются из General-потока с индексом этого потока. Исправление дублировало бы теги файла и обложки в каждом потоке, это изменение поведения, которое стоит принять отдельно.
+- `VideoTagBuilder` и `AudioTagBuilder` опрашивают все поля на каждый поток. Это вопрос скорости, а не ошибка.
 
 - `ChapterStreamBuilder.Kind` возвращает `MediaStreamKind.Menu` для потоков `Other`.
 - `AudioStreamBuilder.cs:319` создаёт `AudioTagBuilder(Info, StreamPosition)`, а базовый `GeneralTagBuilder` читает General-поток с позицией аудиопотока. У аудиопотока 0 теги файла дублируются (обложки декодируются из base64 повторно), у потоков 1 и далее они пустые. Тот же приём в `VideoTagBuilder`.
@@ -298,18 +322,36 @@
 - `FileNameExtensions.IsRtsp` ищет `rtsp:` в любом месте строки: `http://host/?u=rtsp:...` и путь Linux `/mnt/rtsp:cam.mkv` уходят в RTSP-стратегию.
 - `VideoStreamBuilder.GetFullCodecName` вычисляет `strCodec`, но не использует его (мёртвый код).
 
-### 22. Декораторы и потоковый анализ
+### 22. Декораторы и потоковый анализ — исправлено частично
+
+Исправлено 2026-11-20:
+- `ThrottlingAnalyzer` не роняет анализ, который закончился после `Dispose` (`ObjectDisposedException` при `Release`).
+- `MediaAnalysisOptions.BufferSize` отклоняет значения не больше нуля.
+- Новая опция `MaximumStreamBytes` ограничивает чтение потока, который не умеет перематываться. По умолчанию `null`: без ограничения, чтобы не менять результат для длинных потоков.
+- `INativeMediaInfo.Close` у `MediaInfoLibAdapter` теперь закрывает только открытое медиа и оставляет handle (`MediaInfo_Close`), как обещает контракт интерфейса. Раньше он уничтожал handle. Публичный `MediaInfo.Close()` по-прежнему освобождает handle, его документация уточнена.
+
+Тесты: `HardeningTests` (раздел Decorators and options). Предел задержки повтора см. пункт 7.
 
 - `RetryingAnalyzer.cs:81`: `delay += delay` без верхней границы. Примерно после 40 попыток `TimeSpan` переполняется (`OverflowException`).
 - `ThrottlingAnalyzer`: `Dispose` во время выполняющихся анализов освобождает семафор, и их `Release()` бросает `ObjectDisposedException`.
 - `StreamAnalysisStrategy`: `BufferSize` не проверяется (0 даёт молча пустой результат, отрицательный — исключение). Для не-seekable потока нет лимита на объём: бесконечный поток читается, пока не отменят.
 - `MediaInfo.Close()` вызывает `MediaInfo_Delete`, а не `MediaInfo_Close`, то есть после `Close` handle непригоден. Имя вводит в заблуждение, в том числе через `INativeMediaInfo.Close`.
 
-### 23. Парсеры дисков (повторы)
+### 23. Парсеры дисков — исправлено
+
+Исправлено 2026-11-20:
+- IFO и MPLS размером больше 16 МиБ не читаются в память.
+- Разбор MPLS линейный: времена входа элементов запоминаются при разборе, а не ищутся обходом для каждой метки.
+- Номер сектора в IFO умножается как `long`, поэтому значение вроде `0x00200001` больше не даёт «допустимое» смещение.
+- Имя файла, попавшее в шаблон поиска (`ExternalSubtitleAnalyzer`, устаревший `MediaInfoWrapper` для буферов live-TV и субтитров), проверяется на точное начало имени, поэтому `*` и `?` не расширяют результат.
+
+Тесты: `HardeningTests` (раздел Parsers и Patterns). Проверка линейного времени грубая: порог в две секунды на 5000 элементов и 65535 меток.
 
 IFO и MPLS читаются в память без лимита размера (`IfoDvdStructureReader.Read`, `MplsBluRayStructureReader.Read`). Разбор MPLS квадратичный. Есть переполнение `U32 * SectorSize` в `IfoParser`. Шаблон `Directory.GetFiles` содержит пользовательское имя файла, wildcard-символы не экранированы. Подробности в `SECURITY_AUDIT.md`, пункты 10–12 и 14.
 
-### 24. Устаревший `MediaInfoWrapper`
+### 24. Устаревший `MediaInfoWrapper` — исправлено
+
+Исправлено 2026-11-20: `GetDirectorySize` обходит папки списком, а не рекурсией, не заходит в ссылки и точки повторной обработки и пропускает нечитаемые папки, так что цикл ссылок больше не завершает процесс переполнением стека. Конструктор от `Stream` не запрашивает `Length` у потока без перемотки. Тест на конструктор: `LegacyWrapperRobustnessTests`. Обход папки с циклом ссылок отдельным тестом не покрыт: для него нужна точка повторной обработки.
 
 - `MediaInfoWrapper.cs:480` (`GetDirectorySize`): рекурсия по `GetDirectories` идёт через символические ссылки и junction. Цикл ссылок внутри папки Blu-ray или DVD даёт `StackOverflowException`, который нельзя перехватить: процесс падает. Исключения доступа тоже не ловятся.
 - Конструктор от `Stream` вызывает `inputStream.Length` до `try`. Не-seekable поток бросает `NotSupportedException` из конструктора, а не даёт `Success = false`.
@@ -330,10 +372,9 @@ IFO и MPLS читаются в память без лимита размера 
 
 ## Порядок исправления
 
-Сделано: 1, 2, 4, 5, 6, 7, 9, 10 (частично), 11, 12, 13, 14, 15 (без `rtsps`), 16 (.NET Framework), 17. Ложная находка: 8. Пропущено: 3 (нужен Mac).
+Сделано: 1, 2, 4, 5, 6, 7, 9, 10 (частично), 11–14, 15 (без `rtsps`), 16 (.NET Framework), 17–20, 21 и 22 (частично), 23, 24. Ложная находка: 8. Пропущено: 3 (нужен Mac).
 
 Дальше по приоритету:
-1. Остальное (18–24).
-2. Перевод `ImageStreamBuilder` на чтение по имени, если нужен корректный результат с нативной библиотекой новее 26.10 до её официального выпуска.
+1. Перевод `ImageStreamBuilder` на чтение по имени, если нужен корректный результат с нативной библиотекой новее 26.10 до её официального выпуска.
 
 Для проверок RTSP есть готовая основа с настоящим TCP-сервером (`RtspHostileServerTests`, `RtspServerBehaviourTests`, `RtspAuthenticationTests`).

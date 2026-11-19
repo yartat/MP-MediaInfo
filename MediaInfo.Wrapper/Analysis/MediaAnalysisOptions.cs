@@ -75,7 +75,27 @@ public sealed class MediaAnalysisOptions
   /// Gets or sets the size of the blocks media data is submitted to the library in.
   /// </summary>
   /// <value>The default value is 64 kilobytes.</value>
-  public int BufferSize { get; set; } = 64 * 1024;
+  /// <exception cref="ArgumentOutOfRangeException">The value is not greater than zero.</exception>
+  public int BufferSize
+  {
+    get => _bufferSize;
+    set => _bufferSize = value > 0
+      ? value
+      : throw new ArgumentOutOfRangeException(nameof(value), value, "The buffer must hold at least one byte.");
+  }
+
+  private int _bufferSize = 64 * 1024;
+
+  /// <summary>
+  /// Gets or sets the greatest number of bytes read from a stream that cannot seek.
+  /// </summary>
+  /// <remarks>
+  /// A stream that cannot seek may never end, and the library may never decide that it has seen enough. When the limit
+  /// is reached the analysis goes on with what has been read. A stream that can seek is not limited, because the library
+  /// asks for the parts it needs.
+  /// </remarks>
+  /// <value>The default value is <see langword="null"/>, which reads the stream to its end or until the library is done.</value>
+  public long? MaximumStreamBytes { get; set; }
 
   /// <summary>
   /// Gets or sets a value indicating whether blocking calls into the native library are moved off the calling thread.

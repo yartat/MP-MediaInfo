@@ -170,6 +170,39 @@ public class HardeningTests
 
   #endregion
 
+  [Fact]
+  public async Task Analyze_ChaptersAndMenus_HaveTheirOwnKinds()
+  {
+    var fileSystem = new FakeFileSystem().AddFile(Movie);
+    var factory = new FakeNativeMediaInfoFactory();
+    factory.AddMedia(Movie)
+      .WithStreams(StreamKind.Video, 1)
+      .WithStreams(StreamKind.Other, 1)
+      .WithStreams(StreamKind.Menu, 1);
+
+    var result = await MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(factory)
+      .UseFileSystem(fileSystem)
+      .Configure(options => options.OffloadBlockingCalls = false)
+      .Build()
+      .AnalyzeAsync(new FileMediaSource(Movie));
+
+    result.Chapters.Should().ContainSingle().Which.Kind.Should().Be(MediaStreamKind.Chapter);
+    result.MenuStreams.Should().ContainSingle().Which.Kind.Should().Be(MediaStreamKind.Menu);
+  }
+
+  [Fact]
+  public void MediaStreamKind_NewMember_DoesNotChangeTheNumbersOfTheOthers()
+  {
+    // The numbers are part of the contract of anything that stores the enumeration as a number.
+    ((int)MediaStreamKind.Video).Should().Be(0);
+    ((int)MediaStreamKind.Audio).Should().Be(1);
+    ((int)MediaStreamKind.Text).Should().Be(2);
+    ((int)MediaStreamKind.Image).Should().Be(3);
+    ((int)MediaStreamKind.Menu).Should().Be(4);
+    ((int)MediaStreamKind.Chapter).Should().Be(5);
+  }
+
   #region Culture
 
   [Fact]

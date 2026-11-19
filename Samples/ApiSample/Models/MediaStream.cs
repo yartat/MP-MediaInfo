@@ -51,7 +51,14 @@ public enum MediaStreamKind
     /// </summary>
     [EnumMember(Value = "menu")]
     [JsonStringEnumMemberName("menu")]
-    Menu
+    Menu,
+
+    /// <summary>
+    /// A chapter of the media
+    /// </summary>
+    [EnumMember(Value = "chapter")]
+    [JsonStringEnumMemberName("chapter")]
+    Chapter
 }
 
 /// <summary>

@@ -24,7 +24,7 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/scalar",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": false
     }
   }
 }

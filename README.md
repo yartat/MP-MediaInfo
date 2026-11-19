@@ -120,7 +120,7 @@ Make sure that the following dependencies are installed in the operating system 
 | [Debian](#debian) | 9 and above |
 | [Kali Linux](#kali-linux) | |
 | [Windows](#windows) | 7 and above |
-| [Docker](#docker) | buster |
+| [Docker](#docker) | Debian 13 (trixie) |
 
 ### Alpine
 
@@ -253,7 +253,21 @@ RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc 
 
 #### .NET 10.0
 
+The `-trixie-slim` image is Debian 13 (the default `10.0` tag is Ubuntu 24.04, the package names are the same). The native library needs libcurl (GnuTLS) and libmms; libzen is bundled.
+
 ```Dockerfile{:copy}
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-RUN apt-get update && apt-get install -y libzen0v5 libmms0 openssl zlib1g zlibc libnghttp2-14 librtmp1 curl libcurl4-gnutls-dev libglib2.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-trixie-slim
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends libcurl3t64-gnutls libmms0 && rm -rf /var/lib/apt/lists/*
+USER $APP_UID
 ```
+
+The complete file, with the build stages, is [Samples/ApiSample/Dockerfile](Samples/ApiSample/Dockerfile). Build it from the
+repository root and the container listens on port 8080:
+
+```Shell{:copy}
+docker build -f Samples/ApiSample/Dockerfile -t mediainfo-api .
+docker run --rm -p 8080:8080 mediainfo-api
+```
+
+Open `http://localhost:8080/scalar`; `/app/Data/Test_H264.m2ts` is a sample file inside the image.

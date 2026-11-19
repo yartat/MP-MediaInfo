@@ -36,7 +36,12 @@ namespace MediaInfo.Model
     /// <summary>
     /// Menu
     /// </summary>
-    Menu
+    Menu,
+
+    /// <summary>
+    /// A chapter of the media
+    /// </summary>
+    Chapter
   }
 
   /// <summary>

@@ -10,6 +10,7 @@ using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using ApiSample.Endpoints;
 using ApiSample.Infrastructure;
 using MediaInfo.Analysis;
 using Mapster;
@@ -36,9 +37,11 @@ public static class Startup
     {
         var services = webApplicationBuilder.Services;
         var configuration = webApplicationBuilder.Configuration;
-        services
-            .AddControllers()
-                .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
+        services.ConfigureHttpJsonOptions(options =>
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull);
+
+        // Checks the DataAnnotations of the request models and answers 400 with the problem details itself.
+        services.AddValidation();
 
         var config = TypeAdapterConfig.GlobalSettings;
         config.Scan(typeof(Startup).Assembly);
@@ -58,7 +61,6 @@ public static class Startup
             .WithExternalSubtitles());
 
         services
-            .AddFilters()
             .AddOpenApi(options =>
             {
                 // A TimeSpan is a string in JSON, and saying so keeps the document
@@ -101,11 +103,8 @@ public static class Startup
             app.UseHsts();
         }
 
-        app
-            .UseHttpsRedirection()
-            .UseRouting()
-            .UseAuthorization();
-        app.MapControllers();
+        app.UseHttpsRedirection();
+        app.MapMediaEndpoints();
 
         // The document at /openapi/v1.json, and Scalar reading it at /scalar. Both
         // stay on outside development on purpose: an unreachable sample teaches

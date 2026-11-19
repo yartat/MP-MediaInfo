@@ -19,7 +19,7 @@ namespace MediaInfo.Builder
   internal class ChapterStreamBuilder(IMediaInfoReader info, int number, int position) : MediaStreamBuilder<ChapterStream>(info, number, position)
   {
     /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
+    public override MediaStreamKind Kind => MediaStreamKind.Chapter;
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;

@@ -6,7 +6,6 @@
 
 #endregion
 
-using ApiSample.Infrastructure.Filters;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
@@ -41,12 +40,4 @@ internal static class ServiceCollectionExtensions
 
             return Task.CompletedTask;
         });
-
-    /// <summary>
-    /// Adds the filters to DI container.
-    /// </summary>
-    /// <param name="services">The services instance.</param>
-    public static IServiceCollection AddFilters(this IServiceCollection services) =>
-        services
-            .AddScoped<ValidateModelStateAttribute>();
 }

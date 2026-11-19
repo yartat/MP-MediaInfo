@@ -39,7 +39,7 @@ namespace MediaInfo.Model
     }
 
       /// <inheritdoc />
-    public override MediaStreamKind Kind => MediaStreamKind.Menu;
+    public override MediaStreamKind Kind => MediaStreamKind.Chapter;
 
     /// <inheritdoc />
     protected override StreamKind StreamKind => StreamKind.Other;

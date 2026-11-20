@@ -287,7 +287,7 @@ public class AnalyzerPipelineTests
   {
     var context = TestContext.Create(factory, fileSystem);
     return new MediaInfoAnalyzer(
-      new PriorityStrategySelector(MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem)),
+      new PriorityStrategySelector(MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem, new global::MediaInfo.Analysis.Http.HttpAnalysisOptions { Enabled = false })),
       context);
   }
 

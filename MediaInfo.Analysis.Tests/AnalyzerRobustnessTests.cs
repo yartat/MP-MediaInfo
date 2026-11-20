@@ -63,6 +63,64 @@ public class AnalyzerRobustnessTests
   }
 
   [Fact]
+  public async Task Timeout_TooManyNativeCallsAreStillRunning_NoMoreAreStarted()
+  {
+    var (factory, fileSystem, profile) = CreateMedia();
+    using var gate = new ManualResetEventSlim(false);
+    profile.OpenGate = gate;
+    var analyzer = Builder(factory, fileSystem)
+      .Configure(options => options.MaximumAbandonedNativeCalls = 2)
+      .WithTimeout(TimeSpan.FromMilliseconds(200))
+      .Build();
+
+    // Two calls hang and are given up on. Each of them still holds a thread, and would hold a connection.
+    (await analyzer.AnalyzeAsync(new FileMediaSource(Movie))).Failure!.Reason.Should().Be(AnalysisFailureReason.Timeout);
+    (await analyzer.AnalyzeAsync(new FileMediaSource(Movie))).Failure!.Reason.Should().Be(AnalysisFailureReason.Timeout);
+
+    var refused = await analyzer.AnalyzeAsync(new FileMediaSource(Movie));
+
+    refused.Failure!.Reason.Should().Be(AnalysisFailureReason.Busy);
+    refused.Failure.Message.Should().Contain("2 earlier native calls");
+    factory.OpenedPaths.Should().HaveCount(2, "the refused analysis never reached the library");
+
+    // As the calls return, analyses are accepted again.
+    gate.Set();
+    AnalysisFailureReason? reason = AnalysisFailureReason.Busy;
+    var clock = Stopwatch.StartNew();
+    while (reason == AnalysisFailureReason.Busy && clock.Elapsed < TimeSpan.FromSeconds(5))
+    {
+      var result = await analyzer.AnalyzeAsync(new FileMediaSource(Movie));
+      reason = result.Success ? null : result.Failure!.Reason;
+      await Task.Delay(10);
+    }
+
+    reason.Should().BeNull();
+  }
+
+  [Fact]
+  public async Task Timeout_CallsThatReturnInTimeNeverCountAsAbandoned()
+  {
+    var (factory, fileSystem, _) = CreateMedia();
+    var analyzer = Builder(factory, fileSystem)
+      .Configure(options => options.MaximumAbandonedNativeCalls = 1)
+      .WithTimeout(TimeSpan.FromSeconds(30))
+      .Build();
+
+    for (var i = 0; i < 20; i++)
+    {
+      (await analyzer.AnalyzeAsync(new FileMediaSource(Movie))).Success.Should().BeTrue();
+    }
+  }
+
+  [Fact]
+  public void Options_AbandonedCallLimitBelowOne_IsRejected()
+  {
+    var act = () => new MediaAnalysisOptions { MaximumAbandonedNativeCalls = 0 };
+
+    act.Should().Throw<ArgumentOutOfRangeException>();
+  }
+
+  [Fact]
   public async Task Cancellation_NativeCallDoesNotReturn_ReleasesTheCaller()
   {
     var (factory, fileSystem, profile) = CreateMedia();

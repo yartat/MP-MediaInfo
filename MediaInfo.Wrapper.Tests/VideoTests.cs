@@ -198,7 +198,7 @@ namespace MediaInfo.Wrapper.Tests
     }
 
     [Theory]
-    [InlineData("./Data/Test_H264_Ac3.m2ts")]
+    [InlineData("./Data/Test_H264_AC3.m2ts")]
     public void LoadVideoWithDolbyDigital(string fileName)
     {
       _mediaInfoWrapper = new MediaInfoWrapper(fileName, _logger);

@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaInfo.Wrapper\MediaInfo.Wrapper.Core.csproj" />
+    <Compile Include="..\MediaInfo.Analysis.Tests\Fakes\TestHttpServer.cs" Link="Fakes\TestHttpServer.cs" />
   </ItemGroup>
 
 </Project>

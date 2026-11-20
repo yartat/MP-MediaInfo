@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -99,6 +99,94 @@ public class NavigationTableParserTests
   {
     IfoParser.ReadProgramChains(new byte[4096]).Should().BeEmpty();
     IfoParser.ReadTitleToChainMap(new byte[4096]).Should().BeEmpty();
+  }
+
+  // Every pointer of the chain table aims at one chain of 99 programs over 255 cells, and the file stays small.
+  private static byte[] TitleSetWithSharedChain(int pointers, int programs)
+  {
+    const int table = 2048;
+    var chainOffset = 8 + (pointers * 8);
+    var start = table + chainOffset;
+    var data = new byte[start + 0x200 + (255 * 24) + 16];
+    "DVDVIDEO-VTS"u8.CopyTo(data);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0xCC), 1);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(table), (ushort)pointers);
+    for (var i = 0; i < pointers; i++)
+    {
+      System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(table + 8 + (i * 8) + 4), (uint)chainOffset);
+    }
+
+    data[start + 2] = (byte)programs;
+    data[start + 3] = 255;
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(start + 0xE6), 0x100);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(start + 0xE8), 0x200);
+    for (var program = 0; program < 256; program++)
+    {
+      data[start + 0x100 + program] = (byte)(program % 2 == 0 ? 1 : 255);
+    }
+
+    return data;
+  }
+
+  [Fact]
+  public void TitleSet_ManyPointersToOneChain_ReadsTheChainOnce()
+  {
+    var data = TitleSetWithSharedChain(pointers: 2000, programs: 50);
+
+    var chains = IfoParser.ReadProgramChains(data);
+
+    chains.Should().HaveCount(2000);
+    chains.Values.Select(x => x.Chapters).Distinct().Should().ContainSingle("the same target is not read again");
+    chains.Values.Sum(x => x.Chapters.Count).Should().BeGreaterThan(IfoParser.MaximumChaptersPerTitleSet,
+      "the chapters are shared, and it is the work that is bounded");
+  }
+
+  [Fact]
+  public void TitleSet_PointerCountsAndProgramCountsBeyondTheFormat_AreNotBelieved()
+  {
+    var many = IfoParser.ReadProgramChains(TitleSetWithSharedChain(pointers: 65535, programs: 50));
+    many.Count.Should().BeLessThanOrEqualTo(IfoParser.MaximumChainPointers);
+
+    var tooManyPrograms = IfoParser.ReadProgramChains(TitleSetWithSharedChain(pointers: 1, programs: 255));
+    tooManyPrograms[1].Chapters.Should().BeEmpty("a chain has at most 99 programs");
+  }
+
+  [Fact]
+  public void TitleSet_ChainsThatTogetherHoldMoreChaptersThanADiscCan_StopAtTheBudget()
+  {
+    const int table = 2048;
+    const int pointers = 2000;
+    var chainSize = 0x100 + 256 + (255 * 24);
+    var data = new byte[table + 8 + (pointers * 8) + (pointers * 16) + chainSize + 16];
+    "DVDVIDEO-VTS"u8.CopyTo(data);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0xCC), 1);
+    System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(table), pointers);
+
+    // The chains start a few bytes apart, so that they overlap and each one is a different target that reads the
+    // same tables. No two pointers share a target here.
+    var first = table + 8 + (pointers * 8);
+    for (var i = 0; i < pointers; i++)
+    {
+      var start = first + (i * 16);
+      System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(table + 8 + (i * 8) + 4), (uint)(start - table));
+      data[start + 2] = 99;
+      data[start + 3] = 255;
+      System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(start + 0xE6), 0x100);
+      System.Buffers.Binary.BinaryPrimitives.WriteUInt16BigEndian(data.AsSpan(start + 0xE8), 0x200);
+
+      // The program maps overlap too. They are shifted by an even number of bytes, so every chain reads the same pattern.
+      for (var program = 0; program < 100; program++)
+      {
+        data[start + 0x100 + program] = (byte)(program % 2 == 0 ? 1 : 255);
+      }
+    }
+
+    var chains = IfoParser.ReadProgramChains(data);
+    var total = chains.Values.Sum(x => x.Chapters.Count);
+
+    chains.Values.Select(x => x.Chapters).Distinct().Count().Should().BeGreaterThan(100, "every pointer has a target of its own");
+    total.Should().BeGreaterThan(IfoParser.MaximumChaptersPerTitleSet - 99, "the budget is used up, not skipped");
+    total.Should().BeLessThanOrEqualTo(IfoParser.MaximumChaptersPerTitleSet);
   }
 
   #endregion

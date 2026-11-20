@@ -71,6 +71,13 @@ internal static class IfoParser
   private const int PartOfTitleEntrySize = 4;
   private const int CellPlaybackEntrySize = 24;
 
+  // The limits of the format, and a little more. A title set declares up to 65535 chain pointers and every chain up to
+  // 255 programs, which would be 16 million chapters out of a file of half a megabyte if each pointer were believed.
+  // A disc has a few dozen chains and under a hundred programs in each.
+  internal const int MaximumChainPointers = 2048;
+  internal const int MaximumProgramsPerChain = 99;
+  internal const int MaximumChaptersPerTitleSet = 10_000;
+
   /// <summary>
   /// Reads the titles declared by the video manager.
   /// </summary>
@@ -141,8 +148,12 @@ internal static class IfoParser
       return new Dictionary<int, ProgramChain>();
     }
 
-    var count = BigEndian.U16(titleSet, table);
+    var count = Math.Min((int)BigEndian.U16(titleSet, table), MaximumChainPointers);
     var chains = new Dictionary<int, ProgramChain>(count);
+
+    // Pointers may share a target, and a target is read once however many point at it.
+    var read = new Dictionary<int, ProgramChain>();
+    var chapterBudget = MaximumChaptersPerTitleSet;
 
     for (var i = 0; i < count; i++)
     {
@@ -153,7 +164,13 @@ internal static class IfoParser
         continue;
       }
 
-      chains[i + 1] = ReadChain(titleSet, start);
+      if (!read.TryGetValue(start, out var chain))
+      {
+        chain = ReadChain(titleSet, start, ref chapterBudget);
+        read[start] = chain;
+      }
+
+      chains[i + 1] = chain;
     }
 
     return chains;
@@ -198,7 +215,7 @@ internal static class IfoParser
     return map;
   }
 
-  private static ProgramChain ReadChain(ReadOnlySpan<byte> titleSet, int start)
+  private static ProgramChain ReadChain(ReadOnlySpan<byte> titleSet, int start, ref int chapterBudget)
   {
     var duration = ReadPlaybackTime(titleSet, start + 4);
 
@@ -207,7 +224,8 @@ internal static class IfoParser
     var programMap = BigEndian.U16(titleSet, start + 0xE6);
     var cellPlayback = BigEndian.U16(titleSet, start + 0xE8);
 
-    if (programs == 0 || cells == 0 || programMap == 0 || cellPlayback == 0)
+    if (programs == 0 || cells == 0 || programMap == 0 || cellPlayback == 0
+        || programs > MaximumProgramsPerChain || programs > chapterBudget)
     {
       return new ProgramChain(duration, []);
     }
@@ -245,6 +263,7 @@ internal static class IfoParser
       elapsed += chapterLength;
     }
 
+    chapterBudget -= chapters.Count;
     return new ProgramChain(duration, chapters);
   }
 

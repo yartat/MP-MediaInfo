@@ -38,7 +38,7 @@ namespace MediaInfo.Wrapper.Tests
   /// </remarks>
   /// <param name="testOutputHelper">The test output helper.</param>
   [Collection(MemoryMeasurementCollection.Name)]
-  public class GeneratedFilesIntegrationTests(ITestOutputHelper testOutputHelper)
+  public partial class GeneratedFilesIntegrationTests(ITestOutputHelper testOutputHelper)
     {
     /// <summary>Directory that <c>FileGenerator</c> writes files to (relative to test output).</summary>
     private const string TestAudioDir = "./TestAudio";
@@ -155,10 +155,9 @@ namespace MediaInfo.Wrapper.Tests
       var dir = Path.GetDirectoryName(Path.GetFullPath(manifestPath))!;
       var result = new List<(string, int)>();
       using var stream = new StreamReader(manifestPath, Encoding.UTF8);
-      using var reader = new CsvReader(stream, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture));
+      using var reader = CsvReader.Create(stream, new CsvReaderOptions { Encoding = Encoding.UTF8, FormatProvider = CultureInfo.InvariantCulture });
 
-      var fillRecord = new CsvRecord(0, string.Empty, 0, 0, 0, string.Empty, 0, 0, 0, string.Empty, string.Empty);
-      await foreach (var record in reader.EnumerateRecordsAsync(fillRecord))
+      await foreach (var record in reader.GetRecordsAsync<CsvRecord>())
       {
         if (record.Status != "OK")
           continue;
@@ -188,7 +187,8 @@ namespace MediaInfo.Wrapper.Tests
       return $"{bytes / (1024.0 * 1024.0):F1} MB";
     }
 
-    private record CsvRecord(int Index, string Format, int Channels, int BitDepth, double Bitrate, string BitrateMode,
+    [CsvRecord]
+    internal partial record CsvRecord(int Index, string Format, int Channels, int BitDepth, double Bitrate, string BitrateMode,
         double SampleRate, int Duration, int VbrQuality, string FileName, string Status);
 
     #endregion

@@ -55,6 +55,7 @@ public class CredentialRedactionTests
     var reports = new List<AnalysisProgress>();
     var analyzer = MediaInfoAnalyzerBuilder.Create()
       .UseNativeFactory(factory)
+      .WithHttp(http => http.Enabled = false)
       .UseProgress(new SynchronousProgress(reports))
       .Configure(options => options.OffloadBlockingCalls = false)
       .Build();
@@ -82,6 +83,26 @@ public class CredentialRedactionTests
 
     result.Success.Should().BeFalse();
     result.Failure!.Message.Should().NotContain(Secret).And.Contain("***@host");
+    result.SourcePath.Should().NotContain(Secret);
+  }
+
+  [Fact]
+  public async Task Analyze_HttpMediaThatCannotBeReached_DoesNotNameTheCredentialsInTheFailure()
+  {
+    // Nothing listens on the port of a listener that was just stopped.
+    var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+    listener.Start();
+    var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+    listener.Stop();
+    var analyzer = MediaInfoAnalyzerBuilder.Create()
+      .UseNativeFactory(new FakeNativeMediaInfoFactory())
+      .Build();
+
+    var result = await analyzer.AnalyzeAsync(new NetworkMediaSource($"http://user:{Secret}@127.0.0.1:{port}/video.mp4"));
+
+    result.Success.Should().BeFalse();
+    result.Failure!.Message.Should().NotContain(Secret);
+    result.Failure.Exception?.ToString().Should().NotContain(Secret);
     result.SourcePath.Should().NotContain(Secret);
   }
 

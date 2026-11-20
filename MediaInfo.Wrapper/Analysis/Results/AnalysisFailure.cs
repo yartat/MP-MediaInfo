@@ -78,7 +78,13 @@ public enum AnalysisFailureReason
   /// <summary>
   /// The analysis failed for an unexpected reason.
   /// </summary>
-  Unknown
+  Unknown,
+
+  /// <summary>
+  /// Too many earlier native calls were abandoned by a timeout or a cancellation and have not returned yet, so this
+  /// analysis was not started. See <see cref="MediaAnalysisOptions.MaximumAbandonedNativeCalls"/>.
+  /// </summary>
+  Busy
 }
 
 /// <summary>

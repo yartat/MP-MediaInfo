@@ -29,8 +29,13 @@ else
 }
 ```
 
-The source is a file path, an `http`/`https` URL, a disc folder or a `Stream`. Analyzing a file or a URL cannot be
-interrupted once the native library has started opening it; the token is observed before and after.
+The source is a file path, an `http`/`https` URL, a disc folder or a `Stream`. Analyzing a file cannot be
+interrupted once the native library has started opening it: a timeout or a cancellation releases the caller, and the
+native call goes on until the library returns. `MediaAnalysisOptions.MaximumAbandonedNativeCalls` (16) bounds
+this: with that many such calls outstanding, a new analysis fails at once with `AnalysisFailureReason.Busy`.
+
+`http` and `https` locations are read by the analyzer with `HttpClient`, so they do not have this problem; see
+[HTTP](#http).
 
 ## Result
 
@@ -49,6 +54,10 @@ interrupted once the native library has started opening it; the token is observe
 await using var stream = File.OpenRead("path/to/film.mkv");
 var result = await analyzer.AnalyzeAsync(stream, leaveOpen: true, cancellationToken);
 ```
+
+`MediaAnalysisOptions.MaximumStreamBytes` limits how much is read. A stream that cannot seek has no limit by default; a
+stream that can is read up to four times its length plus 32 MiB. When the limit is reached the result holds what the
+library had, with a warning.
 
 The stream is read in 64 KB blocks and cancellation is observed between blocks.
 
@@ -80,7 +89,8 @@ await foreach (var item in analyzer.AnalyzeFolderAsync(@"D:\Movies", cancellatio
 ```
 
 Results arrive as they are ready. A subfolder holding `VIDEO_TS` or `BDMV` is one disc. A file that cannot be read is
-returned as a failure. `MediaFolderScanOptions` sets `Recursive`, `SearchPattern` and `MediaFilesOnly`.
+returned as a failure. Subfolders that are symbolic links or junctions are skipped. `MediaFolderScanOptions` sets
+`Recursive`, `SearchPattern` and `MediaFilesOnly`.
 
 ## Behaviour
 
@@ -101,7 +111,7 @@ var analyzer = MediaInfoAnalyzerBuilder.Create()
 | --- | --- |
 | `WithValidation` | Rejects a missing path or an unreadable stream before anything is opened |
 | `WithCaching` | Reuses the result for an unchanged file or disc; streams and URLs are never cached |
-| `WithTimeout` | Total time budget, including the wait for a free slot |
+| `WithTimeout` | Total time budget, including the wait for a free slot; it releases the caller, not the native call |
 | `WithRetry` | Repeats only failures that may not persist |
 | `WithConcurrencyLimit` | Limits how many native handles are open at once |
 | `WithExternalSubtitles` | Reports subtitle files next to the media (`HasExternalSubtitles`); worked out on every call, also when the rest of the answer comes from the cache |
@@ -115,6 +125,39 @@ services.AddMediaInfoAnalyzer(builder => builder
 ```
 
 `IMediaInfoAnalyzer` is registered as a singleton and uses the container's logger.
+
+## HTTP
+
+`http` and `https` locations are read with `HttpClient`, and the library is given the bytes. A server that serves
+`Range` requests is read in blocks, so the library can ask for the end of a file first; any other server is read from
+the start as far as the library needs (`Size` is 0 then).
+
+```csharp
+var analyzer = MediaInfoAnalyzerBuilder.Create()
+    .WithHttp(http =>
+    {
+        http.RequestTimeout = TimeSpan.FromSeconds(10);
+        http.AllowInvalidCertificates = true; // a server of your own with a self-signed certificate
+    })
+    .Build();
+
+var result = await analyzer.AnalyzeAsync("https://localhost:8443/videos/test.mp4", cancellationToken);
+```
+
+| `HttpAnalysisOptions` | Default | |
+| --- | --- | --- |
+| `Enabled` | `true` | `false` hands the location to the native library, which has no timeouts |
+| `RequestTimeout` | 15 s | Connect and response headers |
+| `ReceiveTimeout` | 15 s | Silence while a body is received |
+| `BlockSize` | 512 KB | Size of one `Range` request |
+| `MaximumRedirects` | 3 | Redirections followed |
+| `AllowInvalidCertificates` | `false` | Accepts any server certificate |
+| `Credentials` | none | Basic or Digest; the URL may carry them instead. Never sent to another host after a redirection |
+| `UserAgent` | `MP-MediaInfo` | |
+
+A timeout fails with `AnalysisFailureReason.Timeout`, a missing media with `SourceNotFound`, an empty one with
+`SourceEmpty`. A media that changes while it is read fails instead of being mixed. The legacy `MediaInfoWrapper`
+still hands URLs to the native library.
 
 ## RTSP
 

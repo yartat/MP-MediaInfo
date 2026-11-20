@@ -2,24 +2,24 @@
 <Project>
 
   <PropertyGroup>
-    <GitHub>10.0.403</GitHub>
+    <GitHub>11.0.100</GitHub>
     <CoreNative>26.10.0</CoreNative>
     <Native>26.10.0</Native>
-    <TestSdk>18.11.0</TestSdk>
+    <TestSdk>18.12.0</TestSdk>
     <MoqLib>4.21.0</MoqLib>
     <Net8x>8.0.*</Net8x>
     <Net10x>10.0.*</Net10x>
     <AzureContainer>1.23.0</AzureContainer>
     <FluentAssertions>7.2.*</FluentAssertions>
-    <MapsterLib>10.0.13</MapsterLib>
-    <MapsterDILib>10.0.13</MapsterDILib>
+    <MapsterLib>10.0.14</MapsterLib>
+    <MapsterDILib>10.0.14</MapsterDILib>
     <xUnitRunner>4.0.1</xUnitRunner>
     <xUnit>2.9.3</xUnit>
     <MediaToolkitNet>0.3.1</MediaToolkitNet>
-    <Scalar>2.18.3</Scalar>
-    <FFmpeg>20261026.1.0</FFmpeg>
-    <CsvHelper>33.1.0</CsvHelper>
-    <CommandLine>2.0.14</CommandLine>
+    <Scalar>2.21.0</Scalar>
+    <FFmpeg>20261120.1.0</FFmpeg>
+    <CsvHelper>34.1.0</CsvHelper>
+    <CommandLine>3.0.0</CommandLine>
     <MediaInfoVersion>26.10.0</MediaInfoVersion>
     <MediaInfoFileVersion>26.10.0.0</MediaInfoFileVersion>
     <PackageAuthor>yartat</PackageAuthor>

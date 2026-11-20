@@ -26,6 +26,7 @@ public sealed class MediaProbe
 {
   private readonly INativeMediaInfoFactory _factory;
   private readonly MediaStreamCollector _collector;
+  private int _abandoned;
 
   /// <summary>
   /// Initializes a new instance of the <see cref="MediaProbe"/> class.
@@ -54,7 +55,15 @@ public sealed class MediaProbe
     CancellationToken cancellationToken = default)
   {
     cancellationToken.ThrowIfCancellationRequested();
-    return Run(() => OpenAndCollect(path, knownSize), options, cancellationToken);
+    return Run(
+      () => OpenAndCollect(path, knownSize),
+      () => new MediaAnalysisResult
+      {
+        Success = false,
+        Failure = new AnalysisFailure(AnalysisFailureReason.Busy, BusyMessage(options))
+      },
+      options,
+      cancellationToken);
   }
 
   /// <summary>
@@ -73,7 +82,7 @@ public sealed class MediaProbe
     CancellationToken cancellationToken = default)
   {
     cancellationToken.ThrowIfCancellationRequested();
-    return Run(() => ProbeDuration(path), options, cancellationToken);
+    return Run(() => ProbeDuration(path), () => TimeSpan.Zero, options, cancellationToken);
   }
 
   /// <summary>
@@ -90,11 +99,21 @@ public sealed class MediaProbe
   /// <returns>Returns the outcome of the analysis.</returns>
   public MediaAnalysisResult Collect(IMediaInfoReader reader, long knownSize = 0L) => _collector.Collect(reader, knownSize);
 
-  private static async Task<T> Run<T>(Func<T> action, MediaAnalysisOptions options, CancellationToken cancellationToken)
+  private static string BusyMessage(MediaAnalysisOptions options) =>
+    $"{options.MaximumAbandonedNativeCalls} earlier native calls were given up on and have not returned, " +
+    "so the analysis was not started.";
+
+  private async Task<T> Run<T>(Func<T> action, Func<T> busy, MediaAnalysisOptions options, CancellationToken cancellationToken)
   {
     if (!options.OffloadBlockingCalls)
     {
       return action();
+    }
+
+    // Calls that nobody waits for any more still hold a thread and a connection. Past the limit, no more are started.
+    if (Volatile.Read(ref _abandoned) >= options.MaximumAbandonedNativeCalls)
+    {
+      return busy();
     }
 
     var task = Task.Run(action, cancellationToken);
@@ -110,11 +129,17 @@ public sealed class MediaProbe
     {
       if (await Task.WhenAny(task, cancelled.Task).ConfigureAwait(false) != task)
       {
-        // Nobody awaits the abandoned call any more, so its failure is observed here instead of going unobserved.
+        // Nobody awaits the abandoned call any more, so its failure is observed here instead of going unobserved, and
+        // it counts against the limit until it returns.
+        Interlocked.Increment(ref _abandoned);
         _ = task.ContinueWith(
-          static abandoned => abandoned.Exception,
+          abandoned =>
+          {
+            Interlocked.Decrement(ref _abandoned);
+            return abandoned.Exception;
+          },
           CancellationToken.None,
-          TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+          TaskContinuationOptions.ExecuteSynchronously,
           TaskScheduler.Default);
 
         cancellationToken.ThrowIfCancellationRequested();

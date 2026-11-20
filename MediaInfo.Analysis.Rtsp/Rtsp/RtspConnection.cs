@@ -115,6 +115,9 @@ internal sealed class RtspConnection : IDisposable
   /// <param name="cancellationToken">The token that abandons the attempt.</param>
   public async Task ConnectAsync(TimeSpan connectTimeout, CancellationToken cancellationToken)
   {
+    // A caller that has already given up must not be answered with whatever the connection attempt fails with first.
+    cancellationToken.ThrowIfCancellationRequested();
+
     ControlUri = new UriBuilder(_uri) { UserName = string.Empty, Password = string.Empty }.Uri.ToString();
 
     _client = new TcpClient { NoDelay = true };

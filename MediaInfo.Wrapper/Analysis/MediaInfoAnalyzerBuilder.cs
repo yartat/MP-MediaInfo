@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MediaInfo.Analysis.Abstractions;
 using MediaInfo.Analysis.Decorators;
+using MediaInfo.Analysis.Http;
 using MediaInfo.Analysis.Native;
 using MediaInfo.Analysis.Pipeline;
 using MediaInfo.Analysis.Strategies;
@@ -33,6 +34,7 @@ public sealed class MediaInfoAnalyzerBuilder
 {
   private readonly List<IMediaAnalysisStrategy> _strategies = [];
   private readonly List<IMediaAnalysisStrategy> _additionalStrategies = [];
+  private HttpAnalysisOptions? _http;
 
   private INativeMediaInfoFactory? _nativeFactory;
   private IFileSystem? _fileSystem;
@@ -229,6 +231,24 @@ public sealed class MediaInfoAnalyzerBuilder
   }
 
   /// <summary>
+  /// Sets how <c>http</c> and <c>https</c> locations are read.
+  /// </summary>
+  /// <remarks>
+  /// They are read by the analyzer, with timeouts, and not by the native library. See <see cref="HttpAnalysisOptions"/>.
+  /// Without this call the defaults apply, and adding a strategy with <see cref="AddStrategy"/> leaves this setting
+  /// unused, because the default set is then not created.
+  /// </remarks>
+  /// <param name="configure">Changes the options, or <see langword="null"/> to keep the defaults.</param>
+  /// <returns>Returns this builder.</returns>
+  public MediaInfoAnalyzerBuilder WithHttp(Action<HttpAnalysisOptions>? configure = null)
+  {
+    var options = new HttpAnalysisOptions();
+    configure?.Invoke(options);
+    _http = options;
+    return this;
+  }
+
+  /// <summary>
   /// Reports whether subtitle files sit next to the analyzed media.
   /// </summary>
   /// <returns>Returns this builder.</returns>
@@ -256,7 +276,7 @@ public sealed class MediaInfoAnalyzerBuilder
     var context = new MediaAnalysisContext(probe, fileSystem, _options, _progress);
     var strategies = (_strategies.Count > 0
         ? _strategies
-        : MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem))
+        : MediaInfoAnalyzer.CreateDefaultStrategies(fileSystem, _http))
       .Concat(_additionalStrategies)
       .ToList();
 

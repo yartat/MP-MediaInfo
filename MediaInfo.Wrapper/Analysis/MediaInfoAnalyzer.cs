@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediaInfo.Analysis.Abstractions;
 using MediaInfo.Analysis.Discs;
+using MediaInfo.Analysis.Http;
 using MediaInfo.Analysis.Native;
 using MediaInfo.Analysis.Pipeline;
 using MediaInfo.Analysis.Results;
@@ -98,8 +99,11 @@ public sealed class MediaInfoAnalyzer : IMediaInfoAnalyzer
   /// Creates the strategies that are registered by default.
   /// </summary>
   /// <param name="fileSystem">The file system the disc strategies read from.</param>
+  /// <param name="http">How <c>http</c> and <c>https</c> locations are read, or <see langword="null"/> for the defaults.</param>
   /// <returns>Returns the default strategies.</returns>
-  public static IEnumerable<IMediaAnalysisStrategy> CreateDefaultStrategies(IFileSystem fileSystem) =>
+  public static IEnumerable<IMediaAnalysisStrategy> CreateDefaultStrategies(
+    IFileSystem fileSystem,
+    HttpAnalysisOptions? http = null) =>
   [
     new UnsupportedSourceStrategy(),
 
@@ -115,6 +119,7 @@ public sealed class MediaInfoAnalyzer : IMediaInfoAnalyzer
         new MplsBluRayStructureReader(fileSystem),
         new BluRayStructureReader(fileSystem))),
 
+    new HttpAnalysisStrategy(http),
     new NetworkStreamAnalysisStrategy(),
     new SingleFileAnalysisStrategy(),
     new StreamAnalysisStrategy()

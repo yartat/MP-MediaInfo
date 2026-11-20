@@ -87,14 +87,17 @@ public sealed class MediaAnalysisOptions
   private int _bufferSize = 64 * 1024;
 
   /// <summary>
-  /// Gets or sets the greatest number of bytes read from a stream that cannot seek.
+  /// Gets or sets the greatest number of bytes read from a stream.
   /// </summary>
   /// <remarks>
-  /// A stream that cannot seek may never end, and the library may never decide that it has seen enough. When the limit
-  /// is reached the analysis goes on with what has been read. A stream that can seek is not limited, because the library
-  /// asks for the parts it needs.
+  /// A stream that cannot seek may never end, and the library may never decide that it has seen enough. A stream that
+  /// can seek is read where the library asks to, and a damaged or hostile file can make it ask for ever. When the limit
+  /// is reached the analysis goes on with what has been read, and the result carries a warning.
   /// </remarks>
-  /// <value>The default value is <see langword="null"/>, which reads the stream to its end or until the library is done.</value>
+  /// <value>
+  /// The default value is <see langword="null"/>. A stream that cannot seek is then read to its end or until the library
+  /// is done. A stream that can seek is read up to four times its length plus 32 MiB, which no parse comes near.
+  /// </value>
   public long? MaximumStreamBytes { get; set; }
 
   /// <summary>
@@ -108,6 +111,29 @@ public sealed class MediaAnalysisOptions
   /// </remarks>
   /// <value>The default value is <see langword="true"/>.</value>
   public bool OffloadBlockingCalls { get; set; } = true;
+
+  /// <summary>
+  /// Gets or sets how many native calls may still be running after the caller gave up on them.
+  /// </summary>
+  /// <remarks>
+  /// A timeout or a cancellation releases the caller, not the native call: it keeps its thread, and with a network
+  /// media its connection, until the library returns, which for a server that never answers is never. The library
+  /// offers no timeout of its own. Once this many such calls are outstanding, a new analysis that needs the library is
+  /// refused at once with <see cref="Results.AnalysisFailureReason.Busy"/> instead of adding another thread and connection, and
+  /// analyses are accepted again as the outstanding calls return. Counted per analyzer. Only meaningful while
+  /// <see cref="OffloadBlockingCalls"/> is <see langword="true"/>.
+  /// </remarks>
+  /// <value>The default value is 16.</value>
+  /// <exception cref="ArgumentOutOfRangeException">The value is not greater than zero.</exception>
+  public int MaximumAbandonedNativeCalls
+  {
+    get => _maximumAbandonedNativeCalls;
+    set => _maximumAbandonedNativeCalls = value > 0
+      ? value
+      : throw new ArgumentOutOfRangeException(nameof(value), value, "At least one abandoned call must be allowed.");
+  }
+
+  private int _maximumAbandonedNativeCalls = 16;
 
   /// <summary>
   /// Gets or sets the maximum number of disc titles that are probed to determine their duration.

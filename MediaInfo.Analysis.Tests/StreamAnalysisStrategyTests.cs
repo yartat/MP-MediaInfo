@@ -69,6 +69,43 @@ public class StreamAnalysisStrategyTests
   }
 
   [Fact]
+  public async Task AnalyzeAsync_SeekableStreamTheLibraryNeverFinishesWith_IsReadOnlyUpToTheLimit()
+  {
+    // A library that keeps asking for the start of the media again and never decides it has seen enough.
+    var factory = CreateFactory();
+    factory.RequestedOffset = 0L;
+    var options = new MediaAnalysisOptions { OffloadBlockingCalls = false, BufferSize = 64 * 1024, MaximumStreamBytes = 1024 * 1024 };
+    using var timeLimit = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+    var result = await new StreamAnalysisStrategy().AnalyzeAsync(
+      new StreamMediaSource(CreateMedia(256 * 1024)),
+      TestContext.Create(factory, new FakeFileSystem(), options),
+      timeLimit.Token);
+
+    factory.BytesSubmitted.Should().BeLessThanOrEqualTo(1024 * 1024 + 64 * 1024);
+    factory.BufferFinalizeCalls.Should().Be(1, "what was read is still handed over");
+    result.Warnings.Should().ContainSingle(x => x.Contains("limit"));
+  }
+
+  [Fact]
+  public async Task AnalyzeAsync_SeekableStreamTheLibraryNeverFinishesWith_StopsWithoutAnExplicitLimit()
+  {
+    var factory = CreateFactory();
+    factory.RequestedOffset = 0L;
+    var options = new MediaAnalysisOptions { OffloadBlockingCalls = false, BufferSize = 64 * 1024 };
+    using var timeLimit = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+    var result = await new StreamAnalysisStrategy().AnalyzeAsync(
+      new StreamMediaSource(CreateMedia(256 * 1024)),
+      TestContext.Create(factory, new FakeFileSystem(), options),
+      timeLimit.Token);
+
+    // Four times the length of the stream and a margin: far more than any parse needs, far less than for ever.
+    factory.BytesSubmitted.Should().BeLessThanOrEqualTo(4L * 256 * 1024 + 32L * 1024 * 1024 + 64 * 1024);
+    result.Warnings.Should().ContainSingle(x => x.Contains("limit"));
+  }
+
+  [Fact]
   public async Task AnalyzeAsync_HonoursTheOffsetTheLibraryAsksFor()
   {
     var factory = CreateFactory(finalizeAfterBlocks: 3);

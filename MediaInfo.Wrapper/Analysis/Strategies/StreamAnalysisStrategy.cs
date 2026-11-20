@@ -65,7 +65,7 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
 
     try
     {
-      var processed = stream.CanSeek
+      var (processed, limited) = stream.CanSeek
         ? await PumpSeekableAsync(stream, handle, context, cancellationToken).ConfigureAwait(false)
         : await PumpForwardOnlyAsync(stream, handle, context, cancellationToken).ConfigureAwait(false);
 
@@ -79,7 +79,10 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
       {
         SourceKind = MediaSourceKind.Stream,
         SourcePath = media.DisplayName,
-        LibraryVersion = version
+        LibraryVersion = version,
+        Warnings = limited
+          ? [.. result.Warnings, $"The library did not finish within the read limit of {processed:N0} bytes; the result holds what it had by then."]
+          : result.Warnings
       };
     }
     finally
@@ -91,7 +94,18 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
     }
   }
 
-  private static async Task<long> PumpSeekableAsync(
+  // The library asks for the parts of a seekable stream it needs, and a damaged or hostile file can make it ask for ever.
+  // A parse reads a few blocks, or at worst the stream once, so a few times the length is far more than any parse needs.
+  private const long SeekableSlack = 32L * 1024 * 1024;
+  private const long SeekableLengthFactor = 4;
+
+  private static long SeekableLimit(MediaAnalysisContext context, long length) =>
+    context.Options.MaximumStreamBytes
+    ?? (length > (long.MaxValue - SeekableSlack) / SeekableLengthFactor
+      ? long.MaxValue
+      : (length * SeekableLengthFactor) + SeekableSlack);
+
+  private static async Task<(long Processed, bool Limited)> PumpSeekableAsync(
     Stream stream,
     INativeMediaInfo handle,
     MediaAnalysisContext context,
@@ -100,6 +114,8 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
     var bufferSize = context.Options.BufferSize;
     var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
     var processed = 0L;
+    var limited = false;
+    var limit = SeekableLimit(context, stream.Length);
 
     try
     {
@@ -107,6 +123,12 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
       while (true)
       {
         cancellationToken.ThrowIfCancellationRequested();
+
+        if (processed >= limit)
+        {
+          limited = true;
+          break;
+        }
 
         var read = await stream.ReadAsync(buffer.AsMemory(0, bufferSize), cancellationToken).ConfigureAwait(false);
         if (read <= 0)
@@ -139,10 +161,10 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
       ArrayPool<byte>.Shared.Return(buffer);
     }
 
-    return processed;
+    return (processed, limited);
   }
 
-  private static async Task<long> PumpForwardOnlyAsync(
+  private static async Task<(long Processed, bool Limited)> PumpForwardOnlyAsync(
     Stream stream,
     INativeMediaInfo handle,
     MediaAnalysisContext context,
@@ -151,6 +173,7 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
     var bufferSize = context.Options.BufferSize;
     var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
     var processed = 0L;
+    var limited = false;
 
     try
     {
@@ -162,6 +185,7 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
 
         if (context.Options.MaximumStreamBytes is { } limit && processed >= limit)
         {
+          limited = true;
           break;
         }
 
@@ -186,6 +210,6 @@ public sealed class StreamAnalysisStrategy : IMediaAnalysisStrategy
       ArrayPool<byte>.Shared.Return(buffer);
     }
 
-    return processed;
+    return (processed, limited);
   }
 }

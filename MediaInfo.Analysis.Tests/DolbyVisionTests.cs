@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -6,6 +6,7 @@
 
 #endregion
 
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MediaInfo.Analysis.Sources;
@@ -18,7 +19,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for reading the HDR format details and the Dolby Vision metadata of a video stream.</summary>
 public class DolbyVisionTests
 {
-  private const string Movie = @"D:\media\dv.mkv";
+  private static readonly string Movie = P("/media/dv.mkv");
 
   private static async Task<VideoStream> AnalyzeAsync(System.Action<FakeMediaProfile> configure)
   {

@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for the wrappers that add cross-cutting concerns to an analyzer.</summary>
 public class DecoratorTests
 {
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string Movie = P("/media/movie.mkv");
 
   private static MediaAnalysisResult Failure(AnalysisFailureReason reason) =>
     new() { Success = false, Failure = new AnalysisFailure(reason, reason.ToString()) };
@@ -167,13 +168,13 @@ public class DecoratorTests
   public async Task Caching_ReusesADiscFolderResult()
   {
     var fileSystem = new FakeFileSystem()
-      .AddDirectory(@"D:\media\disc\VIDEO_TS")
-      .SetLastWriteTimeUtc(@"D:\media\disc\VIDEO_TS", DateTimeOffset.UnixEpoch);
+      .AddDirectory(P("/media/disc/VIDEO_TS"))
+      .SetLastWriteTimeUtc(P("/media/disc/VIDEO_TS"), DateTimeOffset.UnixEpoch);
     var inner = new StubAnalyzer();
     var analyzer = new CachingAnalyzer(inner, new MemoryAnalysisCache(), fileSystem);
 
-    await analyzer.AnalyzeAsync(new DirectoryMediaSource(@"D:\media\disc\VIDEO_TS"));
-    await analyzer.AnalyzeAsync(new DirectoryMediaSource(@"D:\media\disc\VIDEO_TS"));
+    await analyzer.AnalyzeAsync(new DirectoryMediaSource(P("/media/disc/VIDEO_TS")));
+    await analyzer.AnalyzeAsync(new DirectoryMediaSource(P("/media/disc/VIDEO_TS")));
 
     inner.CallCount.Should().Be(1);
   }
@@ -391,7 +392,7 @@ public class DecoratorTests
   {
     var fileSystem = new FakeFileSystem()
       .AddFile(Movie)
-      .AddFile(@"D:\media\movie.srt");
+      .AddFile(P("/media/movie.srt"));
 
     var result = await new ExternalSubtitleAnalyzer(new StubAnalyzer(), fileSystem)
       .AnalyzeAsync(new FileMediaSource(Movie));
@@ -404,8 +405,8 @@ public class DecoratorTests
   {
     var fileSystem = new FakeFileSystem()
       .AddFile(Movie)
-      .AddFile(@"D:\media\movie.jpg")
-      .AddFile(@"D:\media\movie.nfo");
+      .AddFile(P("/media/movie.jpg"))
+      .AddFile(P("/media/movie.nfo"));
 
     var result = await new ExternalSubtitleAnalyzer(new StubAnalyzer(), fileSystem)
       .AnalyzeAsync(new FileMediaSource(Movie));
@@ -416,10 +417,10 @@ public class DecoratorTests
   [Fact]
   public async Task ExternalSubtitles_IgnoresTheMediaItself()
   {
-    var fileSystem = new FakeFileSystem().AddFile(@"D:\media\subtitles.txt");
+    var fileSystem = new FakeFileSystem().AddFile(P("/media/subtitles.txt"));
 
     var result = await new ExternalSubtitleAnalyzer(new StubAnalyzer(), fileSystem)
-      .AnalyzeAsync(new FileMediaSource(@"D:\media\subtitles.txt"));
+      .AnalyzeAsync(new FileMediaSource(P("/media/subtitles.txt")));
 
     result.HasExternalSubtitles.Should().BeFalse();
   }
@@ -428,11 +429,11 @@ public class DecoratorTests
   public async Task ExternalSubtitles_DoesNotScanForADiscOrAStream()
   {
     var fileSystem = new FakeFileSystem()
-      .AddDirectory(@"D:\media\disc")
-      .AddFile(@"D:\media\disc.srt");
+      .AddDirectory(P("/media/disc"))
+      .AddFile(P("/media/disc.srt"));
 
     var result = await new ExternalSubtitleAnalyzer(new StubAnalyzer(), fileSystem)
-      .AnalyzeAsync(new DirectoryMediaSource(@"D:\media\disc"));
+      .AnalyzeAsync(new DirectoryMediaSource(P("/media/disc")));
 
     result.HasExternalSubtitles.Should().BeFalse();
   }

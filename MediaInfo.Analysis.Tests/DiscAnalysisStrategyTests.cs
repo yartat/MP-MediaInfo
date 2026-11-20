@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,8 +24,8 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for the strategies that analyze an optical disc as a whole.</summary>
 public class DiscAnalysisStrategyTests
 {
-  private const string VideoTs = @"D:\media\disc\VIDEO_TS";
-  private const string Bdmv = @"D:\media\bd\BDMV";
+  private static readonly string VideoTs = Path.Combine(P("/media/disc"), "VIDEO_TS");
+  private static readonly string Bdmv = Path.Combine(P("/media/bd"), "BDMV");
 
   private const long Gigabyte = 1024L * 1024L * 1024L;
   private const long Megabyte = 1024L * 1024L;
@@ -52,7 +53,7 @@ public class DiscAnalysisStrategyTests
 
     dvd.CanHandle(new DirectoryMediaSource(VideoTs)).Should().BeTrue();
     dvd.CanHandle(new DirectoryMediaSource(Bdmv)).Should().BeFalse();
-    dvd.CanHandle(new FileMediaSource(@"D:\media\movie.mkv")).Should().BeFalse();
+    dvd.CanHandle(new FileMediaSource(P("/media/movie.mkv"))).Should().BeFalse();
 
     bluRay.CanHandle(new DirectoryMediaSource(Bdmv)).Should().BeTrue();
     bluRay.CanHandle(new DirectoryMediaSource(VideoTs)).Should().BeFalse();
@@ -161,11 +162,11 @@ public class DiscAnalysisStrategyTests
   [Fact]
   public async Task AnalyzeAsync_OnAFolderThatIsNotADisc_Fails()
   {
-    var fileSystem = new FakeFileSystem().AddDirectory(@"D:\media\movies");
+    var fileSystem = new FakeFileSystem().AddDirectory(P("/media/movies"));
     var strategy = new DvdAnalysisStrategy(fileSystem);
 
     var result = await strategy.AnalyzeAsync(
-      new DirectoryMediaSource(@"D:\media\movies"),
+      new DirectoryMediaSource(P("/media/movies")),
       TestContext.Create(new FakeNativeMediaInfoFactory(), fileSystem),
       CancellationToken.None);
 

@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -22,8 +23,8 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for the DVD structure reader that discovers titles from the folder layout.</summary>
 public class DvdStructureReaderTests
 {
-  private const string DiscRoot = @"D:\media\disc";
-  private const string VideoTs = @"D:\media\disc\VIDEO_TS";
+  private static readonly string DiscRoot = P("/media/disc");
+  private static readonly string VideoTs = Path.Combine(P("/media/disc"), "VIDEO_TS");
 
   private const long Gigabyte = 1024L * 1024L * 1024L;
   private const long Megabyte = 1024L * 1024L;
@@ -60,11 +61,12 @@ public class DvdStructureReaderTests
   }
 
   [Theory]
-  [InlineData(@"D:\media\empty")]
-  [InlineData(@"D:\media\missing")]
+  [InlineData("/media/empty")]
+  [InlineData("/media/missing")]
   public void CanRead_FolderWithoutTitleSets_ReturnsFalse(string path)
   {
-    var fileSystem = CreateDisc().AddDirectory(@"D:\media\empty");
+    path = P(path);
+    var fileSystem = CreateDisc().AddDirectory(P("/media/empty"));
     var reader = new DvdStructureReader(fileSystem);
 
     reader.CanRead(path, out var discRoot).Should().BeFalse();

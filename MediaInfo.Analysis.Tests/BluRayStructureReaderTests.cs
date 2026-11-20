@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -22,8 +23,8 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for the Blu-ray structure reader that discovers titles from the folder layout.</summary>
 public class BluRayStructureReaderTests
 {
-  private const string DiscRoot = @"D:\media\bd";
-  private const string Bdmv = @"D:\media\bd\BDMV";
+  private static readonly string DiscRoot = P("/media/bd");
+  private static readonly string Bdmv = Path.Combine(P("/media/bd"), "BDMV");
 
   private const long Gigabyte = 1024L * 1024L * 1024L;
   private const long Megabyte = 1024L * 1024L;
@@ -60,9 +61,9 @@ public class BluRayStructureReaderTests
   [Fact]
   public void CanRead_FolderWithoutABdmvStructure_ReturnsFalse()
   {
-    var reader = new BluRayStructureReader(new FakeFileSystem().AddDirectory(@"D:\media\movies"));
+    var reader = new BluRayStructureReader(new FakeFileSystem().AddDirectory(P("/media/movies")));
 
-    reader.CanRead(@"D:\media\movies", out var discRoot).Should().BeFalse();
+    reader.CanRead(P("/media/movies"), out var discRoot).Should().BeFalse();
     discRoot.Should().BeNull();
   }
 

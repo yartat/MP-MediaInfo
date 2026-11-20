@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -27,7 +28,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for what an analysis does with a media, a file system or a caller that does not behave.</summary>
 public class AnalyzerRobustnessTests
 {
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string Movie = P("/media/movie.mkv");
 
   private static (FakeNativeMediaInfoFactory Factory, FakeFileSystem FileSystem, FakeMediaProfile Profile) CreateMedia()
   {
@@ -247,7 +248,7 @@ public class AnalyzerRobustnessTests
     var analyzer = Builder(factory, fileSystem).WithCaching().WithExternalSubtitles().Build();
 
     var first = await analyzer.AnalyzeAsync(new FileMediaSource(Movie));
-    fileSystem.AddFile(@"D:\media\movie.srt", 100);
+    fileSystem.AddFile(P("/media/movie.srt"), 100);
     var second = await analyzer.AnalyzeAsync(new FileMediaSource(Movie));
 
     first.HasExternalSubtitles.Should().BeFalse();
@@ -407,7 +408,7 @@ public class AnalyzerRobustnessTests
   private static async Task<List<IMediaSource>> ScanAsync(IFileSystem fileSystem, MediaFolderScanOptions? options = null)
   {
     var inner = new StubAnalyzer();
-    await foreach (var _ in inner.AnalyzeFolderAsync(@"D:\library", options, fileSystem))
+    await foreach (var _ in inner.AnalyzeFolderAsync(P("/library"), options, fileSystem))
     {
     }
 
@@ -418,12 +419,12 @@ public class AnalyzerRobustnessTests
   public async Task Scan_DiscsAtAnyDepth_AreReportedAsDiscs()
   {
     var fileSystem = new FakeFileSystem()
-      .AddFile(@"D:\library\a.mkv")
-      .AddFile(@"D:\library\collection\2001\film\VIDEO_TS\VTS_01_0.IFO")
-      .AddFile(@"D:\library\collection\2001\film\VIDEO_TS\VTS_01_1.VOB")
-      .AddFile(@"D:\library\collection\2002\show\BDMV\index.bdmv")
-      .AddFile(@"D:\library\collection\2002\show\BDMV\PLAYLIST\00000.mpls")
-      .AddFile(@"D:\library\collection\2002\show\BDMV\STREAM\00001.m2ts");
+      .AddFile(P("/library/a.mkv"))
+      .AddFile(P("/library/collection/2001/film/VIDEO_TS/VTS_01_0.IFO"))
+      .AddFile(P("/library/collection/2001/film/VIDEO_TS/VTS_01_1.VOB"))
+      .AddFile(P("/library/collection/2002/show/BDMV/index.bdmv"))
+      .AddFile(P("/library/collection/2002/show/BDMV/PLAYLIST/00000.mpls"))
+      .AddFile(P("/library/collection/2002/show/BDMV/STREAM/00001.m2ts"));
 
     var calls = await ScanAsync(fileSystem);
 
@@ -448,11 +449,11 @@ public class AnalyzerRobustnessTests
   public async Task Scan_FolderThatCannotBeRead_OnlyLosesItself()
   {
     var fileSystem = new FakeFileSystem()
-      .AddFile(@"D:\library\a.mkv")
-      .AddFile(@"D:\library\locked\b.mkv")
-      .AddFile(@"D:\library\open\c.mkv");
+      .AddFile(P("/library/a.mkv"))
+      .AddFile(P("/library/locked/b.mkv"))
+      .AddFile(P("/library/open/c.mkv"));
 
-    var calls = await ScanAsync(new UnreadableFolderFileSystem(fileSystem, @"D:\library\locked"));
+    var calls = await ScanAsync(new UnreadableFolderFileSystem(fileSystem, P("/library/locked")));
 
     calls.OfType<FileMediaSource>().Select(x => Path.GetFileName(x.Path))
       .Should().Equal("a.mkv", "c.mkv");

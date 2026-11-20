@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -27,7 +27,7 @@ public class CredentialRedactionTests
   [InlineData("http://user:pa@ss@host/a", "http://***@host/a")]
   [InlineData("http://host/path@with-at", "http://host/path@with-at")]
   [InlineData("http://host/video.mp4?token=a@b", "http://host/video.mp4?token=a@b")]
-  [InlineData(@"D:\media\movie.mkv", @"D:\media\movie.mkv")]
+  [InlineData("/media/movie.mkv", "/media/movie.mkv")]
   [InlineData("user@example.com", "user@example.com")]
   [InlineData("http://", "http://")]
   [InlineData("", "")]

@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for how the duration of a media is read.</summary>
 public class DurationReaderTests
 {
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string Movie = P("/media/movie.mkv");
 
   [Fact]
   public async Task Duration_IsTakenFromTheVideoStreamWhenItKnowsIt()

@@ -119,7 +119,7 @@ public class RtspStrategyTests(ITestOutputHelper output)
   [Fact]
   public void CanHandle_IgnoresAFileEvenWhenItsNameLooksLikeAStream()
   {
-    new RtspAnalysisStrategy().CanHandle(new FileMediaSource(@"D:\media\rtsp.mkv")).Should().BeFalse();
+    new RtspAnalysisStrategy().CanHandle(new FileMediaSource(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "rtsp.mkv"))).Should().BeFalse();
   }
 
   [Fact]
@@ -191,7 +191,7 @@ public class RtspStrategyTests(ITestOutputHelper output)
 
     // A file that does not exist proves the file strategy is still registered: without it the answer would be
     // that no strategy handles the media at all.
-    var result = await analyzer.AnalyzeAsync(@"D:\media\does-not-exist.mkv");
+    var result = await analyzer.AnalyzeAsync(System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"does-not-exist-{Guid.NewGuid()}.mkv"));
 
     result.Failure!.Reason.Should().Be(AnalysisFailureReason.SourceNotFound);
   }

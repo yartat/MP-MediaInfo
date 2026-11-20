@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,8 +24,8 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for reading the navigation tables of a DVD and a Blu-ray.</summary>
 public class NavigationTableParserTests
 {
-  private const string VideoTs = @"D:\media\disc\VIDEO_TS";
-  private const string Bdmv = @"D:\media\bd\BDMV";
+  private static readonly string VideoTs = Path.Combine(P("/media/disc"), "VIDEO_TS");
+  private static readonly string Bdmv = Path.Combine(P("/media/bd"), "BDMV");
 
   #region DVD tables
 

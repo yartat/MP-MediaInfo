@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -32,7 +33,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for the lesser findings of the review: cultures, discs, limits and patterns.</summary>
 public class HardeningTests
 {
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string Movie = P("/media/movie.mkv");
 
   private static MediaAnalysisContext CreateContext(FakeFileSystem? fileSystem = null) =>
     new(
@@ -58,9 +59,9 @@ public class HardeningTests
   [Fact]
   public async Task Analyze_ReadsTheIptcMetadata()
   {
-    var fileSystem = new FakeFileSystem().AddFile(@"D:\media\photo.jpg");
+    var fileSystem = new FakeFileSystem().AddFile(P("/media/photo.jpg"));
     var factory = new FakeNativeMediaInfoFactory();
-    factory.AddMedia(@"D:\media\photo.jpg")
+    factory.AddMedia(P("/media/photo.jpg"))
       .WithStreams(StreamKind.Image, 1)
       .Set(StreamKind.General, 0, "Headline", "A headline")
       .Set(StreamKind.General, 0, "City", "Kyiv")
@@ -75,7 +76,7 @@ public class HardeningTests
       .UseFileSystem(fileSystem)
       .Configure(options => options.OffloadBlockingCalls = false)
       .Build()
-      .AnalyzeAsync(new FileMediaSource(@"D:\media\photo.jpg"));
+      .AnalyzeAsync(new FileMediaSource(P("/media/photo.jpg")));
 
     var iptc = result.General.Iptc;
     iptc.Should().NotBeNull();
@@ -117,9 +118,9 @@ public class HardeningTests
   [Fact]
   public async Task Analyze_Ps2Audio_ReportsTheMuxingMode()
   {
-    var fileSystem = new FakeFileSystem().AddFile(@"D:\media\song.ss2");
+    var fileSystem = new FakeFileSystem().AddFile(P("/media/song.ss2"));
     var factory = new FakeNativeMediaInfoFactory();
-    factory.AddMedia(@"D:\media\song.ss2")
+    factory.AddMedia(P("/media/song.ss2"))
       .WithStreams(StreamKind.Audio, 1)
       .SetIndexed(StreamKind.Audio, 0, (int)NativeMethods.Audio.Audio_Format, "ADPCM")
       .SetIndexed(StreamKind.Audio, 0, (int)NativeMethods.Audio.Audio_MuxingMode, "PS2");
@@ -129,17 +130,17 @@ public class HardeningTests
       .UseFileSystem(fileSystem)
       .Configure(options => options.OffloadBlockingCalls = false)
       .Build()
-      .AnalyzeAsync(new FileMediaSource(@"D:\media\song.ss2"));
+      .AnalyzeAsync(new FileMediaSource(P("/media/song.ss2")));
 
     result.AudioStreams[0].MuxingMode.Should().Be("PS2");
     result.AudioStreams[0].Codec.Should().Be(AudioCodec.Adpcm);
   }
 
   [Theory]
-  [InlineData(@"D:\media\song.ss2", true)]
-  [InlineData(@"D:\media\broadcast.bw64", true)]
-  [InlineData(@"D:\media\track.cmfa", true)]
-  [InlineData(@"D:\media\video.cmfv", false)]
+  [InlineData("/media/song.ss2", true)]
+  [InlineData("/media/broadcast.bw64", true)]
+  [InlineData("/media/track.cmfa", true)]
+  [InlineData("/media/video.cmfv", false)]
   public void Extensions_NewerFormats_AreKnownAsMedia(string path, bool audio)
   {
     (audio ? path.IsAudio() : path.IsVideo()).Should().BeTrue();
@@ -268,7 +269,7 @@ public class HardeningTests
   [Fact]
   public async Task FallbackReader_PreferredReaderThrows_DescribesTheDiscFromTheFolders()
   {
-    var structure = new DvdStructure(@"D:\disc\VIDEO_TS", 0, []);
+    var structure = new DvdStructure(P("/disc/VIDEO_TS"), 0, []);
     var reader = new FallbackDiscStructureReader(new FailingReader(DiscKind.Dvd), new FixedReader(structure));
     var reports = new List<AnalysisProgress>();
     var context = new MediaAnalysisContext(
@@ -276,7 +277,7 @@ public class HardeningTests
       new FakeFileSystem(),
       progress: new ListProgress(reports));
 
-    var result = await reader.ReadAsync(@"D:\disc\VIDEO_TS", context, CancellationToken.None);
+    var result = await reader.ReadAsync(P("/disc/VIDEO_TS"), context, CancellationToken.None);
 
     result.Should().BeSameAs(structure);
     reports.Should().Contain(x => x.Detail != null && x.Detail.Contains("could not be read"));
@@ -527,10 +528,10 @@ public class HardeningTests
   [Fact]
   public async Task IfoReader_FileFarLargerThanAnIfoCanBe_IsNotReadIntoMemory()
   {
-    var fileSystem = new FakeFileSystem().AddFile(@"D:\disc\VIDEO_TS\VIDEO_TS.IFO", 2L * 1024 * 1024 * 1024);
+    var fileSystem = new FakeFileSystem().AddFile(P("/disc/VIDEO_TS/VIDEO_TS.IFO"), 2L * 1024 * 1024 * 1024);
     var reader = new IfoDvdStructureReader(fileSystem);
 
-    var structure = await reader.ReadAsync(@"D:\disc\VIDEO_TS", CreateContext(fileSystem), CancellationToken.None);
+    var structure = await reader.ReadAsync(P("/disc/VIDEO_TS"), CreateContext(fileSystem), CancellationToken.None);
 
     structure.Should().BeNull();
   }
@@ -543,10 +544,10 @@ public class HardeningTests
   public async Task ExternalSubtitles_NameWithWildcards_DoesNotMatchOtherFiles()
   {
     var fileSystem = new FakeFileSystem()
-      .AddFile(@"D:\media\a*b.mkv")
-      .AddFile(@"D:\media\axxb.srt");
+      .AddFile(P("/media/a*b.mkv"))
+      .AddFile(P("/media/axxb.srt"));
     var factory = new FakeNativeMediaInfoFactory();
-    factory.AddMedia(@"D:\media\a*b.mkv").WithStreams(StreamKind.Video, 1);
+    factory.AddMedia(P("/media/a*b.mkv")).WithStreams(StreamKind.Video, 1);
     var analyzer = MediaInfoAnalyzerBuilder.Create()
       .UseNativeFactory(factory)
       .UseFileSystem(fileSystem)
@@ -554,11 +555,11 @@ public class HardeningTests
       .WithExternalSubtitles()
       .Build();
 
-    (await analyzer.AnalyzeAsync(new FileMediaSource(@"D:\media\a*b.mkv"))).HasExternalSubtitles.Should().BeFalse();
+    (await analyzer.AnalyzeAsync(new FileMediaSource(P("/media/a*b.mkv")))).HasExternalSubtitles.Should().BeFalse();
 
-    fileSystem.AddFile(@"D:\media\a*b.srt");
+    fileSystem.AddFile(P("/media/a*b.srt"));
 
-    (await analyzer.AnalyzeAsync(new FileMediaSource(@"D:\media\a*b.mkv"))).HasExternalSubtitles.Should().BeTrue();
+    (await analyzer.AnalyzeAsync(new FileMediaSource(P("/media/a*b.mkv")))).HasExternalSubtitles.Should().BeTrue();
   }
 
   #endregion

@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,8 +27,8 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for strategy selection and the analyzer that drives it.</summary>
 public class AnalyzerPipelineTests
 {
-  private const string VideoTs = @"D:\media\disc\VIDEO_TS";
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string VideoTs = Path.Combine(P("/media/disc"), "VIDEO_TS");
+  private static readonly string Movie = P("/media/movie.mkv");
 
   [Fact]
   public void Selector_ChoosesTheLowestPriorityStrategyThatCanHandleTheSource()
@@ -212,7 +213,7 @@ public class AnalyzerPipelineTests
   [Theory]
   [InlineData("http://localhost/movie.mp4", MediaSourceKind.Network)]
   [InlineData("rtsp://localhost/live", MediaSourceKind.Network)]
-  [InlineData(@"D:\media\movie.mkv", MediaSourceKind.File)]
+  [InlineData("/media/movie.mkv", MediaSourceKind.File)]
   public void MediaSource_ClassifiesAPathOrLocation(string input, MediaSourceKind expected)
   {
     MediaSource.From(input).Kind.Should().Be(expected);

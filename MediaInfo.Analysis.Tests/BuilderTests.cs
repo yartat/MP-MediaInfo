@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for assembling an analyzer and registering it with a container.</summary>
 public class BuilderTests
 {
-  private const string Movie = @"D:\media\movie.mkv";
+  private static readonly string Movie = P("/media/movie.mkv");
 
   private static (FakeNativeMediaInfoFactory Factory, FakeFileSystem FileSystem) CreateMedia()
   {
@@ -120,7 +121,7 @@ public class BuilderTests
   public async Task Build_WithExternalSubtitles_ReportsThem()
   {
     var (factory, fileSystem) = CreateMedia();
-    fileSystem.AddFile(@"D:\media\movie.srt");
+    fileSystem.AddFile(P("/media/movie.srt"));
 
     var analyzer = MediaInfoAnalyzerBuilder.Create()
       .UseNativeFactory(factory)

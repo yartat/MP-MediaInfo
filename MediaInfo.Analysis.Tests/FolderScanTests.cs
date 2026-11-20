@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -7,6 +7,7 @@
 #endregion
 
 using System;
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace MediaInfo.Analysis.Tests;
 /// <summary>Tests for walking a folder of media.</summary>
 public class FolderScanTests
 {
-  private const string Library = @"D:\library";
+  private static readonly string Library = P("/library");
 
   private static FakeFileSystem CreateLibrary() =>
     new FakeFileSystem()
@@ -41,11 +42,11 @@ public class FolderScanTests
     IMediaInfoAnalyzer analyzer,
     FakeFileSystem fileSystem,
     MediaFolderScanOptions? options = null,
-    string folder = Library,
+    string? folder = null,
     CancellationToken cancellationToken = default)
   {
     var results = new List<MediaAnalysisResult>();
-    await foreach (var result in analyzer.AnalyzeFolderAsync(folder, options, fileSystem, cancellationToken))
+    await foreach (var result in analyzer.AnalyzeFolderAsync(folder ?? Library, options, fileSystem, cancellationToken))
     {
       results.Add(result);
     }
@@ -128,7 +129,7 @@ public class FolderScanTests
   [Fact]
   public async Task Scan_OfAMissingFolderYieldsOneFailure()
   {
-    var results = await ScanAsync(new StubAnalyzer(), CreateLibrary(), folder: @"D:\nothing");
+    var results = await ScanAsync(new StubAnalyzer(), CreateLibrary(), folder: "/nothing");
 
     results.Should().ContainSingle()
       .Which.Failure!.Reason.Should().Be(AnalysisFailureReason.SourceNotFound);

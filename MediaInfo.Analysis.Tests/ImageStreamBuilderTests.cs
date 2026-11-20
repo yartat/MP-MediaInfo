@@ -1,4 +1,4 @@
-#region Copyright (C) 2017-2026 Yaroslav Tatarenko
+﻿#region Copyright (C) 2017-2026 Yaroslav Tatarenko
 
 // Copyright (C) 2017-2026 Yaroslav Tatarenko
 // This product uses MediaInfo library, Copyright (c) 2002-2026 MediaArea.net SARL.
@@ -6,6 +6,7 @@
 
 #endregion
 
+using static MediaInfo.Analysis.Tests.Fakes.TestPaths;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -61,7 +62,7 @@ public class ImageStreamBuilderTests
   [Fact]
   public async Task AnalyzeAsync_ImageOnlyMedia_ReportsImageStreams()
   {
-    const string Photo = @"D:\media\photo.heic";
+    var Photo = P("/media/photo.heic");
     var fileSystem = new FakeFileSystem().AddFile(Photo, 4096);
     var factory = new FakeNativeMediaInfoFactory();
     factory.AddMedia(Photo)

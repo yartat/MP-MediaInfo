@@ -63,3 +63,4 @@ Version number not decided. Previous release: 26.10.0.
 
 - Analyzing a file cannot be cancelled while the native library opens it; a timeout releases the caller, and the call runs on until the library returns.
 - Other protocols given to the native library and `MediaInfoWrapper` URLs have no timeouts.
+- Linux: `MediaInfoWrapper` reports no streams for a Blu-ray folder, because the native library 26.10.0 cannot list the playlists of the disc there. Open the playlist (`.mpls`) instead. Fixed in the next native version.
